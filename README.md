@@ -4,5 +4,5 @@
 # References
 
 * [Canban board](https://github.com/bestchanges/studyworthy/projects/1)
-* [Issues](https://github.com/bestchanges/studyworthy/issues)
+* [Unassigned Issues](https://github.com/bestchanges/studyworthy/issues?q=is%3Aopen+is%3Aissue+no%3Aassignee)
 * [Wiki](https://github.com/bestchanges/studyworthy/wiki)
