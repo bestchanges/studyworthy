@@ -1,6 +1,3 @@
-# studyworthy
-Сервис для организации эффективного обучения новым навыкам
-
 # References
 
 * [Canban board](https://github.com/bestchanges/studyworthy/projects/1)
