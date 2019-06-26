@@ -1,4 +1,6 @@
-Build: [![CircleCI](https://circleci.com/gh/bestchanges/studyworthy.svg?style=svg)](https://circleci.com/gh/bestchanges/studyworthy)
+Build: 
+ [![CircleCI](https://circleci.com/gh/bestchanges/studyworthy.svg?style=svg)](https://circleci.com/gh/bestchanges/studyworthy)
+ [![Travis](https://travis-ci.org/bestchanges/studyworthy.svg?branch=master)](https://travis-ci.org/bestchanges/studyworthy)
 # References
 
 * [Canban board](https://github.com/bestchanges/studyworthy/projects/1)
