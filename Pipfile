@@ -6,8 +6,8 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
-redgreenunittest = "==0.1.1"
-Django = "~=2.2"
+Django = ">=2.2"
+gunicorn = "*"
 
 [requires]
 python_version = "3.6"

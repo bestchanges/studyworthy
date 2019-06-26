@@ -40,6 +40,9 @@ INSTALLED_APPS = [
     'studyworthy'
 ]
 
+import django_heroku
+django_heroku.settings(locals())
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
