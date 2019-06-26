@@ -1,1 +1,2 @@
 Django~=2.2
+redgreenunittest==0.1.1
