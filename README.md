@@ -1,4 +1,4 @@
-[![CircleCI](https://circleci.com/gh/bestchanges/studyworthy.svg?style=svg)](https://circleci.com/gh/bestchanges/studyworthy)
+Build status: [![CircleCI](https://circleci.com/gh/bestchanges/studyworthy.svg?style=svg)](https://circleci.com/gh/bestchanges/studyworthy)
 
 # References
 
