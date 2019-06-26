@@ -1,5 +1,4 @@
-Build: <a href="https://circleci.com/gh/bestchanges/studyworthy" target="_blank"><img src="https://circleci.com/gh/bestchanges/studyworthy.svg?style=svg" style="max-width:100%;"></a>
-
+Build: [![CircleCI](https://circleci.com/gh/bestchanges/studyworthy.svg?style=svg)](https://circleci.com/gh/bestchanges/studyworthy)
 # References
 
 * [Canban board](https://github.com/bestchanges/studyworthy/projects/1)
