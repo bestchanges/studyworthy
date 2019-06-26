@@ -1,6 +1,5 @@
 language: python
 python:
-- '3.5'
 - '3.6'
 - '3.7'
 install:
@@ -9,5 +8,6 @@ install:
 script:
 - pipenv run python manage.py test
 deploy:
+  provider: heroku
   api_key:
     secure: YepZp6XMsKr39L7rkYenjkY9+54QR63qn6NmRasqhdD3QWUp0P7YhRNE/x4VCra/In7YaSGmbGS2+Ec8lE2JlpnNQToBvChz/VZj+iVl5gPKJLPRTVO16BSvTWF+Pb6/px76b5GmahPcHztzgVlRRcxIlzDuNyfia7hqDf+CHtZygwAs05UfS4LsiVhZJsmYE6wDuX4B7QENkDWfaMgJEps8hs40vgFX0LcZM3nHikM1C1lappgAer8sA18lSNrDKjnC0JUc3B3MwarygMlLTV94uCcTzDrNsSOZ16HIcPSj/7RZMKs3LBSwqpMV67qtuWNRwOyOuETKOja6zcoV3E7403x/TNdIQ+QWYdoMAo3ZT0Vw35IbgnZ041aH2sBnoXIIahd3uvtymXYTnHa9R8CWvnJjad5WBIlePbAJ/ojr0OZRMea1Zf4Phyi12SRe3aagRstfIL82USCnrxEK/+gJquDW9N0+WI14dVBrhw6F7igzDlftFNhq0o/KLxX9fPE5yp9uqN912rkFLCsWZWTtJC11RNe4nC5wfbbgx4po97F9ZppzLzS98xsovUWqvL78zQuOCOCb/mmUQ00Lj7JCm0qqTm1/FMX9dbY6pijoBBtjWzaD5GHZCM4v8gD37t45EppAzpWjU3bbt0L7wWFykYQtI3jXRppVdVTaKA4=
