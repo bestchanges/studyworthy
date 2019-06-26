@@ -30,8 +30,6 @@ ALLOWED_HOSTS = [
     '.studyworthty.xyz',
 ]
 
-# Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
