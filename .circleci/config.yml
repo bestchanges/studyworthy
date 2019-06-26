@@ -2,22 +2,15 @@
 version: 2.1
 
 jobs:
-    build:  # required for runs that don't use workflows
-    working_directory: ~/circleci-demo-python-django
-    docker:
-      - image: circleci/python:3.6.4  # primary container for the build job
-    steps:
-      - checkout  # checkout source code to working directory
-      - run:
-          command: |  # use pipenv to install dependencies
-            sudo pip install -r requirements.txt
-            python manage.py test
-            
-
-# Orchestrate or schedule a set of jobs, see https://circleci.com/docs/2.0/workflows/
-workflows:
-  # Name the workflow "Welcome"
-  Welcome:
-    # Run the welcome/run job in its own container
-    jobs:
-      - build
+  build:  # required for runs that don't use workflows
+  working_directory: ~/circleci-demo-python-django
+  docker:
+    - image: circleci/python:3.6.4  # primary container for the build job
+  steps:
+    - checkout  # checkout source code to working directory
+    - run: sudo chown -R circleci:circleci /usr/local/bin
+    - run: sudo chown -R circleci:circleci /usr/local/lib/python3.6/site-packages
+    - run:
+      command: |  # use pipenv to install dependencies
+        sudo pip install -r requirements.txt
+        python manage.py test
