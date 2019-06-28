@@ -7,11 +7,12 @@ Build:
 * [Unassigned Issues](https://github.com/bestchanges/studyworthy/issues?q=is%3Aopen+is%3Aissue+no%3Aassignee)
 * [Wiki](https://github.com/bestchanges/studyworthy/wiki)
 
-### Basic system specs
-* Django 2.2
+### How to start
+```
+pip install -r requirements.txt
+./manage.py test
+```
 
-### Configuration
-* pip install -r requirements.txt
-
-### Run tests
-* ./manage.py test
+## Sessions
+* [StudyWorthy project presentation ](https://youtu.be/Fq3F8vt_PcI)
+* [StudyWorthy project update 27.06](https://youtu.be/zDgZCDqagTA)
