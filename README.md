@@ -10,6 +10,14 @@ Build:
 ### How to start
 ```
 pip install -r requirements.txt
+
+python manage.py migrate
+
+# seed db with initial data
+python manage.py loaddata initial_data
+
+python manage.py runserver
+
 ./manage.py test
 ```
 
