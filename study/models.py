@@ -1,11 +1,15 @@
+from django.contrib.auth.models import User
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from slugify import slugify
 
 class Category(models.Model):
     name = models.CharField(max_length=200)
     parentId = models.ForeignKey("self", on_delete=models.DO_NOTHING)
 
-class User(models.Model):
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=200)
     last_name = models.CharField(max_length=200)
     country = models.CharField(max_length=200)
@@ -17,10 +21,29 @@ class User(models.Model):
     email = models.CharField(max_length=200)
     phone = models.CharField(max_length=200)
 
+    def name(self):
+        return  f'{self.first_name} {self.last_name}'
+
+    def __str__(self):
+        return f'Profile for {self.name()} {self.user.username} '
+
+
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user=instance)
+
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    instance.profile.save()
+
 
 class Author(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    bio = models.TextField
+    user = models.OneToOneField(Profile, on_delete=models.CASCADE)
+    bio = models.TextField()
+
+    def __str__(self):
+        return f'Author: {self.user.first_name} {self.user.last_name}'
 
 
 class Course(models.Model):
