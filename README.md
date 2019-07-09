@@ -1,4 +1,4 @@
-Build: 
+Build:
  [![CircleCI](https://circleci.com/gh/bestchanges/studyworthy.svg?style=svg)](https://circleci.com/gh/bestchanges/studyworthy)
  [![Travis](https://travis-ci.org/bestchanges/studyworthy.svg?branch=master)](https://travis-ci.org/bestchanges/studyworthy)
 # References
@@ -10,6 +10,18 @@ Build:
 ### How to start
 ```
 pip install -r requirements.txt
+
+pip install pipenv
+
+pipenv install
+
+python manage.py migrate
+
+# seed db with initial data
+python manage.py loaddata initial_data
+
+python manage.py runserver
+
 ./manage.py test
 ```
 
