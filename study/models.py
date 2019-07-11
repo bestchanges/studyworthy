@@ -40,7 +40,7 @@ def save_user_profile(sender, instance, **kwargs):
 
 class Author(models.Model):
     user = models.OneToOneField(Profile, on_delete=models.CASCADE)
-    bio = models.TextField()
+    bio = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return f'Author: {self.user.first_name} {self.user.last_name}'
