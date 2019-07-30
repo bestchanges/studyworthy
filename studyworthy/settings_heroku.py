@@ -2,8 +2,8 @@ import dj_database_url
 
 from .settings_default import *
 
-if not 'SECRET_KEY' in os.environ:
-    raise NameError('SECRET_KEY not found')
+if 'SECRET_KEY' not in os.environ:
+    raise NameError('SECRET_KEY env not found')
 SECRET_KEY = os.environ['SECRET_KEY']
 
 DEBUG = False

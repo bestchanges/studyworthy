@@ -1,6 +1,8 @@
 from .settings_default import *
 DEBUG = True
 
+SECRET_KEY = '0(#0qt5n$81v-gc)m^20(kb0wf#*-_%7ou(f5mwrho@=ste^0y'
+
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',

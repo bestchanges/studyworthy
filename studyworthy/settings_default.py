@@ -1,12 +1,12 @@
+"""
+Common settings which applies to all environments.
+"""
 import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FIXTURE_DIRS = (
     os.path.join(BASE_DIR, 'fixtures'),
 )
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '0(#0qt5n$81v-gc)m^20(kb0wf#*-_%7ou(f5mwrho@=ste^0y'
 
 INSTALLED_APPS = [
     'study',
@@ -50,18 +50,10 @@ TEMPLATES = [
 WSGI_APPLICATION = 'studyworthy.wsgi.application'
 
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator', },
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator', },
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator', },
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator', },
 ]
 
 # Internationalization
