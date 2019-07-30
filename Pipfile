@@ -10,6 +10,8 @@ behave-django = "*"
 
 [packages]
 Django = ">=2.2"
+psycopg2-binary = "*"
+dj_database_url = "*"
 pyyaml = "*"
 redgreenunittest = "*"
 gunicorn = "*"

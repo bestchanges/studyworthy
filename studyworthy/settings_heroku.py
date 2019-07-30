@@ -1,7 +1,10 @@
+import dj_database_url
+
 from .settings_default import *
 
-# TODO: read from secrets
-SECRET_KEY = '0(#0qt5n$81v-gc)m^20(kb0wf#*-_%7ou(f5mwrho@=ste^0y'
+if not 'SECRET_KEY' in os.environ:
+    raise NameError('SECRET_KEY not found')
+SECRET_KEY = os.environ['SECRET_KEY']
 
 DEBUG = False
 
@@ -11,12 +14,7 @@ ALLOWED_HOSTS = [
     '.studyworthty.xyz',
 ]
 
-# import django_heroku
-# TODO: load like here  django_heroku.settings(locals())
+# from here: https://devcenter.heroku.com/articles/heroku-postgresql
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        'TEST_NAME': os.path.join(BASE_DIR, 'db-test.sqlite3'),
-    }
+    'default': dj_database_url.config(conn_max_age=600, ssl_require=True)
 }
