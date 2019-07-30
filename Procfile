@@ -1,1 +1,1 @@
-web: python manage.py migrate && gunicorn studyworthy.wsgi --log-file -
+web: python manage.py migrate && python manage.py loaddata test-data.yaml && gunicorn studyworthy.wsgi --log-file -
