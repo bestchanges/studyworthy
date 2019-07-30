@@ -1,0 +1,7 @@
+- model: study.course
+  pk: 1
+  fields:
+    title: Hello Python
+    state: active
+    short_description: Study python from scratch
+    slug: hello-python

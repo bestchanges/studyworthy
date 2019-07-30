@@ -4,34 +4,35 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from slugify import slugify
 
+
 class Category(models.Model):
     name = models.CharField(max_length=200)
-    parentId = models.ForeignKey("self", on_delete=models.DO_NOTHING)
+    parent = models.ForeignKey("self", on_delete=models.DO_NOTHING)
 
-class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    first_name = models.CharField(max_length=200)
-    last_name = models.CharField(max_length=200)
-    country = models.CharField(max_length=200)
-    city = models.CharField(max_length=200)
-    language = models.CharField(max_length=200)
-    skype = models.CharField(max_length=200)
-    google_account = models.CharField(max_length=200)
-    github_account = models.CharField(max_length=200)
-    email = models.CharField(max_length=200)
-    phone = models.CharField(max_length=200)
 
-    def name(self):
-        return  f'{self.first_name} {self.last_name}'
+class UserProfile(User):
+    LANGUAGE_CHOICES = [
+        ('ru', 'Russian'),
+        ('en', 'English'),
+        ('ua', 'Ukrainian')
+    ]
+    country = models.CharField(max_length=100)
+    city = models.CharField(max_length=100)
+    language = models.CharField(max_length=2, choices=LANGUAGE_CHOICES)
+    skype = models.CharField(max_length=100)
+    google_account = models.CharField(max_length=100)
+    github_account = models.CharField(max_length=100)
+    phone = models.CharField(max_length=20)
 
     def __str__(self):
-        return f'Profile for {self.name()} {self.user.username} '
+        return f'Profile for {self.get_full_name()} {self.username} '
 
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
-        Profile.objects.create(user=instance)
+        UserProfile.objects.create(user=instance)
+
 
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
@@ -39,11 +40,11 @@ def save_user_profile(sender, instance, **kwargs):
 
 
 class Author(models.Model):
-    user = models.OneToOneField(Profile, on_delete=models.CASCADE)
-    bio = models.TextField(blank=True, null=True)
+    user_profile = models.OneToOneField(UserProfile, on_delete=models.CASCADE)
+    bio = models.TextField(blank=True, default='')
 
     def __str__(self):
-        return f'Author: {self.user.first_name} {self.user.last_name}'
+        return f'Author: {self.user_profile.first_name} {self.user_profile.last_name}'
 
 
 class Course(models.Model):
@@ -54,16 +55,11 @@ class Course(models.Model):
     )
 
     title = models.CharField(max_length=200)
-    author = models.ForeignKey(Author, on_delete=models.CASCADE)
-    state = models.CharField(
-        max_length=8,
-        choices=STATE_CHOICES,
-        default='draft',
-    )
-    short_description = models.CharField(max_length=200)
-    long_description = models.TextField
+    authors = models.ManyToManyField(Author)
+    state = models.CharField(max_length=8, choices=STATE_CHOICES, default='draft')
+    short_description = models.CharField(max_length=500, default='')
+    long_description = models.TextField(default='')
     slug = models.SlugField(unique=True)
-
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.title)
@@ -82,3 +78,48 @@ class Unit(models.Model):
     section = models.ForeignKey(Section, on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
 
+
+class CourseSession(models.Model):
+    STATUS_CHOICES = [
+        ('planned', 'Planned'),
+        ('in_progress', 'In progress'),
+        ('finished', 'Finished'),
+        ('cancelled', 'Cancelled')
+    ]
+
+    course = models.ForeignKey(Course, on_delete=models.PROTECT)
+    started_at = models.DateField()
+    status = models.CharField(max_length=11, choices=STATUS_CHOICES)
+
+
+class Participant(models.Model):
+    ROLE_CHOICES = [
+        ('student', 'Student'),
+        ('trainer', 'Trainer'),
+        ('expert', 'Expert'),
+        ('admin', 'Admin')
+    ]
+    STATUS_CHOICES = [
+        ('possible', 'Possible'),
+        ('active', 'Active'),
+        ('lost', 'Lost')
+    ]
+
+    class Meta:
+        unique_together = [['course_session', 'user_profile', 'role']]
+
+    course_session = models.OneToOneField(CourseSession, on_delete=models.CASCADE)
+    user_profile = models.OneToOneField(UserProfile, on_delete=models.CASCADE)
+    role = models.CharField(max_length=7, choices=ROLE_CHOICES)
+    status = models.CharField(max_length=8, choices=STATUS_CHOICES)
+    score = models.IntegerField()
+
+    @property
+    def nickname(self):
+        return "%s_%s" % (self.user.first_name, self.user.last_name)
+
+
+class ApplicationForm(models.Model):
+    course_session = models.ForeignKey(CourseSession, on_delete=models.CASCADE)
+    comment = models.TextField()
+    user_profile = models.OneToOneField(UserProfile, on_delete=models.PROTECT)

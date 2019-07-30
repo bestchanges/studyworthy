@@ -3,3 +3,8 @@
 <h1>index page</h1>
 Username: {{ user.username }}
 Country: {{ user.profile.country }}
+<h2>Courses</h2>
+{% for course in courses %}
+    <h3>{{  course.title }}</h3>
+    <hr>
+{% endfor %}

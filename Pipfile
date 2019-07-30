@@ -5,12 +5,15 @@ verify_ssl = true
 
 [dev-packages]
 redgreenunittest = "*"
+behave = "*"
+behave-django = "*"
 
 [packages]
 Django = ">=2.2"
+pyyaml = "*"
 redgreenunittest = "*"
 gunicorn = "*"
-slugify = "*"
+python-slugify = "*"
 
 [requires]
 python_version = "3.6"

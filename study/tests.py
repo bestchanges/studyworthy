@@ -33,7 +33,7 @@ class SimpleTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_user_study_response(self):
-        response = self.client.get(reverse('study:user_study'))
+        response = self.client.get(reverse('study:user_study_session'))
         self.assertEqual(response.status_code, 200)
 
     def test_user_settings_response(self):

@@ -35,14 +35,15 @@ ALLOWED_HOSTS = [
 ]
 
 INSTALLED_APPS = [
+    'study',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'study',
     'manage',
+    'behave_django',
 ]
 
 # import django_heroku
@@ -85,6 +86,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'TEST_NAME': os.path.join(BASE_DIR, 'db-test.sqlite3'),
     }
 }
 

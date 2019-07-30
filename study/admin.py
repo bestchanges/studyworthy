@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import Course, Profile, Author
+from .models import Course, UserProfile, Author
 
 
 class AuthorInline(admin.StackedInline):
@@ -13,6 +13,12 @@ class AdminUser(admin.ModelAdmin):
     inlines = [AuthorInline]
 
 
-admin.site.register(Course)
+class AdminCourse(admin.ModelAdmin):
+    list_display = ('title', 'state')
+    list_filter = ['state']
+    search_fields = ['title', 'slug']
+
+
 admin.site.register(Author)
-admin.site.register(Profile, AdminUser)
+admin.site.register(UserProfile, AdminUser)
+admin.site.register(Course, AdminCourse)

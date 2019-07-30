@@ -14,6 +14,6 @@ urlpatterns = [
     path('study/<int:pk>/<int:unit_pk>', views.study_unit, name='study_unit'),
 
     path('user/', views.user, name='user'),
-    path('user/study', views.user_study, name='user_study'),
+    path('user/study', views.user_study, name='user_study_session'),
     path('user/settings', views.user_settings, name='user_settings')
 ]
