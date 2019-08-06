@@ -6,7 +6,7 @@ Feature: Enroll student to the course
     And the page shall contains "Courses"
     And the page shall contains "Hello Python"
 
-  Scenario: one Course
+  Scenario: Course information
     Given user visit /courses/1/ page
     Then it should return a successful response
     And the page shall contains "Hello Python"

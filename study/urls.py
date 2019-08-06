@@ -15,5 +15,7 @@ urlpatterns = [
 
     path('user/', views.user, name='user'),
     path('user/study', views.user_study, name='user_study_session'),
-    path('user/settings', views.user_settings, name='user_settings')
+    path('user/settings', views.user_settings, name='user_settings'),
+    path('upload', views.upload, name='upload'),
+    path('upload1', views.DocumentCreateView.as_view(), name='upload1'),
 ]

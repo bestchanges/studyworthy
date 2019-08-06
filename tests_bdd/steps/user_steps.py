@@ -30,7 +30,9 @@ def step_impl(context, page):
 
 @then('it should return a successful response')
 def it_should_be_successful(context):
-    assert 300 > context.response.status_code >= 200
+    response = context.response
+    context.test.assertEquals(response.status_code, 200)
+    # assert 300 > context.response.status_code >= 200
 
 
 @step('the page shall contains "{text}"')

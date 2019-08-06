@@ -3,6 +3,7 @@ from django.urls import reverse
 
 
 class SimpleTest(TestCase):
+    fixtures = ['test-data.yaml']
 
     def test_home_response(self):
         response = self.client.get(reverse('study:index'))

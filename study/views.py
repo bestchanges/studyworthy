@@ -1,6 +1,9 @@
+from django.forms import ModelForm
 from django.shortcuts import render
+from django.urls import reverse_lazy
+from django.views.generic import CreateView
 
-from .models import Course
+from .models import Course, Document
 
 
 def index(request):
@@ -17,7 +20,8 @@ def courses_list(request):
 
 
 def course(request, pk):
-    return render(request, 'study/course.html', {})
+    course = Course.objects.get(pk=pk)
+    return render(request, 'study/course.html', {'course': course})
 
 
 def study(request, pk):
@@ -38,3 +42,28 @@ def user_study(request):
 
 def user_settings(request):
     return render(request, 'study/user_settings.html', {})
+
+
+def upload(request):
+    class DocumentForm(ModelForm):
+        class Meta:
+            model = Document
+            fields = ['upload']
+    documents = Document.objects.all()
+    context = {
+        'documents': documents,
+        'form': DocumentForm(),
+    }
+    return render(request, 'study/document_form.html', context)
+
+
+class DocumentCreateView(CreateView):
+    model = Document
+    fields = ['upload']
+    success_url = reverse_lazy('index')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        documents = Document.objects.all()
+        context['documents'] = documents
+        return context

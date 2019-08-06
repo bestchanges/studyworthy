@@ -5,6 +5,6 @@ Username: {{ user.username }}
 Country: {{ user.profile.country }}
 <h2>Courses</h2>
 {% for course in courses %}
-    <h3>{{  course.title }}</h3>
+    <h3><a href="{% url 'study:course' course.id %}">{{  course.title }}</a></h3>
     <hr>
 {% endfor %}

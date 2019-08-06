@@ -4,4 +4,5 @@
     title: Hello Python
     state: active
     short_description: Study python from scratch
+    long_description: Hello Python long description
     slug: hello-python
