@@ -15,4 +15,3 @@ jobs: # A basic unit of work in a run
       - run:
           command: |
             pipenv run python manage.py test
-            ./bdd.sh
