@@ -4,9 +4,11 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from slugify import slugify
 
+
 class Document(models.Model):
     uploaded_at = models.DateTimeField(auto_now_add=True)
     upload = models.FileField()
+
 
 class Category(models.Model):
     name = models.CharField(max_length=200)
