@@ -24,6 +24,7 @@ DATABASES = {
     'default': dj_database_url.config(conn_max_age=600, ssl_require=True)
 }
 
+# keep uploaded files in Amazon S3
 WS_ACCESS_KEY_ID = get_from_env('WS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = get_from_env('AWS_SECRET_ACCESS_KEY')
 AWS_STORAGE_BUCKET_NAME = get_from_env('AWS_STORAGE_BUCKET_NAME')
@@ -33,5 +34,6 @@ AWS_S3_OBJECT_PARAMETERS = {
 }
 DEFAULT_FILE_STORAGE = 'study.storage_backends.S3MediaStorage'
 
+# for serving static files
 MIDDLEWARE.append('whitenoise.middleware.WhiteNoiseMiddleware')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
