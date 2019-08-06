@@ -3,10 +3,11 @@ python:
 - '3.7'
 install:
 - pip install pipenv
-- pipenv install -d
+- pipenv check
+- pipenv install --dev
 script:
 - pipenv run python manage.py test
-- ./bdd.sh
+- pipenv run python manage.py behave bdd_tests
 deploy:
   provider: heroku
   api_key:
