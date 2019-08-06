@@ -20,6 +20,7 @@ gunicorn = "*"
 python-slugify = "*"
 boto3 = '*'
 django-storages = '*'
+whitenoise = '*'
 
 [requires]
 python_version = "3.6"
