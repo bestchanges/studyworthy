@@ -18,18 +18,18 @@
     "default": {
         "boto3": {
             "hashes": [
-                "sha256:9b14e28f89e6e6e7fda505ffd3d681e2edceb48c72acdef15b8d79c574285d37",
-                "sha256:9b4ef9b1ce046b482785102f9e20ad9268259a2ba1abc106a1535716a4cfa2b6"
+                "sha256:7b527dd1acc127822a4b5ff7565e031e095ce1a7e1560ca88d1e4548c4b78388",
+                "sha256:82e8c5ab549205843b0a25204aff11b01d80e814656938446ab651573dfd83e1"
             ],
             "index": "pypi",
-            "version": "==1.9.201"
+            "version": "==1.9.208"
         },
         "botocore": {
             "hashes": [
-                "sha256:91d1deb7d09a27122820a3a99d22f45dbadc039c1d5cf6270eb245b95071e7ba",
-                "sha256:e4678f5072bd8a429ea27243004964986db5dfda911084d47a9f18de5c8d75d7"
+                "sha256:1a9b246b40a7694c6c1707c386e6dc00cd473647efd92aa8b5b812c8a223ff4d",
+                "sha256:7fa1ea16e11d8537dab675577e609b95d3cea6f5db005f3adc934afdae6b72bc"
             ],
-            "version": "==1.12.201"
+            "version": "==1.12.208"
         },
         "dj-database-url": {
             "hashes": [
