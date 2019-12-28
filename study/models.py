@@ -64,6 +64,9 @@ class Course(models.Model):
     content_repository = models.CharField(max_length=255, help_text="GIT repository with course content")
     students_template_repository = models.CharField(max_length=255, help_text="Template GIT repository for students submissions")
 
+    def __str__(self):
+        return f'{self.title}'
+
 
 class CourseFlow(models.Model):
     class Meta:
@@ -86,6 +89,9 @@ class CourseFlow(models.Model):
     finished_at = models.DateField(null=True, blank=True)
     cancelled_at = models.DateField(null=True, blank=True)
 
+    def __str__(self):
+        return f'{self.code}'
+
 
 class Participant(models.Model):
     ROLE_CHOICES = [
@@ -102,8 +108,8 @@ class Participant(models.Model):
     user_profile = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
     role = models.CharField(max_length=20, choices=ROLE_CHOICES)
     is_active = models.BooleanField(default=True)
-    code_repository = models.CharField(max_length=255, null=True)
-    student_score = models.IntegerField()
+    code_repository = models.CharField(max_length=255, default='', blank=True)
+    student_score = models.IntegerField(blank=True, null=True)
     assigned_at = models.DateField(auto_now_add=True, editable=False)
     deactivated_at = models.DateField(null=True, blank=True)
 

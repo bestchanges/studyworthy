@@ -5,3 +5,6 @@ init-data:
 
 venv:
 	pipenv update --dev
+
+dump-data:
+	pipenv run python manage.py dumpdata study.Course study.CourseFlow study.FlowSection study.FlowUnit --format yaml
