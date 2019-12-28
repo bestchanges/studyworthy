@@ -1,5 +1,6 @@
-from behave import given, then, step, when
 from splinter.driver.webdriver import BaseWebDriver
+
+from behave import *
 
 
 @given("user visit {page} page")

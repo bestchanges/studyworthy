@@ -1,4 +1,4 @@
-from django.test import TestCase
+from django.test import TestCase, Client
 from django.urls import reverse
 
 
@@ -6,8 +6,11 @@ class SimpleTest(TestCase):
     fixtures = ['test-data.yaml']
 
     def test_home_response(self):
-        response = self.client.get(reverse('study:index'))
-        self.assertEqual(response.status_code, 200)
+        client = self.client  # type: Client
+        with self.assertTemplateUsed('study/index.html'):
+            response = client.get(reverse('study:index'))
+            self.assertEqual(response.status_code, 200)
+            self.assertContains(response, "index page")
 
     def test_courses_response(self):
         response = self.client.get(reverse('study:courses'))

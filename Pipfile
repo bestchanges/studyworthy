@@ -11,15 +11,14 @@ splinter = '*'
 # selenium = '*'
 
 [packages]
-Django = ">=2.2"
+Django = ">=3.0"
+djangorestframework = "*"
+django-storages = '*'
 psycopg2-binary = "*"
 dj_database_url = "*"
 pyyaml = "*"
-redgreenunittest = "*"
 gunicorn = "*"
-python-slugify = "*"
 boto3 = '*'
-django-storages = '*'
 whitenoise = '*'
 
 [requires]

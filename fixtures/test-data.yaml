@@ -1,8 +1,17 @@
-- model: study.course
+- model: study.Course
   pk: 1
   fields:
     title: Hello Python
+    code: hp
     state: active
     short_description: Study python from scratch
     long_description: Hello Python long description
-    slug: hello-python
+    content_repository: https://github.com/bestchanges/hello_python
+
+- model: study.CourseFlow
+  pk: 1
+  fields:
+    course: 1
+    code: hp-1
+    state: planned
+    created_at: 2019-12-01 12:42:00

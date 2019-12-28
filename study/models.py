@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from slugify import slugify
+from rest_framework.authtoken.models import Token
 
 
 class Document(models.Model):
@@ -15,33 +15,30 @@ class Category(models.Model):
     parent = models.ForeignKey("self", on_delete=models.DO_NOTHING)
 
 
-class UserProfile(User):
+class UserProfile(models.Model):
     LANGUAGE_CHOICES = [
         ('ru', 'Russian'),
         ('en', 'English'),
         ('ua', 'Ukrainian')
     ]
-    country = models.CharField(max_length=100)
-    city = models.CharField(max_length=100)
-    language = models.CharField(max_length=2, choices=LANGUAGE_CHOICES)
-    skype = models.CharField(max_length=100)
-    google_account = models.CharField(max_length=100)
-    github_account = models.CharField(max_length=100)
-    phone = models.CharField(max_length=20)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    country = models.CharField(max_length=100, default='', blank=True)
+    city = models.CharField(max_length=100, default='', blank=True)
+    language = models.CharField(max_length=2, choices=LANGUAGE_CHOICES, default='ru')
+    skype = models.CharField(max_length=100, default='', blank=True)
+    google_account = models.CharField(max_length=100, default='', blank=True)
+    github_account = models.CharField(max_length=100, default='', blank=True)
+    phone = models.CharField(max_length=20, default='', blank=True)
 
     def __str__(self):
-        return f'Profile for {self.get_full_name()} {self.username} '
+        return f'Profile for {self.user.get_full_name()} {self.user.username} '
 
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
         UserProfile.objects.create(user=instance)
-
-
-@receiver(post_save, sender=User)
-def save_user_profile(sender, instance, **kwargs):
-    instance.profile.save()
+        Token.objects.create(user=instance)
 
 
 class Author(models.Model):
@@ -49,82 +46,130 @@ class Author(models.Model):
     bio = models.TextField(blank=True, default='')
 
     def __str__(self):
-        return f'Author: {self.user_profile.first_name} {self.user_profile.last_name}'
+        return f'Author: {self.user_profile.user.username} {self.user_profile.user.get_full_name()}'
 
 
 class Course(models.Model):
-    STATE_CHOICES = (
-        ('draft', 'Draft'),
-        ('active', 'Active'),
-        ('archived', 'Archived')
-    )
+    class State(models.TextChoices):
+        DRAFT = 'draft'
+        ACTIVE = 'active'
+        ARCHIVED = 'archived',
 
     title = models.CharField(max_length=200)
+    code = models.SlugField(unique=True)
     authors = models.ManyToManyField(Author)
-    state = models.CharField(max_length=8, choices=STATE_CHOICES, default='draft')
+    state = models.CharField(max_length=8, choices=State.choices, default=State.DRAFT)
     short_description = models.CharField(max_length=500, default='')
     long_description = models.TextField(default='')
-    slug = models.SlugField(unique=True)
-
-    def save(self, *args, **kwargs):
-        self.slug = slugify(self.title)
-        super(Course, self).save(*args, **kwargs)
+    content_repository = models.CharField(max_length=255, help_text="GIT repository with course content")
+    students_template_repository = models.CharField(max_length=255, help_text="Template GIT repository for students submissions")
 
 
-class Section(models.Model):
-    name = models.CharField(max_length=200)
-    order = models.IntegerField
-    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+class CourseFlow(models.Model):
+    class Meta:
+        unique_together = [['course', 'code']]
 
-
-class Unit(models.Model):
-    number = models.CharField(max_length=200)
-    order = models.IntegerField
-    section = models.ForeignKey(Section, on_delete=models.CASCADE)
-    title = models.CharField(max_length=200)
-
-
-class CourseSession(models.Model):
-    STATUS_CHOICES = [
-        ('planned', 'Planned'),
-        ('in_progress', 'In progress'),
-        ('finished', 'Finished'),
-        ('cancelled', 'Cancelled')
-    ]
+    class State(models.TextChoices):
+        PLANNED = 'planned'
+        IN_PROGRESS = 'in_progress'
+        FINISHED = 'finished',
+        CANCELLED = 'cancelled'
 
     course = models.ForeignKey(Course, on_delete=models.PROTECT)
-    started_at = models.DateField()
-    status = models.CharField(max_length=11, choices=STATUS_CHOICES)
+    code = models.SlugField(unique=True, blank=True)
+    state = models.CharField(max_length=20, choices=State.choices, default=State.PLANNED)
+
+    created_at = models.DateField(auto_now_add=True, editable=False)
+    start_planned_at = models.DateField(null=True, blank=True)
+    finish_planned_at = models.DateField(null=True, blank=True)
+    started_at = models.DateField(null=True, blank=True)
+    finished_at = models.DateField(null=True, blank=True)
+    cancelled_at = models.DateField(null=True, blank=True)
 
 
 class Participant(models.Model):
     ROLE_CHOICES = [
         ('student', 'Student'),
-        ('trainer', 'Trainer'),
+        ('teacher', 'Teacher'),
         ('expert', 'Expert'),
         ('admin', 'Admin')
     ]
-    STATUS_CHOICES = [
-        ('possible', 'Possible'),
-        ('active', 'Active'),
-        ('lost', 'Lost')
-    ]
 
     class Meta:
-        unique_together = [['course_session', 'user_profile', 'role']]
+        unique_together = [['flow', 'user_profile', 'role']]
 
-    course_session = models.OneToOneField(CourseSession, on_delete=models.CASCADE)
-    user_profile = models.OneToOneField(UserProfile, on_delete=models.CASCADE)
-    role = models.CharField(max_length=7, choices=ROLE_CHOICES)
-    status = models.CharField(max_length=8, choices=STATUS_CHOICES)
-    score = models.IntegerField()
+    flow = models.ForeignKey(CourseFlow, on_delete=models.CASCADE)
+    user_profile = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES)
+    is_active = models.BooleanField(default=True)
+    code_repository = models.CharField(max_length=255, null=True)
+    student_score = models.IntegerField()
+    assigned_at = models.DateField(auto_now_add=True, editable=False)
+    deactivated_at = models.DateField(null=True, blank=True)
 
     @property
     def nickname(self):
-        return "%s_%s" % (self.user.first_name, self.user.last_name)
+        return "%s_%s" % (self.user_profile.user.username)
+
+
+class FlowSection(models.Model):
+    class Meta:
+        unique_together = [['flow', 'code'], ['flow', 'order'], ]
+
+    title = models.CharField(max_length=200)
+    code = models.SlugField(max_length=20)
+    order = models.IntegerField()
+    flow = models.ForeignKey(CourseFlow, on_delete=models.CASCADE)
+
+
+class FlowUnit(models.Model):
+    class Meta:
+        unique_together = [['section', 'code'], ['section', 'order'], ]
+
+    class TaskType(models.TextChoices):
+        NONE = "none", "None"
+        SELF_CHECK = "self_check", "Self check"
+        ASSIGNMENT = "assignment", "Assignment"
+
+    class State(models.TextChoices):
+        HIDDEN = "hidden"
+        WAITING = "waiting"
+        OPENED = "opened"
+        FINISHED = "finished"
+
+    title = models.CharField(max_length=200)
+    code = models.SlugField(max_length=20)
+    order = models.IntegerField()
+    section = models.ForeignKey(FlowSection, on_delete=models.CASCADE)
+    task_type = models.CharField(max_length=20, choices=TaskType.choices, default=TaskType.NONE)
+    submission_timespan_days = models.IntegerField(default=0)
+    pass_score = models.IntegerField(default=0)
+
+
+class StudentSubmission(models.Model):
+    class Status(models.TextChoices):
+        NONE = "none", "None"
+        DONE = "done", "Done"
+        WAIT_REVIEW = "wait_review", "To review"
+        ACCEPTED = "accepted", "Accepted"
+        REJECTED = "rejected", "Rejected"
+
+    student = models.ForeignKey(Participant, limit_choices_to={'role': 'student'}, related_name='+', on_delete=models.CASCADE)
+    unit = models.ForeignKey(FlowUnit, on_delete=models.CASCADE)
+    reviewer = models.ForeignKey(Participant, limit_choices_to={'role': 'teacher'}, related_name='+', on_delete=models.CASCADE)
+    status = models.CharField(max_length=20, choices=Status.choices, default=Status.NONE)
+    can_student_resubmit = models.BooleanField(default=True)
+    students_comment = models.TextField(default='')
+    reviewer_comment = models.TextField(default='')
+    score = models.IntegerField(default=0)
+
+    created_at = models.DateField(auto_now_add=True, editable=False)
+    assigned_at = models.DateField(null=True, blank=True)
+    checked_at = models.DateField(null=True, blank=True)
+    resubmitted_at = models.DateField(null=True, blank=True)
 
 
 class ApplicationForm(models.Model):
-    course_session = models.ForeignKey(CourseSession, on_delete=models.CASCADE)
+    flow = models.ForeignKey(CourseFlow, on_delete=models.PROTECT)
     comment = models.TextField()
-    user_profile = models.OneToOneField(UserProfile, on_delete=models.PROTECT)
+    user_profile = models.ForeignKey(UserProfile, on_delete=models.PROTECT)
