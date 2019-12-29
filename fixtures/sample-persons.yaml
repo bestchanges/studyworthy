@@ -1,0 +1,27 @@
+- model: study.person
+  fields:
+    code: 'sample-teacher'
+    first_name: Ivan
+    last_name: Ivanovich
+    email: ivan@rambler-sucks.com
+    language: ru
+- model: study.person
+  fields:
+    code: 'bot-checker'
+    first_name: Robot
+    last_name: Checker
+    email: some@email.com
+    language: ru
+- model: study.person
+  fields:
+    code: 'sample-student'
+    first_name: Daria
+    last_name: Imnova
+    email: dasha@email.com
+    phone: ''
+    skype: ''
+    google_account: ''
+    github_account: ''
+    language: ru
+    country: ''
+    city: ''

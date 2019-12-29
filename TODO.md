@@ -1,0 +1,21 @@
+- [x] learning data
+  - [x] course
+  - [x] learning
+  - [x] section
+  - [x] unit
+  - [ ] checkmark
+  - [ ] submission
+- [x] student enrollment
+    - [x] register user profile without user creation (more fields require)
+    - [x] rename user profile to person
+    - [x] person + enrollment by fixture
+- [ ] python-checker creates user submission
+    - [ ] REST API routes
+    - [ ] token authentication
+    - [ ] checker-bot auth fixture
+    - [ ] unit endpoint GET
+    - [ ] checkmark endpoint GET
+    - [ ] submission endpoint GET/PUT
+- [ ] flow content render
+- [ ] flow content render
+- [ ] slack integration

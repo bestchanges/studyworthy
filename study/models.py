@@ -1,7 +1,9 @@
+from django.conf.global_settings import LANGUAGES
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.utils import timezone
 from rest_framework.authtoken.models import Token
 
 
@@ -15,48 +17,68 @@ class Category(models.Model):
     parent = models.ForeignKey("self", on_delete=models.DO_NOTHING)
 
 
-class UserProfile(models.Model):
-    LANGUAGE_CHOICES = [
-        ('ru', 'Russian'),
-        ('en', 'English'),
-        ('ua', 'Ukrainian')
-    ]
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+class ByCodeManager(models.Manager):
+    def get_by_natural_key(self, code):
+        return self.get(code=code)
+
+
+class CodeNaturalKeyAbstractModel(models.Model):
+    code = models.SlugField(unique=True)
+
+    objects = ByCodeManager()
+
+    class Meta:
+        abstract = True
+
+    def natural_key(self):
+        return (self.code,)
+
+
+class Person(CodeNaturalKeyAbstractModel):
+    first_name = models.CharField(max_length=100, blank=True)
+    last_name = models.CharField(max_length=150, blank=True)
+    email = models.EmailField(blank=True)
+    phone = models.CharField(max_length=20, default='', blank=True)
+    skype = models.CharField(max_length=100, default='', blank=True)
+    google_account = models.CharField(max_length=200, default='', blank=True)
+    github_account = models.CharField(max_length=200, default='', blank=True)
+    language = models.CharField(max_length=10, choices=LANGUAGES, default='ru')
     country = models.CharField(max_length=100, default='', blank=True)
     city = models.CharField(max_length=100, default='', blank=True)
-    language = models.CharField(max_length=2, choices=LANGUAGE_CHOICES, default='ru')
-    skype = models.CharField(max_length=100, default='', blank=True)
-    google_account = models.CharField(max_length=100, default='', blank=True)
-    github_account = models.CharField(max_length=100, default='', blank=True)
-    phone = models.CharField(max_length=20, default='', blank=True)
+
+    user = models.OneToOneField(User, null=True, on_delete=models.SET_NULL)
+
+    created_at = models.DateTimeField(default=timezone.now)
+
+    def get_full_name(self):
+        return f'{self.first_name} {self.last_name}'
 
     def __str__(self):
-        return f'Profile for {self.user.get_full_name()} {self.user.username} '
+        return f'{self.get_full_name()} {self.email}'
 
 
 @receiver(post_save, sender=User)
-def create_user_profile(sender, instance, created, **kwargs):
+def on_user_create(sender, instance: User, created, **kwargs):
     if created:
-        UserProfile.objects.create(user=instance)
+        Person.objects.create(user=instance, first_name=instance.first_name, last_name=instance.last_name, email=instance.email)
         Token.objects.create(user=instance)
 
 
 class Author(models.Model):
-    user_profile = models.OneToOneField(UserProfile, on_delete=models.CASCADE)
+    person = models.OneToOneField(Person, on_delete=models.CASCADE)
     bio = models.TextField(blank=True, default='')
 
     def __str__(self):
-        return f'Author: {self.user_profile.user.username} {self.user_profile.user.get_full_name()}'
+        return f'Author: {self.person.get_full_name()}'
 
 
-class Course(models.Model):
+class Course(CodeNaturalKeyAbstractModel):
     class State(models.TextChoices):
         DRAFT = 'draft'
         ACTIVE = 'active'
         ARCHIVED = 'archived',
 
     title = models.CharField(max_length=200)
-    code = models.SlugField(unique=True)
     authors = models.ManyToManyField(Author)
     state = models.CharField(max_length=8, choices=State.choices, default=State.DRAFT)
     short_description = models.CharField(max_length=500, default='')
@@ -68,9 +90,11 @@ class Course(models.Model):
         return f'{self.title}'
 
 
-class CourseFlow(models.Model):
+class Learning(CodeNaturalKeyAbstractModel):
+
     class Meta:
-        unique_together = [['course', 'code']]
+        verbose_name = 'learning'
+        verbose_name_plural = 'learnings'
 
     class State(models.TextChoices):
         PLANNED = 'planned'
@@ -79,63 +103,67 @@ class CourseFlow(models.Model):
         CANCELLED = 'cancelled'
 
     course = models.ForeignKey(Course, on_delete=models.PROTECT)
-    code = models.SlugField(unique=True, blank=True)
     state = models.CharField(max_length=20, choices=State.choices, default=State.PLANNED)
 
-    created_at = models.DateField(auto_now_add=True, editable=False)
-    start_planned_at = models.DateField(null=True, blank=True)
-    finish_planned_at = models.DateField(null=True, blank=True)
-    started_at = models.DateField(null=True, blank=True)
-    finished_at = models.DateField(null=True, blank=True)
-    cancelled_at = models.DateField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True, editable=False)
+    start_planned_at = models.DateTimeField(null=True, blank=True)
+    finish_planned_at = models.DateTimeField(null=True, blank=True)
+    started_at = models.DateTimeField(null=True, blank=True)
+    finished_at = models.DateTimeField(null=True, blank=True)
+    cancelled_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return f'{self.code}'
 
 
 class Participant(models.Model):
-    ROLE_CHOICES = [
-        ('student', 'Student'),
-        ('teacher', 'Teacher'),
-        ('expert', 'Expert'),
-        ('admin', 'Admin')
-    ]
+    class Role(models.TextChoices):
+        STUDENT = 'student'
+        TEACHER = 'teacher'
+        EXPERT = 'expert',
+        ADMIN = 'admin',
+
+    class State(models.TextChoices):
+        CANDIDATE = 'candidate'
+        ACTIVE = 'active'
+        CANCELLED = 'cancelled',
 
     class Meta:
-        unique_together = [['flow', 'user_profile', 'role']]
+        unique_together = [['learning', 'person', 'role']]
 
-    flow = models.ForeignKey(CourseFlow, on_delete=models.CASCADE)
-    user_profile = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
-    role = models.CharField(max_length=20, choices=ROLE_CHOICES)
-    is_active = models.BooleanField(default=True)
+    learning = models.ForeignKey(Learning, on_delete=models.CASCADE)
+    person = models.ForeignKey(Person, on_delete=models.CASCADE)
+    role = models.CharField(max_length=20, choices=Role.choices)
+    state = models.CharField(max_length=20, choices=State.choices)
     code_repository = models.CharField(max_length=255, default='', blank=True)
-    student_score = models.IntegerField(blank=True, null=True)
-    assigned_at = models.DateField(auto_now_add=True, editable=False)
-    deactivated_at = models.DateField(null=True, blank=True)
+    total_score = models.IntegerField(null=True, blank=True)
+    admin_notes = models.TextField(default='', blank=True)
 
-    @property
-    def nickname(self):
-        return "%s_%s" % (self.user_profile.user.username)
+    assigned_at = models.DateTimeField(auto_now_add=True, editable=False)
+    activated_at = models.DateTimeField(null=True, blank=True)
+    deactivated_at = models.DateTimeField(null=True, blank=True)
 
 
-class FlowSection(models.Model):
+class Section(CodeNaturalKeyAbstractModel):
     class Meta:
-        unique_together = [['flow', 'code'], ['flow', 'order'], ]
+        unique_together = [['learning', 'order'], ]
 
     title = models.CharField(max_length=200)
-    code = models.SlugField(max_length=20)
     order = models.IntegerField()
-    flow = models.ForeignKey(CourseFlow, on_delete=models.CASCADE)
+    learning = models.ForeignKey(Learning, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'{self.title} ({self.code})'
 
 
-class FlowUnit(models.Model):
+class Unit(CodeNaturalKeyAbstractModel):
     class Meta:
-        unique_together = [['section', 'code'], ['section', 'order'], ]
+        unique_together = [['section', 'order'], ]
 
     class TaskType(models.TextChoices):
-        NONE = "none", "None"
-        SELF_CHECK = "self_check", "Self check"
-        ASSIGNMENT = "assignment", "Assignment"
+        NONE = "none"
+        SELF_CHECK = "self_check"
+        ASSIGNMENT = "assignment"
 
     class State(models.TextChoices):
         HIDDEN = "hidden"
@@ -144,15 +172,19 @@ class FlowUnit(models.Model):
         FINISHED = "finished"
 
     title = models.CharField(max_length=200)
-    code = models.SlugField(max_length=20)
     order = models.IntegerField()
-    section = models.ForeignKey(FlowSection, on_delete=models.CASCADE)
+    section = models.ForeignKey(Section, on_delete=models.CASCADE)
     task_type = models.CharField(max_length=20, choices=TaskType.choices, default=TaskType.NONE)
+    task_details = models.TextField(default='')
     submission_timespan_days = models.IntegerField(default=0)
     pass_score = models.IntegerField(default=0)
 
+    def __str__(self):
+        return f'{self.title} ({self.code})'
 
-class StudentSubmission(models.Model):
+
+class Submission(models.Model):
+
     class Status(models.TextChoices):
         NONE = "none", "None"
         DONE = "done", "Done"
@@ -161,21 +193,23 @@ class StudentSubmission(models.Model):
         REJECTED = "rejected", "Rejected"
 
     student = models.ForeignKey(Participant, limit_choices_to={'role': 'student'}, related_name='+', on_delete=models.CASCADE)
-    unit = models.ForeignKey(FlowUnit, on_delete=models.CASCADE)
+    unit = models.ForeignKey(Unit, on_delete=models.CASCADE)
+    submission = models.TextField(default='')
+    student_comment = models.TextField(default='')
     reviewer = models.ForeignKey(Participant, limit_choices_to={'role': 'teacher'}, related_name='+', on_delete=models.CASCADE)
+    score = models.IntegerField(default=0)
+    reviewer_comment = models.TextField(default='')
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.NONE)
     can_student_resubmit = models.BooleanField(default=True)
-    students_comment = models.TextField(default='')
-    reviewer_comment = models.TextField(default='')
-    score = models.IntegerField(default=0)
 
-    created_at = models.DateField(auto_now_add=True, editable=False)
-    assigned_at = models.DateField(null=True, blank=True)
-    checked_at = models.DateField(null=True, blank=True)
-    resubmitted_at = models.DateField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True, editable=False)
+    assigned_at = models.DateTimeField(null=True, blank=True)
+    checked_at = models.DateTimeField(null=True, blank=True)
+    resubmitted_at = models.DateTimeField(null=True, blank=True)
 
 
 class ApplicationForm(models.Model):
-    flow = models.ForeignKey(CourseFlow, on_delete=models.PROTECT)
+    learning = models.ForeignKey(Learning, on_delete=models.PROTECT, null=True)
+    course = models.ForeignKey(Course, on_delete=models.PROTECT, null=True)
     comment = models.TextField()
-    user_profile = models.ForeignKey(UserProfile, on_delete=models.PROTECT)
+    person = models.ForeignKey(Person, on_delete=models.PROTECT)

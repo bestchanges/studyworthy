@@ -1,0 +1,45 @@
+- model: study.Course
+  fields:
+    title: Hello Python
+    code: hp
+    state: active
+    short_description: Study python from scratch
+    long_description: Hello Python long description
+    content_repository: https://github.com/bestchanges/hello_python
+
+- model: study.learning
+  fields:
+    course: ['hp']
+    code: hp-1
+    state: planned
+    created_at: "2019-12-01 12:42:00+03:00"
+
+- model: study.Section
+  fields:
+    title: "Introduction"
+    code: hp-1-u01
+    order: 2
+    learning: ['hp-1']
+
+- model: study.unit
+  fields:
+    code: hp-1-u01-1
+    title: First program
+    order: 1
+    section:
+      - hp-1-u01
+    task_type: assignment
+    task_details: Hello World
+    submission_timespan_days: 14
+    pass_score: 10
+
+- model: study.participant
+  pk: 2
+  fields:
+    learning:
+      - hp-1
+    person:
+      - 'sample-student'
+    role: student
+    state: candidate
+    assigned_at: "2019-12-01 12:42:00+03:00"
