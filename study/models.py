@@ -4,7 +4,6 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
-from rest_framework.authtoken.models import Token
 
 
 class Document(models.Model):
@@ -60,8 +59,11 @@ class Person(CodeNaturalKeyAbstractModel):
 @receiver(post_save, sender=User)
 def on_user_create(sender, instance: User, created, **kwargs):
     if created:
-        Person.objects.create(user=instance, first_name=instance.first_name, last_name=instance.last_name, email=instance.email)
-        Token.objects.create(user=instance)
+        Person.objects.create(
+            user=instance,
+            first_name=instance.first_name, last_name=instance.last_name,
+            email=instance.email, code=instance.username
+        )
 
 
 class Author(models.Model):
@@ -120,7 +122,6 @@ class Participant(models.Model):
     class Role(models.TextChoices):
         STUDENT = 'student'
         TEACHER = 'teacher'
-        EXPERT = 'expert',
         ADMIN = 'admin',
 
     class State(models.TextChoices):
@@ -142,6 +143,9 @@ class Participant(models.Model):
     assigned_at = models.DateTimeField(auto_now_add=True, editable=False)
     activated_at = models.DateTimeField(null=True, blank=True)
     deactivated_at = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        return f'{self.role} {self.person.get_full_name()}'
 
 
 class Section(CodeNaturalKeyAbstractModel):
@@ -183,23 +187,48 @@ class Unit(CodeNaturalKeyAbstractModel):
         return f'{self.title} ({self.code})'
 
 
+class CheckMark(models.Model):
+    """
+    Represents state of processing of the Unit by the Student. Unique for combination of unit and student.
+    """
+
+    class Meta:
+        unique_together = [['unit', 'student'], ]
+
+    class State(models.TextChoices):
+        EMPTY = "empty"
+        CHECKED = "checked"
+
+    student = models.ForeignKey(Participant, limit_choices_to={'role': 'student'}, related_name='+', on_delete=models.CASCADE)
+    unit = models.ForeignKey(Unit, on_delete=models.CASCADE)
+    score = models.IntegerField(null=True)
+    state = models.CharField(max_length=20, choices=State.choices, default=State.EMPTY)
+
+    checked_at = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        return f'{self.unit} {self.student.person.get_full_name()}: {self.state}'
+
+
 class Submission(models.Model):
 
-    class Status(models.TextChoices):
+    class State(models.TextChoices):
         NONE = "none", "None"
         DONE = "done", "Done"
         WAIT_REVIEW = "wait_review", "To review"
         ACCEPTED = "accepted", "Accepted"
         REJECTED = "rejected", "Rejected"
 
-    student = models.ForeignKey(Participant, limit_choices_to={'role': 'student'}, related_name='+', on_delete=models.CASCADE)
-    unit = models.ForeignKey(Unit, on_delete=models.CASCADE)
-    submission = models.TextField(default='')
+    check_mark = models.ForeignKey(CheckMark, on_delete=models.CASCADE)
+    text = models.TextField(default='')
     student_comment = models.TextField(default='')
-    reviewer = models.ForeignKey(Participant, limit_choices_to={'role': 'teacher'}, related_name='+', on_delete=models.CASCADE)
-    score = models.IntegerField(default=0)
+    reviewer = models.ForeignKey(
+        Participant, null=True, limit_choices_to={'role': 'teacher'},
+        related_name='+', on_delete=models.CASCADE,
+    )
+    score = models.IntegerField(null=True)
     reviewer_comment = models.TextField(default='')
-    status = models.CharField(max_length=20, choices=Status.choices, default=Status.NONE)
+    state = models.CharField(max_length=20, choices=State.choices, default=State.NONE)
     can_student_resubmit = models.BooleanField(default=True)
 
     created_at = models.DateTimeField(auto_now_add=True, editable=False)

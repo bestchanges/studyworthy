@@ -1,8 +1,13 @@
-from django.urls import path
+from django.urls import path, include
+from .rest_api_v1 import router
 from . import views
 
 app_name = 'study'
+
 urlpatterns = [
+    path('api/', include(router.urls)),
+    # path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+
     path('', views.index, name='index'),
 
     path('courses/', views.courses_list, name='courses'),

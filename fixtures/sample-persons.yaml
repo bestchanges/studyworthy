@@ -1,20 +1,42 @@
+- model: auth.user
+  fields:
+    password: pbkdf2_sha256$180000$ebf2fmuUQdKP$Mep++y12aOzBMJ7VD1pybu/K/1o5rclQuqzAT1PfXM8=
+    is_superuser: false
+    username: checker-bot
+    first_name: 'Checker'
+    last_name: 'Bot'
+    email: devnull@notagmail.com
+    is_staff: false
+    is_active: true
+
+- model: authtoken.token
+  pk: 779b15d80933c858c4b2fc1153d841700c7f1011
+  fields:
+    user:
+      - checker-bot
+    created: '2019-12-28 21:10:59.005121+00:00'
+
 - model: study.person
   fields:
-    code: 'sample-teacher'
+    code: sample-teacher
     first_name: Ivan
     last_name: Ivanovich
     email: ivan@rambler-sucks.com
     language: ru
+
 - model: study.person
   fields:
-    code: 'bot-checker'
-    first_name: Robot
-    last_name: Checker
-    email: some@email.com
+    code: checker-bot
+    first_name: Checker
+    last_name: Bot
+    user:
+    - checker-bot
+    email: devnull@notagmail.com
     language: ru
+
 - model: study.person
   fields:
-    code: 'sample-student'
+    code: sample-student
     first_name: Daria
     last_name: Imnova
     email: dasha@email.com

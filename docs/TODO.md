@@ -1,0 +1,31 @@
+- [x] learning data
+  - [x] checkmark
+  - [x] submission
+- [x] student enrollment
+    - [x] register user profile without user creation (more fields require)
+    - [x] rename user profile to person
+    - [x] person + enrollment by fixture
+- [ ] composite natural keys for Models
+- [ ] REST API
+    - [x] REST API routes
+    - [x] unit endpoint GET
+    - [x] token authentication
+    - [x] create django fixture for checker-bot auth
+    - [x] checkmark endpoint GET
+    - [x] submission endpoint GET/PUT
+    - [ ] search participant by repository
+    - [ ] search unit by path
+    - [ ] provide python client lib
+- [ ] wlms client library
+- [ ] python-checker creates user submission
+
+
+## Backlog:
+- [ ] secure POST submission endpoint to only teachers of this Learning
+- [ ] add v1 tag to api
+- [ ] add checkmark as units/{}/checkmark
+- [ ] secure PIT/DELETE operations
+- [ ] GET /units/ take learning param in consideration
+- [ ] make API refer to code instead of ID
+- [ ] learning content render
+- [ ] slack integration

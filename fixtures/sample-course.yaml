@@ -39,7 +39,30 @@
     learning:
       - hp-1
     person:
-      - 'sample-student'
+      - sample-student
     role: student
-    state: candidate
+    state: active
+    code_repository: https://github.com/bestchanges/study-pipeline
+    assigned_at: "2019-12-01 12:42:00+03:00"
+
+- model: study.participant
+  pk: 3
+  fields:
+    learning:
+      - hp-1
+    person:
+      - sample-teacher
+    role: teacher
+    state: active
+    assigned_at: "2019-12-01 12:42:00+03:00"
+
+- model: study.participant
+  pk: 4
+  fields:
+    learning:
+      - hp-1
+    person:
+      - checker-bot
+    role: teacher
+    state: active
     assigned_at: "2019-12-01 12:42:00+03:00"
