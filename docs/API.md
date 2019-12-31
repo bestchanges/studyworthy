@@ -1,3 +1,11 @@
+# TASKS
+- [ ] secure POST submission endpoint to only teachers of this Learning
+- [ ] add checkmark as units/{}/checkmark
+- [ ] secure PIT/DELETE operations
+- [ ] GET /units/ take learning param in consideration
+- [ ] make API refer to code instead of ID
+
+
 ## add submission
 * POST /submissions/create ?
     * unit unit.code
