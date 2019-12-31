@@ -1,24 +1,50 @@
-- [x] learning data
-  - [x] checkmark
-  - [x] submission
-- [x] student enrollment
-    - [x] register user profile without user creation (more fields require)
-    - [x] rename user profile to person
-    - [x] person + enrollment by fixture
-- [ ] composite natural keys for Models
-- [ ] REST API
-    - [x] REST API routes
-    - [x] unit endpoint GET
-    - [x] token authentication
-    - [x] create django fixture for checker-bot auth
-    - [x] checkmark endpoint GET
-    - [x] submission endpoint GET/PUT
+- Study UI
+     - [ ] my courses
+     - [ ] view course
+     - [ ] view unit
+- Student enrollment
+    - [ ] student application form (exportable to external sites)
+    - [ ] assign student as candidate to learning/course(?)
+    - [ ] application notification to course manager(!)
+    - [ ] update payment and participant status  
+    - [ ] list payment status for admin
+    - [ ] Send welcome message to Student onActivate() 
+* [REST API](API.md)
     - [ ] search participant by repository
     - [ ] search unit by path
     - [ ] provide python client lib
-- [ ] wlms client library
-- [ ] python-checker creates user submission
-
+* [Content](CONTENT-reqs.md) 
+    - [ ] keep content in Unit.content as longtext (0h)
+    - [ ] md plugin for template expansion (1h)
+    - [ ] Make export from .yaml (from repository) (3h)
+- Manage learnings
+    - [ ] logic.py
+    - [ ] Learning clone (as draft, keep teacher, admin) 
+    - [ ] schedule learning 
+    - [ ] add teacher and admin
+- Slack integration
+    - [x] slack integration spike (3h)
+    - [ ] invite users to account (using invite link in )
+- [ ] remove checker bot traces (1h)
+- WLMS REST client library
+    - [ ] commands with parameters with help function (2h)
+    - [ ] support ~/.wlms/config file (1h)
+    - [x] installable package (1h)
+    - [ ] sample course.yaml (in root) (0h)
+    - [ ] sample unit.yaml (in unit's folder) (1h)
+    - [ ] sample learning.yaml (in root) (1h)
+    - [ ] command: course ls
+    - [ ] command: course create
+    - [ ] command: learning ls
+    - [ ] command: learning create
+    - [ ] command: learning start
+    - [ ] command: learning notify (email)
+    - [ ] command: learning schedule
+    - [ ] render unit's content html
+    - [ ] command: unit ls
+    - [ ] command: unit open
+    - [ ] command: submission ls
+    - [ ] command: submission review
 
 ## Backlog:
 - [ ] secure POST submission endpoint to only teachers of this Learning
@@ -28,4 +54,4 @@
 - [ ] GET /units/ take learning param in consideration
 - [ ] make API refer to code instead of ID
 - [ ] learning content render
-- [ ] slack integration
+- [ ] announcement object
