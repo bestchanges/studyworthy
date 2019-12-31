@@ -3,7 +3,7 @@ from django.urls import reverse
 
 
 class SimpleTest(TestCase):
-    fixtures = ['test-data.yaml']
+    fixtures = ['fixtures/sample-persons.yaml', 'fixtures/sample-course.yaml']
 
     def test_home_response(self):
         client = self.client  # type: Client
