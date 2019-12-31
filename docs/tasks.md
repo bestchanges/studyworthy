@@ -1,5 +1,3 @@
-- [ ] fix build
-- [ ] remove checker bot traces (1h)
 ### Student UI
 - [ ] my courses
 - [ ] view course
