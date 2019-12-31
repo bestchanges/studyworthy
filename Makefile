@@ -14,6 +14,8 @@ sample-data:
 
 data-pipeline: makemigrations migrate sample-data
 
+tests: sample-data dump-data-persons dump-data-course
+
 dump-data-course:
 	pipenv run python manage.py dumpdata study.Course study.Learning study.Section study.Unit --format yaml --natural-primary --natural-foreign
 

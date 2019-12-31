@@ -55,14 +55,3 @@
     role: teacher
     state: active
     assigned_at: "2019-12-01 12:42:00+03:00"
-
-- model: study.participant
-  pk: 4
-  fields:
-    learning:
-      - hp-1
-    person:
-      - checker-bot
-    role: teacher
-    state: active
-    assigned_at: "2019-12-01 12:42:00+03:00"

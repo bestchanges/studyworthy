@@ -6,7 +6,7 @@ install:
 - pipenv install --dev
 script:
 - pipenv run python manage.py test
-- pipenv run python manage.py behave bdd_tests
+#- pipenv run python manage.py behave bdd_tests
 deploy:
   provider: heroku
   api_key:
