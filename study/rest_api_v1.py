@@ -1,6 +1,6 @@
 from rest_framework import routers, serializers, viewsets, permissions
 
-from study.models import Unit, CheckMark, Submission, Participant, Person
+from study.models import Unit, Presence, Decision, Participant, Person
 
 
 class UnitSerializer(serializers.ModelSerializer):
@@ -48,24 +48,24 @@ class PersonViewSet(viewsets.ModelViewSet):
 
 class CheckMarkSerializer(serializers.ModelSerializer):
     class Meta:
-        model = CheckMark
+        model = Presence
         fields = ('id', 'unit', 'student', 'state', 'score')
 
 
 class CheckMarkViewSet(viewsets.ModelViewSet):
-    queryset = CheckMark.objects.all()
+    queryset = Presence.objects.all()
     serializer_class = CheckMarkSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
 class SubmissionSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Submission
+        model = Decision
         fields = ('id', 'state', 'check_mark', 'text', 'student_comment', 'reviewer', 'score', 'reviewer_comment')
 
 
 class SubmissionViewSet(viewsets.ModelViewSet):
-    queryset = Submission.objects.all()
+    queryset = Decision.objects.all()
     serializer_class = SubmissionSerializer
     permission_classes = [permissions.IsAuthenticated]
 

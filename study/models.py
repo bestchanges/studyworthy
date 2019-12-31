@@ -1,9 +1,11 @@
 from django.conf.global_settings import LANGUAGES
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.utils import timezone
+from django.conf import settings
+
+from study import config
 
 
 class Document(models.Model):
@@ -22,7 +24,7 @@ class ByCodeManager(models.Manager):
 
 
 class CodeNaturalKeyAbstractModel(models.Model):
-    code = models.SlugField(unique=True)
+    code = models.CharField(max_length=36, unique=True)
 
     objects = ByCodeManager()
 
@@ -36,7 +38,7 @@ class CodeNaturalKeyAbstractModel(models.Model):
 class Person(CodeNaturalKeyAbstractModel):
     first_name = models.CharField(max_length=100, blank=True)
     last_name = models.CharField(max_length=150, blank=True)
-    email = models.EmailField(blank=True)
+    email = models.EmailField(null=True, unique=True)  # TODO: can we use unique=True for nullable ?
     phone = models.CharField(max_length=20, default='', blank=True)
     skype = models.CharField(max_length=100, default='', blank=True)
     google_account = models.CharField(max_length=200, default='', blank=True)
@@ -44,10 +46,10 @@ class Person(CodeNaturalKeyAbstractModel):
     language = models.CharField(max_length=10, choices=LANGUAGES, default='ru')
     country = models.CharField(max_length=100, default='', blank=True)
     city = models.CharField(max_length=100, default='', blank=True)
+    timezone = models.CharField(max_length=100, choices=[(tz, tz) for tz in config.TIMEZONES], default=settings.TIME_ZONE)
 
-    user = models.OneToOneField(User, null=True, on_delete=models.SET_NULL)
-
-    created_at = models.DateTimeField(default=timezone.now)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, editable=False)
+    updated_at = models.DateTimeField(auto_now=True, null=True, editable=False)
 
     def get_full_name(self):
         return f'{self.first_name} {self.last_name}'
@@ -56,14 +58,18 @@ class Person(CodeNaturalKeyAbstractModel):
         return f'{self.get_full_name()} {self.email}'
 
 
-@receiver(post_save, sender=User)
-def on_user_create(sender, instance: User, created, **kwargs):
+class UserPerson(AbstractUser):
+    person = models.ForeignKey(Person, null=True, on_delete=models.CASCADE)
+
+
+@receiver(post_save, sender=UserPerson)
+def on_user_create(sender, instance: UserPerson, created, **kwargs):
     if created:
-        Person.objects.create(
-            user=instance,
+        person = Person.objects.create(
             first_name=instance.first_name, last_name=instance.last_name,
             email=instance.email, code=instance.username
         )
+        instance.person = person
 
 
 class Author(models.Model):
@@ -88,6 +94,11 @@ class Course(CodeNaturalKeyAbstractModel):
     content_repository = models.CharField(max_length=255, help_text="GIT repository with course content")
     students_template_repository = models.CharField(max_length=255, help_text="Template GIT repository for students submissions")
 
+    created_at = models.DateTimeField(auto_now_add=True, null=True, editable=False)
+    updated_at = models.DateTimeField(auto_now=True, null=True, editable=False)
+    activated_at = models.DateTimeField(null=True)
+    archived_at = models.DateTimeField(null=True)
+
     def __str__(self):
         return f'{self.title}'
 
@@ -99,20 +110,27 @@ class Learning(CodeNaturalKeyAbstractModel):
         verbose_name_plural = 'learnings'
 
     class State(models.TextChoices):
+        DRAFT = 'draft'
         PLANNED = 'planned'
-        IN_PROGRESS = 'in_progress'
+        ONGOING = 'ongoing'
         FINISHED = 'finished',
         CANCELLED = 'cancelled'
 
     course = models.ForeignKey(Course, on_delete=models.PROTECT)
     state = models.CharField(max_length=20, choices=State.choices, default=State.PLANNED)
+    schedule = models.CharField(max_length=200, null=True, help_text='Regular plan of learning of units. Example: "Mon 15:00, Tue 15:00, Sat 19:00"')
+    timezone = models.CharField(max_length=100, choices=[(tz, tz) for tz in config.TIMEZONES], default=settings.TIME_ZONE)
+    notes = models.TextField(null=True)
 
-    created_at = models.DateTimeField(auto_now_add=True, editable=False)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, editable=False)
+    updated_at = models.DateTimeField(auto_now=True, null=True, editable=False)
     start_planned_at = models.DateTimeField(null=True, blank=True)
     finish_planned_at = models.DateTimeField(null=True, blank=True)
     started_at = models.DateTimeField(null=True, blank=True)
     finished_at = models.DateTimeField(null=True, blank=True)
     cancelled_at = models.DateTimeField(null=True, blank=True)
+
+    # TODO: def timetable()
 
     def __str__(self):
         return f'{self.code}'
@@ -138,8 +156,10 @@ class Participant(models.Model):
     state = models.CharField(max_length=20, choices=State.choices)
     code_repository = models.CharField(max_length=255, default='', blank=True)
     total_score = models.IntegerField(null=True, blank=True)
-    admin_notes = models.TextField(default='', blank=True)
+    notes = models.TextField(null=True)
 
+    created_at = models.DateTimeField(auto_now_add=True, null=True, editable=False)
+    updated_at = models.DateTimeField(auto_now=True, null=True, editable=False)
     assigned_at = models.DateTimeField(auto_now_add=True, editable=False)
     activated_at = models.DateTimeField(null=True, blank=True)
     deactivated_at = models.DateTimeField(null=True, blank=True)
@@ -150,11 +170,11 @@ class Participant(models.Model):
 
 class Section(CodeNaturalKeyAbstractModel):
     class Meta:
-        unique_together = [['learning', 'order'], ]
+        unique_together = [['course', 'order'], ]
 
     title = models.CharField(max_length=200)
     order = models.IntegerField()
-    learning = models.ForeignKey(Learning, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
 
     def __str__(self):
         return f'{self.title} ({self.code})'
@@ -162,55 +182,104 @@ class Section(CodeNaturalKeyAbstractModel):
 
 class Unit(CodeNaturalKeyAbstractModel):
     class Meta:
-        unique_together = [['section', 'order'], ]
+        unique_together = [['course', 'section', 'order'], ['course', 'slug']]
 
-    class TaskType(models.TextChoices):
-        NONE = "none"
-        SELF_CHECK = "self_check"
-        ASSIGNMENT = "assignment"
+    class ContentType(models.TextChoices):
+        TEXT = "text"
+        LINK = "link"
+        VIDEO = "video"
+        AUDIO = "audio"
+
+    title = models.CharField(max_length=200)
+    slug = models.SlugField(max_length=50)
+    section = models.ForeignKey(Section, null=True, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    order = models.IntegerField()
+    content_type = models.CharField(max_length=20, choices=ContentType.choices, default=ContentType.TEXT)
+    content = models.TextField(blank=True, null=True)
+    link = models.URLField(blank=True, null=True)
+    notes = models.TextField(null=True)
+
+    created_at = models.DateTimeField(auto_now_add=True, null=True, editable=False)
+    updated_at = models.DateTimeField(auto_now=True, null=True, editable=False)
+
+    def __str__(self):
+        return f'{self.title} ({self.slug})'
+
+
+class Task(models.Model):
+    class Type(models.TextChoices):
+        QUIZ = "quiz"
+        TEXT = "text"
+
+    class DecisionType(models.TextChoices):
+        NUMBER = "number"
+        TEXT = "text"
+        LINK = "link"
+
+    name = models.CharField(max_length=200)
+    type = models.CharField(max_length=20, choices=Type.choices, default=Type.TEXT)
+    description = models.TextField(default='')
+
+    decision_type = models.CharField(max_length=20, choices=DecisionType.choices)
+    decision_deadline_days = models.IntegerField(null=True)
+
+    max_score = models.IntegerField(null=True)
+    pass_score = models.IntegerField(null=True)
+
+    created_at = models.DateTimeField(auto_now_add=True, null=True, editable=False)
+    updated_at = models.DateTimeField(auto_now=True, null=True, editable=False)
+
+
+class Lesson(models.Model):
+    class Meta:
+        unique_together = [['unit', 'learning']]
 
     class State(models.TextChoices):
         HIDDEN = "hidden"
-        WAITING = "waiting"
+        CLOSED = "closed"
         OPENED = "opened"
         FINISHED = "finished"
+        CANCELLED = "cancelled"
 
-    title = models.CharField(max_length=200)
+    unit = models.ForeignKey(Unit, on_delete=models.CASCADE)
+    learning = models.ForeignKey(Learning, on_delete=models.CASCADE)
+    state = models.CharField(max_length=20, choices=State.choices)
     order = models.IntegerField()
-    section = models.ForeignKey(Section, on_delete=models.CASCADE)
-    task_type = models.CharField(max_length=20, choices=TaskType.choices, default=TaskType.NONE)
-    task_details = models.TextField(default='')
-    submission_timespan_days = models.IntegerField(default=0)
-    pass_score = models.IntegerField(default=0)
+    notes = models.TextField(null=True)
+
+    created_at = models.DateTimeField(null=True, blank=True)
+    open_planned_at = models.DateTimeField(null=True, blank=True)
+    opened_at = models.DateTimeField(null=True, blank=True)
+    finished_at = models.DateTimeField(null=True, blank=True)
+    cancelled_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
-        return f'{self.title} ({self.code})'
+        return f'Lesson: {self.unit} for {self.learning}'
 
 
-class CheckMark(models.Model):
+class Presence(models.Model):
     """
-    Represents state of processing of the Unit by the Student. Unique for combination of unit and student.
+    Represents state of processing of the Lesson by the Student. Unique for combination of unit and student.
     """
 
     class Meta:
-        unique_together = [['unit', 'student'], ]
-
-    class State(models.TextChoices):
-        EMPTY = "empty"
-        CHECKED = "checked"
+        unique_together = [['lesson', 'student'], ]
 
     student = models.ForeignKey(Participant, limit_choices_to={'role': 'student'}, related_name='+', on_delete=models.CASCADE)
-    unit = models.ForeignKey(Unit, on_delete=models.CASCADE)
+    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
+    completed = models.BooleanField(default=False)
     score = models.IntegerField(null=True)
-    state = models.CharField(max_length=20, choices=State.choices, default=State.EMPTY)
 
-    checked_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, editable=False)
+    updated_at = models.DateTimeField(auto_now=True, null=True, editable=False)
+    completed_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
-        return f'{self.unit} {self.student.person.get_full_name()}: {self.state}'
+        return f'{self.lesson} {self.student}: [{"X" if self.completed else " "}]'
 
 
-class Submission(models.Model):
+class Decision(models.Model):
 
     class State(models.TextChoices):
         NONE = "none", "None"
@@ -219,22 +288,33 @@ class Submission(models.Model):
         ACCEPTED = "accepted", "Accepted"
         REJECTED = "rejected", "Rejected"
 
-    check_mark = models.ForeignKey(CheckMark, on_delete=models.CASCADE)
-    text = models.TextField(default='')
-    student_comment = models.TextField(default='')
+    presence = models.ForeignKey(Presence, on_delete=models.CASCADE)
+    value_float = models.FloatField(null=True)
+    value_string = models.CharField(max_length=255, null=True)
+    value_text = models.TextField(null=True)
+    value_link = models.URLField(null=True)
+    comment = models.TextField(default='')
+    state = models.CharField(max_length=20, choices=State.choices, default=State.NONE)
+
+    created_at = models.DateTimeField(auto_now_add=True, null=True, editable=False)
+    updated_at = models.DateTimeField(auto_now=True, null=True, editable=False)
+    assigned_at = models.DateTimeField(null=True, blank=True)
+    checked_at = models.DateTimeField(null=True, blank=True)
+
+
+class Review(models.Model):
+    decision = models.OneToOneField(Decision, on_delete=models.CASCADE)
     reviewer = models.ForeignKey(
         Participant, null=True, limit_choices_to={'role': 'teacher'},
         related_name='+', on_delete=models.CASCADE,
     )
     score = models.IntegerField(null=True)
     reviewer_comment = models.TextField(default='')
-    state = models.CharField(max_length=20, choices=State.choices, default=State.NONE)
-    can_student_resubmit = models.BooleanField(default=True)
 
-    created_at = models.DateTimeField(auto_now_add=True, editable=False)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, editable=False)
+    updated_at = models.DateTimeField(auto_now=True, null=True, editable=False)
     assigned_at = models.DateTimeField(null=True, blank=True)
     checked_at = models.DateTimeField(null=True, blank=True)
-    resubmitted_at = models.DateTimeField(null=True, blank=True)
 
 
 class ApplicationForm(models.Model):

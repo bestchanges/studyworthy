@@ -72,9 +72,12 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 50,
 }
 
+AUTH_USER_MODEL = 'study.UserPerson'
+
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Moscow'
+
 USE_TZ = True
 
 USE_I18N = True
