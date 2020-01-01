@@ -1,6 +1,8 @@
 from rest_framework import routers, serializers, viewsets, permissions
 
-from study.models import Unit, Presence, Decision, Participant, Person
+from study.models.base import Person
+from study.models.content import Unit
+from study.models.learning import Participant, Presence, Decision
 
 
 class UnitSerializer(serializers.ModelSerializer):

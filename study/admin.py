@@ -2,7 +2,9 @@ from django.contrib import admin
 # Register your models here.
 from django.contrib.auth.models import User
 
-from .models import Course, Person, Learning, Participant, Section, Unit, UserPerson
+from study.models.base import UserPerson, Person
+from study.models.content import Section, Course, Unit
+from study.models.learning import Participant, Learning
 
 admin.site.register(User, UserPerson)
 
@@ -37,7 +39,7 @@ class AdminParticipant(admin.ModelAdmin):
 
 @admin.register(Unit)
 class AdminUnit(admin.ModelAdmin):
-    list_display = ('section', 'course', 'code', 'title')
+    list_display = ('section', 'course', 'code', 'name')
     list_filter = ['section']
     search_fields = ['section']
 

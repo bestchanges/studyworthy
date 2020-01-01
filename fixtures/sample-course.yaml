@@ -5,11 +5,12 @@
     state: active
     short_description: Study python from scratch
     long_description: Hello Python long description
-    content_repository: https://github.com/bestchanges/hello_python
+    notes: |
+      Repository: https://github.com/bestchanges/hello_python
 
 - model: study.Section
   fields:
-    title: "Introduction"
+    name: "Introduction"
     code: hp-1-s01
     order: 2
     course: ['hp']
@@ -17,7 +18,7 @@
 - model: study.unit
   fields:
     code: hp-1-s01-1
-    title: First program
+    name: First program
     course: ['hp']
     order: 1
     section:

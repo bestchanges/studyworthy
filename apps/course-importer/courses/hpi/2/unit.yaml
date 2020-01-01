@@ -1,0 +1,17 @@
+name: Продолжаем разговор
+description: |
+  - complex types (tuple, array, dict, set)
+  - iterables
+  - list,dict,set comprehensions
+  - with statement (need to repeat later)
+  - exceptions
+content-type: text/markdown
+content: !include README.md
+tasks:
+ - type: text
+   name: Kalimbas
+   description: >
+    существуют такие слова, которые, если их часто повторять, превращаются в другие слова.
+    Например кабан-банка, камыш-мышка.
+    Задание: найти все такие пары слов в словаре русского языка. (Упорядоченные линейные анаграммы)
+    Словарь находится в файле dict.txt

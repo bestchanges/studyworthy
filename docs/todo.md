@@ -1,6 +1,9 @@
+##### [Content](CONTENT-reqs.md) 
+- [x] keep content in Unit.content as longtext (0h)
+- [ ] Make import Course from .yaml (3h)
 ##### [Domain Model](MODELS.md)
-- [ ] create model Task
-- [ ] review model Submission, extract Review<br>
+- [x] create model Task
+- [x] review model Submission, extract Review<br>
       Unit -* Task -* Submission - Review
 ##### Student enrollment
 - [ ] student application form (exportable to external sites)
@@ -13,14 +16,11 @@
 - [ ] my courses
 - [ ] view course
 - [ ] view unit
+    - [ ] md plugin for template expansion (1h)
 ##### [REST API](API.md)
 - [ ] search participant by repository
 - [ ] search unit by path
 - [ ] provide python client lib
-##### [Content](CONTENT-reqs.md) 
-- [ ] keep content in Unit.content as longtext (0h)
-- [ ] md plugin for template expansion (1h)
-- [ ] Make export from .yaml (from repository) (3h)
 ##### Manage learnings
 - [ ] logic.py
 - [ ] Learning clone (as draft, keep teacher, admin) 

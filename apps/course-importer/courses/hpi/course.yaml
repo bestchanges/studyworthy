@@ -1,0 +1,20 @@
+course:
+ title: Hello Python
+ code: hpi
+ short_description: Study python from scratch
+ long_description: >
+   Hello Python long description
+   Another Lone
+   # Hello Python header
+ notes: >
+   Content repository: https://github.com/bestchanges/hello_python
+sections:
+ - name: Введение
+   units:
+     - name: Введение в курс
+       content-type: video/youtube
+       link: http://youtube.com/xxxxxx
+ - name: Принципы Python
+   units:
+     - !include 1/unit.yaml
+     - !include 2/unit.yaml

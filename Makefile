@@ -7,14 +7,18 @@ makemigrations:
 migrate:
 	pipenv run python manage.py migrate
 
+tests:
+	pipenv run python manage.py test
+
+load-hello-python:
+	pipenv run python manage.py loaddata fixtures/course-hello-python.yaml
+
 sample-data:
 	pipenv run python manage.py loaddata fixtures/sample-admin.yaml
 	pipenv run python manage.py loaddata fixtures/sample-persons.yaml
 	pipenv run python manage.py loaddata fixtures/sample-course.yaml
 
 data-pipeline: makemigrations migrate sample-data
-
-tests: sample-data dump-data-persons dump-data-course
 
 dump-data-course:
 	pipenv run python manage.py dumpdata study.Course study.Learning study.Section study.Unit --format yaml --natural-primary --natural-foreign

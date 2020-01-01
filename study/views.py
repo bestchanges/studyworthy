@@ -3,7 +3,8 @@ from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
 
-from .models import Course, Document
+from study.models.base import Document
+from study.models.content import Course
 
 
 def index(request):
