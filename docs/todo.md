@@ -1,10 +1,14 @@
-##### [Content](CONTENT-reqs.md) 
-- [x] Make import Course from .yaml (3h)
+##### [Content](CONTENT.md)
+- [x] admin: view course (codes, sections, units)
+- [x] unit order is course-wide. Not in section
+- [ ] unit order is course-wide. Not in section
+##### [Learnings](LEARNINGS.md)
+- [x] admin: view learnings (0h)
+- [x] create learning (with Lessons) (2h)
+- [ ] (re-)schedule learning (1h)
+- [ ] Learning clone (as draft, keep teacher, admin) 
+- [ ] add teacher and admin
 ##### [Domain Model](MODELS.md)
-- [x] create model for Content
-    - [x] properties: content(text, string, url), code, content-type (1h)
-    - [x] update fixtures (0h)
-    - [x] update importer (1h)
 ##### Student enrollment
 - [ ] student application form (exportable to external sites)
 - [ ] assign student as candidate to learning/course(?)
@@ -21,11 +25,6 @@
 - [ ] search participant by repository
 - [ ] search unit by path
 - [ ] provide python client lib
-##### Manage learnings
-- [ ] logic.py
-- [ ] Learning clone (as draft, keep teacher, admin) 
-- [ ] schedule learning 
-- [ ] add teacher and admin
 ##### Slack integration
 - [x] slack integration spike (3h)
 - [ ] invite users to account (using invite link in )

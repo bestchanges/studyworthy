@@ -1,3 +1,9 @@
+# Backlog Tasks
+- [  ] importer: clean content items not in file but in DB (content-always)
+- [ ] admin: course content modification
+- [ ] admin: Unit
+
+
 # Solution
 - unit content = single .md file
 - all media files are external (possible other solution by plugin)
@@ -5,8 +11,6 @@
 
 # IDEAS
 - Separate unit's tasks from study content<br>
-
-# Backlog Tasks
 
 # Check Requirements
 - [x]  Удобство создания и визуального обзора материалов

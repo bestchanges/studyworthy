@@ -4,6 +4,9 @@ Learning process related models.
 
 from django.conf import settings
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.utils.timezone import now
 
 from study import config
 from study.models.base import CodeNaturalKeyAbstractModel, Person
@@ -25,22 +28,29 @@ class Learning(CodeNaturalKeyAbstractModel):
 
     course = models.ForeignKey(Course, on_delete=models.PROTECT)
     state = models.CharField(max_length=20, choices=State.choices, default=State.PLANNED)
-    schedule = models.CharField(max_length=200, null=True, help_text='Regular plan of learning of units. Example: "Mon 15:00, Tue 15:00, Sat 19:00"')
+    schedule = models.CharField(max_length=200, null=True, default="Mon 15:00, Tue 15:00, Sat 19:00", help_text='Regular plan of learning of units')
     timezone = models.CharField(max_length=100, choices=[(tz, tz) for tz in config.TIMEZONES], default=settings.TIME_ZONE)
-    notes = models.TextField(null=True)
+    notes = models.TextField(null=True, blank=True)
 
-    created_at = models.DateTimeField(auto_now_add=True, null=True, editable=False)
-    updated_at = models.DateTimeField(auto_now=True, null=True, editable=False)
-    start_planned_at = models.DateTimeField(null=True, blank=True)
+    start_planned_at = models.DateTimeField(default=now, null=True, blank=True)
     finish_planned_at = models.DateTimeField(null=True, blank=True)
+
     started_at = models.DateTimeField(null=True, blank=True)
     finished_at = models.DateTimeField(null=True, blank=True)
     cancelled_at = models.DateTimeField(null=True, blank=True)
-
-    # TODO: def timetable()
+    created_at = models.DateTimeField(auto_now_add=True, null=True, editable=False)
+    updated_at = models.DateTimeField(auto_now=True, null=True, editable=False)
 
     def __str__(self):
         return f'Learning {self.code}'
+
+
+@receiver(post_save, sender=Learning)
+def on_learning_create(sender, instance: Learning, created, **kwargs):
+    if created:
+        for unit in instance.course.unit_set.all():
+            lesson = Lesson(unit=unit, order=unit.order, learning=instance, state=Lesson.State.CLOSED)
+            lesson.save()
 
 
 class Participant(models.Model):
@@ -63,7 +73,7 @@ class Participant(models.Model):
     state = models.CharField(max_length=20, choices=State.choices)
     code_repository = models.CharField(max_length=255, default='', blank=True)
     total_score = models.IntegerField(null=True, blank=True)
-    notes = models.TextField(null=True)
+    notes = models.TextField(null=True, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True, null=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True, null=True, editable=False)
@@ -90,13 +100,15 @@ class Lesson(models.Model):
     learning = models.ForeignKey(Learning, on_delete=models.CASCADE)
     state = models.CharField(max_length=20, choices=State.choices)
     order = models.IntegerField()
-    notes = models.TextField(null=True)
+    notes = models.TextField(null=True, blank=True)
 
-    created_at = models.DateTimeField(null=True, blank=True)
     open_planned_at = models.DateTimeField(null=True, blank=True)
     opened_at = models.DateTimeField(null=True, blank=True)
     finished_at = models.DateTimeField(null=True, blank=True)
     cancelled_at = models.DateTimeField(null=True, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True, null=True, editable=False)
+    updated_at = models.DateTimeField(auto_now=True, null=True, editable=False)
 
     def __str__(self):
         return f'Lesson: {self.unit} for {self.learning}'

@@ -14,11 +14,11 @@ class Course(CodeNaturalKeyAbstractModel):
         ARCHIVED = 'archived',
 
     title = models.CharField(max_length=200)
-    authors = models.ManyToManyField(Author)
+    authors = models.ManyToManyField(Author, blank=True)
     state = models.CharField(max_length=8, choices=State.choices, default=State.DRAFT)
     short_description = models.CharField(max_length=500, default='')
     long_description = models.TextField(default='')
-    notes = models.TextField(null=True)
+    notes = models.TextField(null=True, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True, null=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True, null=True, editable=False)
@@ -36,7 +36,7 @@ class Section(CodeNaturalKeyAbstractModel):
     name = models.CharField(max_length=200)
     order = models.IntegerField()
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    description = models.TextField(null=True)
+    description = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return f'Section {self.name} ({self.code})'
@@ -53,7 +53,10 @@ class Content(CodeNaturalKeyAbstractModel):
     type = models.CharField(max_length=20, choices=ContentType.choices, default=ContentType.HTML)
     text = models.TextField(blank=True, null=True)
     url = models.URLField(max_length=255, blank=True, null=True)
-    notes = models.TextField(null=True)
+    notes = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return f'Content {self.code} ({self.type})'
 
 
 class Unit(CodeNaturalKeyAbstractModel):
@@ -67,9 +70,9 @@ class Unit(CodeNaturalKeyAbstractModel):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     order = models.IntegerField()
 
-    description = models.TextField(null=True)
+    description = models.TextField(null=True, blank=True)
     contents = models.ManyToManyField(Content)
-    notes = models.TextField(null=True)
+    notes = models.TextField(null=True, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True, null=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True, null=True, editable=False)

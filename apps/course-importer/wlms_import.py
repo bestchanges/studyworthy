@@ -141,9 +141,10 @@ def import_course_content(data: dict) -> List[Model]:
             unit_data = dict(unit_node)
             unit_data['course'] = [ course.code() ]
             unit_data['section'] = [ section.code() ]
-            unit_data['order'] = unit_number_across_section
-            unit_data['code'] = f'{section.code()}-{unit_number_across_section}'
-            unit_data['slug'] = f'U{section_number}-{unit_number_across_section}'
+            unit_data['order'] = unit_number_across_course
+            slug = f'U{unit_number_across_course}'
+            unit_data['code'] = f'{course.code()}-{slug}'
+            unit_data['slug'] = slug
             if 'tasks' in unit_data:
                 unit_data.pop('tasks')
             contents = []
