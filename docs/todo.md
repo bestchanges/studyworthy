@@ -1,10 +1,10 @@
 ##### [Content](CONTENT-reqs.md) 
-- [x] keep content in Unit.content as longtext (0h)
-- [ ] Make import Course from .yaml (3h)
+- [x] Make import Course from .yaml (3h)
 ##### [Domain Model](MODELS.md)
-- [x] create model Task
-- [x] review model Submission, extract Review<br>
-      Unit -* Task -* Submission - Review
+- [x] create model for Content
+    - [x] properties: content(text, string, url), code, content-type (1h)
+    - [x] update fixtures (0h)
+    - [x] update importer (1h)
 ##### Student enrollment
 - [ ] student application form (exportable to external sites)
 - [ ] assign student as candidate to learning/course(?)

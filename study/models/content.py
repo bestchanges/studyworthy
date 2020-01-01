@@ -42,15 +42,23 @@ class Section(CodeNaturalKeyAbstractModel):
         return f'Section {self.name} ({self.code})'
 
 
+class Content(CodeNaturalKeyAbstractModel):
+    class ContentType(models.TextChoices):
+        TEXT = "text/plain"
+        HTML = "text/html"
+        MARKDOWN = "text/markdown"
+        LINK = "text/uri"
+        VIDEO = "video/youtube"
+
+    type = models.CharField(max_length=20, choices=ContentType.choices, default=ContentType.HTML)
+    text = models.TextField(blank=True, null=True)
+    url = models.URLField(max_length=255, blank=True, null=True)
+    notes = models.TextField(null=True)
+
+
 class Unit(CodeNaturalKeyAbstractModel):
     class Meta:
         unique_together = [['course', 'section', 'order'], ['course', 'slug']]
-
-    class ContentType(models.TextChoices):
-        TEXT = "text"
-        LINK = "link"
-        VIDEO = "video"
-        AUDIO = "audio"
 
     name = models.CharField(max_length=200)
     slug = models.SlugField(max_length=50, help_text="Short code to easily identify this unit across the Course")
@@ -60,9 +68,7 @@ class Unit(CodeNaturalKeyAbstractModel):
     order = models.IntegerField()
 
     description = models.TextField(null=True)
-    content_type = models.CharField(max_length=20, choices=ContentType.choices, default=ContentType.TEXT)
-    content = models.TextField(blank=True, null=True)
-    link = models.URLField(blank=True, null=True)
+    contents = models.ManyToManyField(Content)
     notes = models.TextField(null=True)
 
     created_at = models.DateTimeField(auto_now_add=True, null=True, editable=False)

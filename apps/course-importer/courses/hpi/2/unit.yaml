@@ -5,8 +5,13 @@ description: |
   - list,dict,set comprehensions
   - with statement (need to repeat later)
   - exceptions
-content-type: text/markdown
-content: !include README.md
+contents:
+  - type: text/markdown
+    text: !include README.md
+
+  - type: video/youtube
+    url: https://www.youtube.com/watch?v=k4i5YpyYWmQ&feature=youtu.be
+    code: https://www.youtube.com/watch?v=k4i5YpyYWmQ
 tasks:
  - type: text
    name: Kalimbas

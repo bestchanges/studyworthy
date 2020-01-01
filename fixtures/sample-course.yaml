@@ -15,15 +15,31 @@
     order: 2
     course: ['hp']
 
+- model: study.content
+  fields:
+    type: text/markdown
+    code: courses/hello-python/basics.md#sub-title-slugified
+    text: >
+      # Header
+      some text content
+
+- model: study.content
+  fields:
+    type: video/youtube
+    code: https://www.youtube.com/watch?v=k4i5YpyYWmQ # without query string!!
+    url: https://www.youtube.com/watch?v=k4i5YpyYWmQ&feature=youtu.be
+
 - model: study.unit
   fields:
     code: hp-1-s01-1
     name: First program
     course: ['hp']
+    contents:
+      - [ 'https://www.youtube.com/watch?v=k4i5YpyYWmQ' ]
+      - [ 'courses/hello-python/basics.md#sub-title-slugified' ]
     order: 1
     section:
       - hp-1-s01
-    content_type: text
 
 - model: study.learning
   fields:

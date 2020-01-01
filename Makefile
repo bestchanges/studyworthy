@@ -10,8 +10,8 @@ migrate:
 tests:
 	pipenv run python manage.py test
 
-load-hello-python:
-	pipenv run python manage.py loaddata fixtures/course-hello-python.yaml
+load-course:
+	pipenv run python manage.py loaddata out/course-fixture.yaml
 
 sample-data:
 	pipenv run python manage.py loaddata fixtures/sample-admin.yaml

@@ -33,7 +33,6 @@ class Model():
             'fields': self.request_data
         }
 
-
     def code(self):
         if 'code' in self.request_data:
             return self.request_data['code']
@@ -53,6 +52,7 @@ class Course(Model):
         'long_description',
         'notes',
     )
+
 
 class Section(Model):
     model = 'study.Section'
@@ -76,42 +76,47 @@ class Unit(Model):
         'slug',
         'course',
         'order',
-        'content_type',
+        'contents',
     )
 
     optional_fields = (
         'section',
-        'content',
         'description',
-        'link',
         'notes',
     )
 
 
-class MyLoader(yaml.SafeLoader):
+class Content(Model):
+    model = 'study.Content'
 
+    required_fields = (
+        'type',
+        'code',
+    )
+
+    optional_fields = (
+        'text',
+        'url',
+        'notes',
+    )
+
+
+# TODO: add Tasks from Unit
+
+class YamlLoader(yaml.SafeLoader):
     def __init__(self, stream):
-
         self._root = os.path.split(stream.name)[0]
-
-        super(MyLoader, self).__init__(stream)
+        super(YamlLoader, self).__init__(stream)
 
     def include(self, node):
-
         filename = os.path.join(self._root, self.construct_scalar(node))
-
         with open(filename, 'r') as f:
             if filename.endswith('.yaml'):
-                return yaml.load(f, MyLoader)
+                return yaml.load(f, YamlLoader)
             else:
                 return f.read()
 
-MyLoader.add_constructor('!include', MyLoader.include)
-
-
-def load_yaml(filename):
-    with open(filename, 'r') as f:
-        return yaml.load(f, Loader=MyLoader)
+YamlLoader.add_constructor('!include', YamlLoader.include)
 
 
 def import_course_content(data: dict) -> List[Model]:
@@ -139,16 +144,38 @@ def import_course_content(data: dict) -> List[Model]:
             unit_data['order'] = unit_number_across_section
             unit_data['code'] = f'{section.code()}-{unit_number_across_section}'
             unit_data['slug'] = f'U{section_number}-{unit_number_across_section}'
-            unit_data['content_type'] = unit_data['content-type']
-            unit_data.pop('content-type')
             if 'tasks' in unit_data:
                 unit_data.pop('tasks')
+            contents = []
+            for content_node in unit_node['contents']:
+                content_data = dict(content_node)
+                if 'code' not in content_data:
+                    if 'name' in content_data:
+                        code = f'{unit_data["code"]}-{content_data["name"]}'
+                        content_data.pop('name')
+                    else:
+                        code = f'{unit_data["code"]}-{len(contents) + 1}'
+                    content_data['code'] = code
+                content = Content(**content_data)
+                contents.append(content)
+            result += (content.to_django_fixture() for content in contents)
+            unit_data['contents'] = [[content.code()] for content in contents]
             unit = Unit(**unit_data)
             result.append(unit.to_django_fixture())
     return result
 
+
+def load_yaml(filename):
+    with open(filename, 'r') as f:
+        return yaml.load(f, Loader=YamlLoader)
+
+
+def save_yaml(data):
+    return yaml.safe_dump(data, allow_unicode=True)
+
+
 if __name__ == '__main__':
     file = sys.argv[1]
     data = import_course_content(load_yaml(file))
-    s = yaml.safe_dump(data, allow_unicode=True)
+    s = save_yaml(data)
     print(s)
