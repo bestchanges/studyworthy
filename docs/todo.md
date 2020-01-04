@@ -3,10 +3,9 @@
 - [x] unit order is course-wide. Not in section
 - [ ] redo import as django command accepting course.yaml
 ##### [Learnings](LEARNINGS.md)
-- [x] event schedule generator (~~1h~~, 2h)
-- [x] admin: Learning add teacher and admin (0h)
-- [x] admin: create Learning stay on the same page after save/add
-- [x] (re-)schedule learning (1h)
+- [x] create command for scheduled jobs
+- [x] start course and open lesson automatically
+- [x] Lesson on save() trigger appropriate django signals to apps
 ##### [Domain Model](MODELS.md)
 ##### Student enrollment
 - [ ] student application form (exportable to external sites)

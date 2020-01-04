@@ -11,10 +11,10 @@ from django.dispatch import receiver
 from django.utils import timezone
 from django.utils.timezone import now
 
-from study import config
-from study.logic import events_generator
+from study import config, signals
 from study.models.base import CodeNaturalKeyAbstractModel, Person
 from study.models.content import Course, Unit
+from study.schedule import events_generator
 
 
 class Learning(CodeNaturalKeyAbstractModel):
@@ -45,6 +45,19 @@ class Learning(CodeNaturalKeyAbstractModel):
     created_at = models.DateTimeField(auto_now_add=True, null=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True, null=True, editable=False)
 
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        need_send_started_signal = False
+        need_send_finished_signal = False
+        if self.pk:
+            existing_instance = Learning.objects.get(pk=self.pk)
+            need_send_started_signal = existing_instance.state != self.State.ONGOING and self.state == self.State.ONGOING
+            need_send_finished_signal = existing_instance.state == self.State.ONGOING and self.state == self.State.FINISHED
+        super().save(force_insert, force_update, using, update_fields)
+        if need_send_started_signal:
+            signals.learning_started_signal.send(self.__class__, learning=self)
+        if need_send_finished_signal:
+            signals.learning_finished_signal.send(self.__class__, learning=self)
+
     def reschedule(self):
         lesson_timezone = pytz.timezone(self.timezone)
         with timezone.override(lesson_timezone):
@@ -60,6 +73,7 @@ class Learning(CodeNaturalKeyAbstractModel):
 
 @receiver(post_save, sender=Learning)
 def on_learning_create(sender, instance: Learning, created, **kwargs):
+    """Create Lessons from course's units."""
     if created:
         for unit in instance.course.unit_set.all():
             lesson = Lesson(unit=unit, order=unit.order, learning=instance, state=Lesson.State.CLOSED)
@@ -123,6 +137,15 @@ class Lesson(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True, null=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True, null=True, editable=False)
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        need_send_opened_signal = False
+        if self.pk:
+            existing_instance = Lesson.objects.get(pk=self.pk)
+            need_send_opened_signal = existing_instance.state != self.State.OPENED and self.state == self.State.OPENED
+        super().save(force_insert, force_update, using, update_fields)
+        if need_send_opened_signal:
+            signals.lesson_opened_signal.send(self.__class__, lesson=self)
 
     def __str__(self):
         return f'Lesson: {self.unit} for {self.learning}'

@@ -3,6 +3,8 @@ Common settings which applies to all environments.
 """
 import os
 
+from django.utils import timezone
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 FIXTURE_DIRS = (
@@ -85,3 +87,5 @@ USE_L10N = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+PERIODIC_MAX_PERIOD = timezone.timedelta(hours=24)

@@ -1,57 +1,62 @@
-from datetime import datetime
-from unittest import TestCase
+from django.test import TestCase
+from django.utils import timezone
 
-from study.logic import events_generator
+from study.logic import periodic_task_start_learnings, periodic_task_open_lessons
+from study.models.content import Course
+from study.models.learning import Learning, Lesson
 
 
-class TestLogic(TestCase):
+class TestModels(TestCase):
+    fixtures = ['fixtures/sample-course-hpi.yaml']
 
-    def test_schedule_generator_increment_day(self):
-        schedule = '+1'
-        generator = events_generator(schedule, start_at=datetime(2020, 1, 4))
-        self.assertEquals(next(generator), datetime(2020, 1, 5))
-        self.assertEquals(next(generator), datetime(2020, 1, 6))
-        self.assertEquals(next(generator), datetime(2020, 1, 7))
+    def test_periodic_task_start_learnings(self):
+        course = Course.objects.get_by_natural_key('hpi')
+        one_hour_ago = timezone.now() - timezone.timedelta(hours=1)
+        two_days_ago = timezone.now() - timezone.timedelta(days=2)
+        two_days_in_future = timezone.now() + timezone.timedelta(days=2)
+        data_sets = (
+            [one_hour_ago, Learning.State.ONGOING],
+            [two_days_in_future, Learning.State.PLANNED],
+            [two_days_ago, Learning.State.PLANNED],
+        )
 
-    def test_schedule_generator_increment_three_day(self):
-        schedule = '+3 13:0'
-        generator = events_generator(schedule, start_at=datetime(2020, 1, 4))
-        self.assertEquals(next(generator), datetime(2020, 1, 7, 13))
-        self.assertEquals(next(generator), datetime(2020, 1, 10, 13))
-        self.assertEquals(next(generator), datetime(2020, 1, 13, 13))
+        for entry in data_sets:
+            date = entry[0]
+            learning = Learning(course=course, start_planned_at=date, code=str(date))
+            learning.save()
+            entry.append(learning)
+            self.assertEqual(learning.state, learning.State.PLANNED)
 
-    def test_schedule_generator_increment_one_day_three_day(self):
-        schedule = '+1 15:00, +3 13:0'
-        generator = events_generator(schedule, start_at=datetime(2020, 1, 4))
-        self.assertEquals(next(generator), datetime(2020, 1, 5, 15))
-        self.assertEquals(next(generator), datetime(2020, 1, 8, 13))
-        self.assertEquals(next(generator), datetime(2020, 1, 9, 15))
-        self.assertEquals(next(generator), datetime(2020, 1, 12, 13))
+        periodic_task_start_learnings()
 
-    def test_schedule_generator_one_day(self):
-        schedule = 'Mon'
-        generator = events_generator(schedule, start_at=datetime(2020, 1, 4))
-        self.assertEquals(next(generator), datetime(2020, 1, 6))
-        self.assertEquals(next(generator), datetime(2020, 1, 13))
+        for entry in data_sets:
+            date, expected_state, learning = entry
+            learning = Learning.objects.get(pk=learning.id)
+            self.assertEqual(learning.state, expected_state, f"For date={date} state shall be {expected_state}, but actual was {learning.state}")
 
-    def test_schedule_generator_one_day_with_time(self):
-        schedule = 'Mon 15:55'
-        generator = events_generator(schedule, start_at=datetime(2020, 1, 4))
-        self.assertEquals(next(generator), datetime(2020, 1, 6, 15, 55))
-        self.assertEquals(next(generator), datetime(2020, 1, 13, 15, 55))
+    def test_periodic_task_open_lessons(self):
+        course = Course.objects.get_by_natural_key('hpi')
+        learning = Learning(course=course, code='test_periodic_task_open_lessons')
+        learning.save()
+        self.assertGreaterEqual(learning.lesson_set.count(), 3)
 
-    def test_schedule_generator_two_days(self):
-        schedule = 'Mon, Wed'
-        generator = events_generator(schedule, start_at=datetime(2020, 1, 8))
-        self.assertEquals(next(generator), datetime(2020, 1, 13))
-        self.assertEquals(next(generator), datetime(2020, 1, 15))
-        self.assertEquals(next(generator), datetime(2020, 1, 20))
-        self.assertEquals(next(generator), datetime(2020, 1, 22))
+        one_hour_ago = timezone.now() - timezone.timedelta(hours=1)
+        two_days_ago = timezone.now() - timezone.timedelta(days=2)
+        two_days_in_future = timezone.now() + timezone.timedelta(days=2)
+        data_sets = (
+            [one_hour_ago, Lesson.State.OPENED],
+            [two_days_in_future, Lesson.State.CLOSED],
+            [two_days_ago, Lesson.State.CLOSED],
+        )
 
-    def test_schedule_generator_two_days_with_time(self):
-        schedule = 'Sun 0:0, Wed 18:55'
-        generator = events_generator(schedule, start_at=datetime(2020, 1, 8))
-        self.assertEquals(next(generator), datetime(2020, 1, 12, 0, 0))
-        self.assertEquals(next(generator), datetime(2020, 1, 15, 18, 55))
-        self.assertEquals(next(generator), datetime(2020, 1, 19, 0, 0))
-        self.assertEquals(next(generator), datetime(2020, 1, 22, 18, 55))
+        for lesson, entry in zip(learning.lesson_set.all(), data_sets):
+            date = entry[0]
+            self.assertEqual(lesson.state, Lesson.State.CLOSED)
+            lesson.open_planned_at = date
+            lesson.save()
+
+        periodic_task_open_lessons()
+
+        for lesson, entry in zip(learning.lesson_set.all(), data_sets):
+            date, expected_state = entry
+            self.assertEqual(lesson.state, expected_state, f"For date={date} state shall be {expected_state}, but actual was {lesson.state}")
