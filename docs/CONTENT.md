@@ -1,7 +1,7 @@
 # Backlog Tasks
 - [  ] importer: clean content items not in file but in DB (content-always)
 - [ ] admin: course content modification
-- [ ] admin: Unit
+- [ ] admin: Unit with Content Inline
 
 
 # Solution

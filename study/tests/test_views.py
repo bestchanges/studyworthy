@@ -2,7 +2,7 @@ from django.test import TestCase, Client
 from django.urls import reverse
 
 
-class ViewsTest(TestCase):
+class TestViews(TestCase):
     fixtures = ['fixtures/sample-persons.yaml', 'fixtures/sample-course.yaml']
 
     def test_home_response(self):

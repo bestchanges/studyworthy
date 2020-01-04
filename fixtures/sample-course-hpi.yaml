@@ -1,0 +1,176 @@
+- fields:
+    code: hpi
+    long_description: 'Hello Python long description
+
+      Another Lone
+
+      # Hello Python header
+
+      '
+    notes: 'Content repository: https://github.com/bestchanges/hello_python
+
+      '
+    short_description: Study python from scratch
+    title: Hello Python I (ai)
+  model: study.Course
+- fields:
+    code: hpi-1
+    course:
+    - hpi
+    name: Введение
+    order: 1
+  model: study.Section
+- fields:
+    code: https://www.youtube.com/watch?v=k4i5YpyYWmQ
+    type: video/youtube
+    url: https://www.youtube.com/watch?v=k4i5YpyYWmQ&feature=youtu.be
+  model: study.Content
+- fields:
+    code: hpi-1
+    contents:
+    - - https://www.youtube.com/watch?v=k4i5YpyYWmQ
+    course:
+    - hpi
+    name: Введение в курс
+    order: 1
+    section:
+    - hpi-1
+    slug: U1
+  model: study.Unit
+- fields:
+    code: hpi-2
+    course:
+    - hpi
+    name: Принципы Python
+    order: 2
+  model: study.Section
+- fields:
+    code: hpi-2-1
+    text: "# Session 1\n- intro: projects, zen, code_style\n- install & setup (PyCharm)\n\
+      - run, debug, python console\n- types (numbers, strings, bool)\n- read/write\
+      \ stdin/stdout\n- variables\n- control flow (if, for, while)\n\n## Screencast\n\
+      [![Hello Python Session 1](http://img.youtube.com/vi/uwJHd9WUL6s/0.jpg)](http://www.youtube.com/watch?v=uwJHd9WUL6s\
+      \ \"Hello Python Session 1 \")\n\n## Materials\n- https://pythoner.name/documentation/tutorial/introduction\n\
+      - https://pythoner.name/documentation/tutorial/tools\n- https://pythoner.name/documentation/tutorial/output\n\
+      - (part 1,3) https://learnxinyminutes.com/docs/python3/\n- strings https://www.youtube.com/watch?v=ajrtAuDg3yw\n\
+      - string formatting https://www.youtube.com/watch?v=vTX3IwquFkc\n- booleans\
+      \ https://www.youtube.com/watch?v=DZwmZ8Usvnk\n- numbers https://www.youtube.com/watch?v=khKv-8q7YmY\n\
+      - slicing lists and strings https://www.youtube.com/watch?v=ajrtAuDg3yw\n\n\
+      ## Projects\n- guess_game\n\nИгра загадывает одно за другим числа от 1 до 3\
+      \ (включительно). \nПользователь пытается угадать какое число было загадано\
+      \ и вводит ответ на клавиатуре.\nИгра сообщает был ли ответ верным. По окончании\
+      \ игры игра сообщает % верных ответов.\n\n"
+    type: text/markdown
+  model: study.Content
+- fields:
+    code: hpi-2
+    contents:
+    - - hpi-2-1
+    course:
+    - hpi
+    description: '- intro: projects, zen, code_style
+
+      - install & setup (PyCharm)
+
+      - run, debug, python console
+
+      - types (numbers, strings, bool)
+
+      - read/write stdin/stdout
+
+      - variables
+
+      - control flow (if, for, while)
+
+      '
+    name: Основы питона
+    order: 2
+    section:
+    - hpi-2
+    slug: U2
+  model: study.Unit
+- fields:
+    code: hpi-3-1
+    text: '# Session 2
+
+
+      - complex types (tuple, array, dict, set)
+
+      - iterables
+
+      - list,dict,set comprehensions
+
+      - with statement (need to repeat later)
+
+      - exceptions
+
+
+      ## Screencast
+
+      [![Hello Python Session 2](http://img.youtube.com/vi/rDiLYYKcfYo/0.jpg)](http://www.youtube.com/watch?v=rDiLYYKcfYo
+      "Hello Python Session 2")
+
+
+      ## Materials
+
+      - https://pythoner.name/documentation/tutorial/structures
+
+      - https://pythoner.name/documentation/tutorial/exceptions
+
+      - (Part 2,3) https://learnxinyminutes.com/docs/python3/
+
+      - lists, tuples, sets https://www.youtube.com/watch?v=W8KRzm-HUcc
+
+      - iterables https://www.youtube.com/watch?v=jTYiNjvnHZY&t=948s
+
+      - dicts https://www.youtube.com/watch?v=daefaLgNkw0
+
+      - list,dict,set comprehensions https://www.youtube.com/watch?v=3dt4OGnU5sM&t=5s
+
+      - exceptions https://www.youtube.com/watch?v=NIWwJbo-9_8
+
+
+      ## Project
+
+      - kalimbas
+
+      существуют такие слова, которые, если их часто повторять, превращаются в другие
+      слова. Например кабан-банка, камыш-мышка. Задание найти все такие пары слов
+      в словаре русского языка. (Упорядоченные линейные анаграммы)
+
+      Словарь находится в sessions/2/dict.txt
+
+
+      '
+    type: text/markdown
+  model: study.Content
+- fields:
+    code: https://www.youtube.com/watch?v=k4i5YpyYWmQ
+    type: video/youtube
+    url: https://www.youtube.com/watch?v=k4i5YpyYWmQ&feature=youtu.be
+  model: study.Content
+- fields:
+    code: hpi-3
+    contents:
+    - - hpi-3-1
+    - - https://www.youtube.com/watch?v=k4i5YpyYWmQ
+    course:
+    - hpi
+    description: '- complex types (tuple, array, dict, set)
+
+      - iterables
+
+      - list,dict,set comprehensions
+
+      - with statement (need to repeat later)
+
+      - exceptions
+
+      '
+    name: Продолжаем разговор
+    order: 3
+    section:
+    - hpi-2
+    slug: U3
+  model: study.Unit
+

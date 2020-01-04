@@ -1,14 +1,18 @@
 """
 Learning process related models.
 """
+import datetime
 
+import pytz
 from django.conf import settings
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.utils import timezone
 from django.utils.timezone import now
 
 from study import config
+from study.logic import events_generator
 from study.models.base import CodeNaturalKeyAbstractModel, Person
 from study.models.content import Course, Unit
 
@@ -30,7 +34,7 @@ class Learning(CodeNaturalKeyAbstractModel):
     state = models.CharField(max_length=20, choices=State.choices, default=State.PLANNED)
     schedule = models.CharField(max_length=200, null=True, default="Mon 15:00, Tue 15:00, Sat 19:00", help_text='Regular plan of learning of units')
     timezone = models.CharField(max_length=100, choices=[(tz, tz) for tz in config.TIMEZONES], default=settings.TIME_ZONE)
-    notes = models.TextField(null=True, blank=True)
+    notes = models.CharField(max_length=200, null=True, blank=True)
 
     start_planned_at = models.DateTimeField(default=now, null=True, blank=True)
     finish_planned_at = models.DateTimeField(null=True, blank=True)
@@ -40,6 +44,15 @@ class Learning(CodeNaturalKeyAbstractModel):
     cancelled_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True, null=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True, null=True, editable=False)
+
+    def reschedule(self):
+        lesson_timezone = pytz.timezone(self.timezone)
+        with timezone.override(lesson_timezone):
+            generator = events_generator(self.schedule, timezone.localtime(self.start_planned_at))
+        for lesson in self.lesson_set.all():
+            timestamp = next(generator)
+            lesson.open_planned_at = timestamp
+            lesson.save()
 
     def __str__(self):
         return f'Learning {self.code}'
@@ -73,13 +86,14 @@ class Participant(models.Model):
     state = models.CharField(max_length=20, choices=State.choices)
     code_repository = models.CharField(max_length=255, default='', blank=True)
     total_score = models.IntegerField(null=True, blank=True)
-    notes = models.TextField(null=True, blank=True)
+    notes = models.CharField(max_length=200, null=True, blank=True)
 
-    created_at = models.DateTimeField(auto_now_add=True, null=True, editable=False)
-    updated_at = models.DateTimeField(auto_now=True, null=True, editable=False)
     assigned_at = models.DateTimeField(auto_now_add=True, editable=False)
     activated_at = models.DateTimeField(null=True, blank=True)
     deactivated_at = models.DateTimeField(null=True, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True, null=True, editable=False)
+    updated_at = models.DateTimeField(auto_now=True, null=True, editable=False)
 
     def __str__(self):
         return f'{self.role} {self.person.get_full_name()}'
@@ -100,7 +114,7 @@ class Lesson(models.Model):
     learning = models.ForeignKey(Learning, on_delete=models.CASCADE)
     state = models.CharField(max_length=20, choices=State.choices)
     order = models.IntegerField()
-    notes = models.TextField(null=True, blank=True)
+    notes = models.CharField(max_length=200, null=True, blank=True)
 
     open_planned_at = models.DateTimeField(null=True, blank=True)
     opened_at = models.DateTimeField(null=True, blank=True)

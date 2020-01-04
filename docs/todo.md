@@ -1,13 +1,12 @@
 ##### [Content](CONTENT.md)
 - [x] admin: view course (codes, sections, units)
 - [x] unit order is course-wide. Not in section
-- [ ] unit order is course-wide. Not in section
+- [ ] redo import as django command accepting course.yaml
 ##### [Learnings](LEARNINGS.md)
-- [x] admin: view learnings (0h)
-- [x] create learning (with Lessons) (2h)
-- [ ] (re-)schedule learning (1h)
-- [ ] Learning clone (as draft, keep teacher, admin) 
-- [ ] add teacher and admin
+- [x] event schedule generator (~~1h~~, 2h)
+- [x] admin: Learning add teacher and admin (0h)
+- [x] admin: create Learning stay on the same page after save/add
+- [x] (re-)schedule learning (1h)
 ##### [Domain Model](MODELS.md)
 ##### Student enrollment
 - [ ] student application form (exportable to external sites)
@@ -19,6 +18,7 @@
 ##### Student UI
 - [ ] my courses
 - [ ] view course
+- [ ] timezone aware views
 - [ ] view unit
     - [ ] md plugin for template expansion (1h)
 ##### [REST API](API.md)

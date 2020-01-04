@@ -57,7 +57,7 @@ class Person(CodeNaturalKeyAbstractModel):
 
 
 class UserPerson(AbstractUser):
-    person = models.ForeignKey(Person, null=True, on_delete=models.CASCADE)
+    person = models.ForeignKey(Person, blank=True, null=True, on_delete=models.CASCADE)
 
 
 @receiver(post_save, sender=UserPerson)

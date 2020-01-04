@@ -1,6 +1,7 @@
 from django.contrib import admin
 # Register your models here.
 from django.contrib.auth.models import User
+from django.utils.translation import gettext_lazy
 
 from study.models.base import UserPerson, Person
 from study.models.content import Section, Course, Unit
@@ -53,11 +54,12 @@ class ParticipantInline(admin.StackedInline):
     model = Participant
 
 
-@admin.register(Participant)
-class AdminParticipant(admin.ModelAdmin):
-    list_display = ('person', 'learning', 'role')
-    list_filter = ['learning']
-    search_fields = ['learning']
+@admin.register(UserPerson)
+class AdminUserPerson(admin.ModelAdmin):
+    # list_display = ('person', 'learning', 'role')
+    # list_filter = ['learning']
+    #search_fields = ['learning']
+    pass
 
 
 @admin.register(Unit)
@@ -80,6 +82,20 @@ class LessonsInline(admin.TabularInline):
     extra = 0
 
 
+class ParticipantsInline(admin.TabularInline):
+    fields = ['person', 'role', 'state', 'notes', 'created_at', 'activated_at']
+    readonly_fields = ['created_at', 'activated_at']
+    model = Participant
+    extra = 0
+
+
+def reschedule_selected(modeladmin, request, queryset):
+    for learning in queryset:
+        learning.reschedule()
+
+reschedule_selected.allowed_permissions = ('delete',)
+reschedule_selected.short_description = gettext_lazy("Reschedule")
+
 @admin.register(Learning)
 class Adminlearning(admin.ModelAdmin):
     list_display = ('course', 'code', 'state', 'started_at')
@@ -98,7 +114,9 @@ class Adminlearning(admin.ModelAdmin):
             'fields': ('notes',),
         }),
         ('Datetime', {
+            'classes': ('collapse',),
             'fields': (('started_at', 'finished_at', 'cancelled_at'), ('created_at', 'updated_at'),),
         }),
     )
-    inlines = [LessonsInline]
+    inlines = [ParticipantsInline, LessonsInline]
+    actions = [reschedule_selected]
