@@ -1,11 +1,10 @@
-{% load static %}
-<link rel="stylesheet" type="text/css" href="{% static 'study/css/style.css' %}">
-<h1>index page</h1>
-Username: {{ user.username }}
-Country: {{ user.person.email }}
+{% extends 'campus/layout.html' %}
 
-<h2>Courses</h2>
-{% for course in courses %}
-    <h3><a href="{% url 'campus:course' course.id %}">{{  course.title }}</a></h3>
+{% block content %}
+
+<h2>Your courses:</h2>
+{% for learning in learnings %}
+    <h3><a href="{% url 'campus:learning' learning.code %}">{{  learning.course.title }}</a></h3>
     <hr>
 {% endfor %}
+{% endblock content %}

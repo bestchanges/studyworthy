@@ -1,9 +1,14 @@
-##### [Architecture](ARCH.md)
+##### [Main app](ROOTAPP.md)
+- [x] get user's avatar on signup
+- [x] update avatar on signup if it's changed
+- [ ] move avatar url from user to person
 ##### [Campus APP](CAMPUS.md)
-- [ ] basic layout (from github UI library)
-- [ ] require auth with person
-- [ ] my courses (Person.my_learnings())
-- [ ] view courses  
+- [x] basic layout (from github UI library)
+- [x] my courses (Person.my_learnings())
+- [x] require auth with person
+- [x] view learnings  
+- [x] view one learning
+- [ ] create fixture with Readme
 - [ ] view unit
 ##### [Content](CONTENT.md)
 ##### [Learnings](LEARNINGS.md)
@@ -20,3 +25,4 @@
 - [ ] 'slackbot' application in Django
 - [ ] invite users to account (using invite link in )
 ##### [CLI client library](CLI.md)
+##### [Architecture](ARCH.md)

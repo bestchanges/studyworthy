@@ -1,13 +1,13 @@
 tests-unit:
 	pipenv run python manage.py test djangoapps/
 
+data-pipeline: makemigrations migrate
+
 makemigrations:
 	pipenv run python manage.py makemigrations
 
 migrate:
 	pipenv run python manage.py migrate
-
-data-pipeline: makemigrations migrate
 
 sample-data:
 	pipenv run python manage.py loaddata sample-admin.yaml

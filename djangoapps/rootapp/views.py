@@ -7,6 +7,8 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.utils.http import urlencode
 
+from rootapp.models import SiteUser
+
 
 def index(request):
     return render(request, 'index.html', {})
@@ -14,8 +16,14 @@ def index(request):
 
 @login_required
 def dashboard(request):
-    user = request.user
+    user : SiteUser = request.user
     auth0user = user.social_auth.get(provider='auth0')
+    if 'picture' in auth0user.extra_data:
+        person = user.person
+        if auth0user.extra_data['picture'] != person.avatar_url:
+            person.avatar_url = auth0user.extra_data['picture']
+            person.save()
+
     userdata = {
         'user_id': auth0user.uid,
         'name': user.first_name,

@@ -1,74 +1,35 @@
-from django.forms import ModelForm
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
-from django.urls import reverse_lazy
-from django.views.generic import CreateView
 
-from lms.models.base import Document
-from lms.models.content import Course
+from lms.models.content import Unit
+from lms.models.learning import Learning, Lesson, Participant
+from rootapp.models import SiteUser
 
 
+@login_required
 def index(request):
-    user = request.user
-    # if user.is_authenticated:
-    #     return redirect(dashboard)
-
-    active_courses = Course.objects.filter(state__in=('active',))
-    return render(request, 'campus/index.html', {'courses': active_courses})
+    user: SiteUser = request.user
+    my_learnings = Learning.objects.filter(state__in=(Learning.State.ONGOING, Learning.State.PLANNED),
+                                           participant__person=user.person)
+    return render(request, 'campus/index.html', {'learnings': my_learnings})
 
 
-def dashboard(request):
-    return render(request, 'campus/category.html', {})
-
-
-def courses_list(request):
-    return render(request, 'campus/courses_list.html', {})
-
-
-def course(request, pk):
-    course = Course.objects.get(pk=pk)
-    return render(request, 'campus/course.html', {'course': course})
-
-
-def study(request, pk):
-    return render(request, 'campus/study.html', {})
-
-
-def study_unit(request, pk, unit_pk):
-    return render(request, 'campus/study_unit.html', {})
-
-
-def user(request):
-    return render(request, 'campus/user.html', {})
-
-
-def user_lms(request):
-    return render(request, 'campus/user_study.html', {})
-
-
-def user_settings(request):
-    return render(request, 'campus/user_settings.html', {})
-
-
-def upload(request):
-    class DocumentForm(ModelForm):
-        class Meta:
-            model = Document
-            fields = ['upload']
-    documents = Document.objects.all()
+@login_required
+def learning_view(request, learning_code):
+    learning: Learning = Learning.objects.get_by_natural_key(learning_code)
     context = {
-        'documents': documents,
-        'form': DocumentForm(),
+        'learning': learning,
+        'lessons': learning.lesson_set.all(),
+        'students': learning.participant_set.filter(role=Participant.Role.STUDENT),
+        'teachers': learning.participant_set.filter(role=Participant.Role.TEACHER),
+        'admins': learning.participant_set.filter(role=Participant.Role.ADMIN),
     }
-    return render(request, 'campus/document_form.html', context)
+    return render(request, 'campus/learning.html', context)
 
 
-class DocumentCreateView(CreateView):
-    model = Document
-    fields = ['upload']
-    success_url = reverse_lazy('index')
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        documents = Document.objects.all()
-        context['documents'] = documents
-        return context
+@login_required
+def lesson_view(request, learning_code, unit_slug):
+    learning = Learning.objects.get_by_natural_key(learning_code)
+    unit = Unit.objects.get(course=learning.course, slug=unit_slug)
+    lesson = Lesson.objects.get(learning=learning, unit=unit)
+    return render(request, 'campus/lesson.html', {'lesson': lesson, 'unit': unit, 'learning': learning})

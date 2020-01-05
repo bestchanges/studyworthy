@@ -42,6 +42,7 @@ class Person(CodeNaturalKeyAbstractModel):
     skype = models.CharField(max_length=100, default='', blank=True)
     google_account = models.CharField(max_length=200, default='', blank=True)
     github_account = models.CharField(max_length=200, default='', blank=True)
+    avatar_url = models.URLField(null=True, blank=True)
     language = models.CharField(max_length=10, choices=LANGUAGES, default='ru')
     country = models.CharField(max_length=100, default='', blank=True)
     city = models.CharField(max_length=100, default='', blank=True)
@@ -50,11 +51,12 @@ class Person(CodeNaturalKeyAbstractModel):
     created_at = models.DateTimeField(auto_now_add=True, null=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True, null=True, editable=False)
 
-    def get_full_name(self):
+    @property
+    def full_name(self):
         return f'{self.first_name} {self.last_name}'
 
     def __str__(self):
-        return f'{self.get_full_name()} {self.email}'
+        return f'{self.full_name} {self.email}'
 
 
 class Author(models.Model):
