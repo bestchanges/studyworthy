@@ -3,7 +3,10 @@ Common settings which applies to all environments.
 """
 import os
 
+import dotenv
 from django.utils import timezone
+
+dotenv.load_dotenv()
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -21,9 +24,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'social_django',
-    'auth0login',
     'campus',
-    'promo',
+    'rootapp',
 ]
 
 MIDDLEWARE = [
@@ -32,7 +34,6 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    # 'django.contrib.auth.middleware.RemoteUserMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -91,7 +92,7 @@ SOCIAL_AUTH_AUTH0_SCOPE = [
 ]
 
 AUTHENTICATION_BACKENDS = [
-    'auth0login.auth0backend.Auth0',
+    'rootapp.auth0backend.Auth0',
     'django.contrib.auth.backends.ModelBackend',
 ]
 

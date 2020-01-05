@@ -1,19 +1,15 @@
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth import logout as log_out
-from django.conf import settings
-from django.http import HttpResponseRedirect
-from urllib.parse import urlencode
-
 import json
+
+from django.conf import settings
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import logout
+from django.http import HttpResponseRedirect
+from django.shortcuts import render
+from django.utils.http import urlencode
 
 
 def index(request):
-    user = request.user
-    if user.is_authenticated:
-        return redirect(dashboard)
-    else:
-        return render(request, 'index.html')
+    return render(request, 'index.html', {})
 
 
 @login_required
@@ -32,8 +28,9 @@ def dashboard(request):
         'userdata': json.dumps(userdata, indent=4)
     })
 
-def logout(request):
-    log_out(request)
+
+def logout_view(request):
+    logout(request)
     return_to = urlencode({'returnTo': request.build_absolute_uri('/')})
     logout_url = 'https://%s/v2/logout?client_id=%s&%s' % \
                  (settings.SOCIAL_AUTH_AUTH0_DOMAIN, settings.SOCIAL_AUTH_AUTH0_KEY, return_to)

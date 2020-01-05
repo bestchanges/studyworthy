@@ -4,9 +4,10 @@
 - [x] rename app 'study' to 'lms'
 - [x] introduce 'promo'
 - [x] introduce 'campus'
-- [ ] folder '/settings' ?
-- [ ] move apps inside project (sources ?)
-- [ ] where locales 
+- [x] rename 'promo' to rootapp
+- [x] move auth0 stuff to rootapp
+- [ ] move auth User model to rootapp with Picture and Person connection
+
 ##### [Content](CONTENT.md)
 - [x] admin: view course (codes, sections, units)
 - [x] unit order is course-wide. Not in section
