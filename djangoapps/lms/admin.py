@@ -3,11 +3,9 @@ from django.contrib import admin
 from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy
 
-from lms.models.base import UserPerson, Person
+from lms.models.base import Person
 from lms.models.content import Section, Course, Unit
 from lms.models.learning import Participant, Learning, Lesson
-
-admin.site.register(User, UserPerson)
 
 
 @admin.register(Person)
@@ -52,14 +50,6 @@ class AdminCourse(admin.ModelAdmin):
 
 class ParticipantInline(admin.StackedInline):
     model = Participant
-
-
-@admin.register(UserPerson)
-class AdminUserPerson(admin.ModelAdmin):
-    # list_display = ('person', 'learning', 'role')
-    # list_filter = ['learning']
-    #search_fields = ['learning']
-    pass
 
 
 @admin.register(Unit)

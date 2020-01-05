@@ -1,13 +1,7 @@
 ##### [Architecture](ARCH.md)
-- [x] restructure of django project. Apps now in djangoapps
-- [x] introduced data dir for SQLite DB and other temp stuff
-- [x] rename app 'study' to 'lms'
-- [x] introduce 'promo'
-- [x] introduce 'campus'
-- [x] rename 'promo' to rootapp
-- [x] move auth0 stuff to rootapp
-- [ ] move auth User model to rootapp with Picture and Person connection
-
+- [x] move auth User model to rootapp with Picture and Person connection
+  - [x] when I login via Auth0 it creates User and stores Image URL
+  - [x] when I create User in Admin, the Person creates automatically
 ##### [Content](CONTENT.md)
 - [x] admin: view course (codes, sections, units)
 - [x] unit order is course-wide. Not in section

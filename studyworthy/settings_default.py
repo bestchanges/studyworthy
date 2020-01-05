@@ -99,7 +99,7 @@ AUTHENTICATION_BACKENDS = [
 LOGIN_URL = '/login/auth0'
 LOGIN_REDIRECT_URL = '/dashboard'
 
-AUTH_USER_MODEL = 'lms.UserPerson'
+AUTH_USER_MODEL = 'rootapp.SiteUser'
 
 LANGUAGE_CODE = 'en-us'
 

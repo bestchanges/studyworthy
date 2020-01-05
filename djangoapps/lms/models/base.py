@@ -57,31 +57,6 @@ class Person(CodeNaturalKeyAbstractModel):
         return f'{self.get_full_name()} {self.email}'
 
 
-class UserPerson(AbstractUser):
-    person = models.ForeignKey(Person, blank=True, null=True, on_delete=models.CASCADE)
-
-
-@receiver(post_save, sender=UserPerson)
-def on_user_create(sender, instance: UserPerson, created, **kwargs):
-    if created:
-        try:
-            person = Person.objects.get(email=instance.email)
-            if instance.first_name and not person.first_name:
-                person.first_name = instance.first_name
-                person.save()
-            if instance.last_name and not person.last_name:
-                person.last_name = instance.last_name
-                person.save()
-        except ObjectDoesNotExist:
-            person = Person.objects.create(
-                code=instance.username,
-                first_name=instance.first_name,
-                last_name=instance.last_name,
-                email=instance.email,
-            )
-        instance.person = person
-
-
 class Author(models.Model):
     person = models.OneToOneField(Person, on_delete=models.CASCADE)
     bio = models.TextField(blank=True, default='')

@@ -1,21 +1,3 @@
-- model: lms.userPerson
-  fields:
-    password: pbkdf2_sha256$180000$ebf2fmuUQdKP$Mep++y12aOzBMJ7VD1pybu/K/1o5rclQuqzAT1PfXM8=
-    is_superuser: false
-    username: sample-teacher
-    first_name: Ivan
-    last_name: Ivanovich
-    email: ivan@rambler-sucks.com
-    is_staff: true
-    is_active: true
-
-- model: authtoken.token
-  pk: 779b15d80933c858c4b2fc1153d841700c7f1011
-  fields:
-    user:
-      - sample-teacher
-    created: '2019-12-28 21:10:59.005121+00:00'
-
 - model: lms.person
   fields:
     code: sample-teacher
