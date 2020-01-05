@@ -1,3 +1,12 @@
+##### [Architecture](ARCH.md)
+- [ ] rename project's dir to 'project' ?
+- [x] move django apps inside project  
+- [ ] rename app 'study' to 'lms'
+- [ ] introduce 'promo'
+- [ ] introduce 'campus'
+- [ ] folder '/settings' ?
+- [ ] move apps inside project (sources ?)
+- [ ] where locales 
 ##### [Content](CONTENT.md)
 - [x] admin: view course (codes, sections, units)
 - [x] unit order is course-wide. Not in section

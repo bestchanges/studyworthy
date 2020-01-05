@@ -110,4 +110,4 @@ USE_L10N = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-PERIODIC_MAX_PERIOD = timezone.timedelta(hours=24)
+PERIODIC_PERIOD_TIMEDELTA = timezone.timedelta(hours=24)
