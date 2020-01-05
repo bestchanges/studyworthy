@@ -1,3 +1,7 @@
+"""
+This is scheduler for Learning.
+"""
+
 import datetime
 import itertools
 import time
