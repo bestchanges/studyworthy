@@ -1,5 +1,5 @@
 from django.forms import ModelForm
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
 
@@ -13,44 +13,40 @@ def index(request):
     #     return redirect(dashboard)
 
     active_courses = Course.objects.filter(state__in=('active',))
-    return render(request, 'lms/index.html', {'courses': active_courses})
+    return render(request, 'campus/index.html', {'courses': active_courses})
 
 
 def dashboard(request):
-    return render(request, 'lms/category.html', {})
-
-
-def category(request, pk):
-    return render(request, 'lms/category.html', {})
+    return render(request, 'campus/category.html', {})
 
 
 def courses_list(request):
-    return render(request, 'lms/courses_list.html', {})
+    return render(request, 'campus/courses_list.html', {})
 
 
 def course(request, pk):
     course = Course.objects.get(pk=pk)
-    return render(request, 'lms/course.html', {'course': course})
+    return render(request, 'campus/course.html', {'course': course})
 
 
 def study(request, pk):
-    return render(request, 'lms/study.html', {})
+    return render(request, 'campus/study.html', {})
 
 
 def study_unit(request, pk, unit_pk):
-    return render(request, 'lms/study_unit.html', {})
+    return render(request, 'campus/study_unit.html', {})
 
 
 def user(request):
-    return render(request, 'lms/user.html', {})
+    return render(request, 'campus/user.html', {})
 
 
 def user_lms(request):
-    return render(request, 'lms/user_study.html', {})
+    return render(request, 'campus/user_study.html', {})
 
 
 def user_settings(request):
-    return render(request, 'lms/user_settings.html', {})
+    return render(request, 'campus/user_settings.html', {})
 
 
 def upload(request):
@@ -63,7 +59,7 @@ def upload(request):
         'documents': documents,
         'form': DocumentForm(),
     }
-    return render(request, 'lms/document_form.html', context)
+    return render(request, 'campus/document_form.html', context)
 
 
 class DocumentCreateView(CreateView):

@@ -22,6 +22,8 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'social_django',
     'auth0login',
+    'campus',
+    'promo',
 ]
 
 MIDDLEWARE = [

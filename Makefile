@@ -1,7 +1,5 @@
-admin-user:
-	pipenv run python manage.py createsuperuser --username admin --email egor.fedorov@gmail.com
-
-data-pipeline: makemigrations migrate sample-data
+tests-unit:
+	pipenv run python manage.py test djangoapps/
 
 makemigrations:
 	pipenv run python manage.py makemigrations
@@ -9,8 +7,7 @@ makemigrations:
 migrate:
 	pipenv run python manage.py migrate
 
-tests:
-	pipenv run python manage.py test
+data-pipeline: makemigrations migrate
 
 sample-data:
 	pipenv run python manage.py loaddata sample-admin.yaml
@@ -18,14 +15,20 @@ sample-data:
 	pipenv run python manage.py loaddata sample-course-hp.yaml
 	pipenv run python manage.py loaddata sample-course-hpi.yaml
 
-dump-data-course:
-	pipenv run python manage.py dumpdata study.Course study.Learning study.Section study.Unit --format yaml --natural-primary --natural-foreign
+data:
+	mkdir -p data
 
-dump-data-persons:
-	pipenv run python manage.py dumpdata study.Person study.Participant --format yaml --natural-primary --natural-foreign
+dump-course: data
+	pipenv run python manage.py dumpdata lms.Course lms.Learning lms.Section lms.Unit --format yaml --natural-primary --natural-foreign > data/course.yaml
 
-dump-data-auth:
-	pipenv run python manage.py dumpdata authtoken auth.user --format yaml --natural-primary --natural-foreign
+dump-persons: data
+	pipenv run python manage.py dumpdata lms.Person lms.Participant --format yaml --natural-primary --natural-foreign > data/persons.yaml
+
+dump-auth: data
+	pipenv run python manage.py dumpdata authtoken lms.UserPerson --format yaml --natural-primary --natural-foreign > data/auth.yaml
+
+
+dump-all: dump-course dump-persons dump-auth
 
 venv:
 	pipenv update --dev

@@ -18,7 +18,7 @@ class UnitViewSet(viewsets.ModelViewSet):
 
 
 class ParticipantSerializer(serializers.HyperlinkedModelSerializer):
-    url = serializers.HyperlinkedIdentityField(view_name='lms:participant-detail')
+    url = serializers.HyperlinkedIdentityField(view_name='campus:participant-detail')
 
     class Meta:
         model = Participant
@@ -34,7 +34,7 @@ class ParticipantViewSet(viewsets.ModelViewSet):
 
 
 class PersonSerializer(serializers.HyperlinkedModelSerializer):
-    url = serializers.HyperlinkedIdentityField(view_name='lms:person-detail')
+    url = serializers.HyperlinkedIdentityField(view_name='campus:person-detail')
 
     class Meta:
         model = Person

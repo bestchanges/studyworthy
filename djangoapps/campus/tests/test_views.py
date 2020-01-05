@@ -7,39 +7,31 @@ class TestViews(TestCase):
 
     def test_home_response(self):
         client = self.client  # type: Client
-        with self.assertTemplateUsed('lms/index.html'):
-            response = client.get(reverse('lms:index'))
+        with self.assertTemplateUsed('campus/index.html'):
+            response = client.get(reverse('campus:index'))
             self.assertEqual(response.status_code, 200)
             self.assertContains(response, "index page")
 
     def test_courses_response(self):
-        response = self.client.get(reverse('lms:courses'))
+        response = self.client.get(reverse('campus:courses'))
         self.assertEqual(response.status_code, 200)
 
     def test_course_response(self):
-        response = self.client.get(reverse('lms:course', kwargs={'pk': 1}))
-        self.assertEqual(response.status_code, 200)
-
-    def test_category_response(self):
-        response = self.client.get(reverse('lms:category', kwargs={'pk': 1}))
+        response = self.client.get(reverse('campus:course', kwargs={'pk': 1}))
         self.assertEqual(response.status_code, 200)
 
     def test_lms_response(self):
-        response = self.client.get(reverse('lms:study', kwargs={'pk': 1}))
+        response = self.client.get(reverse('campus:study', kwargs={'pk': 1}))
         self.assertEqual(response.status_code, 200)
 
     def test_lms_unit_response(self):
-        response = self.client.get(reverse('lms:study_unit', kwargs={'pk': 1, 'unit_pk': 1}))
+        response = self.client.get(reverse('campus:study_unit', kwargs={'pk': 1, 'unit_pk': 1}))
         self.assertEqual(response.status_code, 200)
 
     def test_user_response(self):
-        response = self.client.get(reverse('lms:user'))
-        self.assertEqual(response.status_code, 200)
-
-    def test_user_lms_response(self):
-        response = self.client.get(reverse('lms:user_lms_session'))
+        response = self.client.get(reverse('campus:user'))
         self.assertEqual(response.status_code, 200)
 
     def test_user_settings_response(self):
-        response = self.client.get(reverse('lms:user_settings'))
+        response = self.client.get(reverse('campus:user_settings'))
         self.assertEqual(response.status_code, 200)

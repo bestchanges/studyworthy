@@ -5,7 +5,7 @@ install:
 - pip install pipenv
 - pipenv install --dev
 script:
-- pipenv run python manage.py test
+- make tests-unit
 #- pipenv run python manage.py behave bdd_tests
 deploy:
   provider: heroku

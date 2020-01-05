@@ -2,8 +2,8 @@
 - [x] restructure of django project. Apps now in djangoapps
 - [x] introduced data dir for SQLite DB and other temp stuff
 - [x] rename app 'study' to 'lms'
-- [ ] introduce 'promo'
-- [ ] introduce 'campus'
+- [x] introduce 'promo'
+- [x] introduce 'campus'
 - [ ] folder '/settings' ?
 - [ ] move apps inside project (sources ?)
 - [ ] where locales 

@@ -13,6 +13,6 @@ Country: {{ user.person.email }}
 
 <h2>Courses</h2>
 {% for course in courses %}
-    <h3><a href="{% url 'lms:course' course.id %}">{{  course.title }}</a></h3>
+    <h3><a href="{% url 'campus:course' course.id %}">{{  course.title }}</a></h3>
     <hr>
 {% endfor %}
