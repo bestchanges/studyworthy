@@ -1,15 +1,12 @@
 ##### [Architecture](ARCH.md)
-- [x] move auth User model to rootapp with Picture and Person connection
-  - [x] when I login via Auth0 it creates User and stores Image URL
-  - [x] when I create User in Admin, the Person creates automatically
+##### [Campus APP](CAMPUS.md)
+- [ ] basic layout (from github UI library)
+- [ ] require auth with person
+- [ ] my courses (Person.my_learnings())
+- [ ] view courses  
+- [ ] view unit
 ##### [Content](CONTENT.md)
-- [x] admin: view course (codes, sections, units)
-- [x] unit order is course-wide. Not in section
-- [ ] redo import as django command accepting course.yaml
 ##### [Learnings](LEARNINGS.md)
-- [x] create command for scheduled jobs
-- [x] start course and open lesson automatically
-- [x] Lesson on save() trigger appropriate django signals to apps
 ##### [Domain Model](MODELS.md)
 ##### Student enrollment
 - [ ] student application form (exportable to external sites)
@@ -18,14 +15,6 @@
 - [ ] update payment and participant status  
 - [ ] list payment status for admin
 - [ ] Send welcome message to Student onActivate() 
-##### Student UI
-- [x] auth by auth0
-- [ ] layout
-- [ ] my courses
-- [ ] view course
-- [ ] timezone aware views
-- [ ] view unit
-    - [ ] md plugin for template expansion (1h)
 ##### [REST API](API.md)
 ##### Slack integration
 - [ ] 'slackbot' application in Django
