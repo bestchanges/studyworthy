@@ -1,5 +1,5 @@
 from django.forms import ModelForm
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
 
@@ -8,8 +8,16 @@ from study.models.content import Course
 
 
 def index(request):
+    user = request.user
+    # if user.is_authenticated:
+    #     return redirect(dashboard)
+
     active_courses = Course.objects.filter(state__in=('active',))
     return render(request, 'study/index.html', {'courses': active_courses})
+
+
+def dashboard(request):
+    return render(request, 'study/category.html', {})
 
 
 def category(request, pk):

@@ -1,4 +1,7 @@
 # TASKS
+- [ ] search participant by repository
+- [ ] search unit by path
+- [ ] provide python client lib
 - [ ] secure POST submission endpoint to only teachers of this Learning
 - [ ] add checkmark as units/{}/checkmark
 - [ ] secure PIT/DELETE operations

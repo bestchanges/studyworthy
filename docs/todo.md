@@ -15,16 +15,15 @@
 - [ ] list payment status for admin
 - [ ] Send welcome message to Student onActivate() 
 ##### Student UI
+- [x] auth by auth0
+- [ ] layout
 - [ ] my courses
 - [ ] view course
 - [ ] timezone aware views
 - [ ] view unit
     - [ ] md plugin for template expansion (1h)
 ##### [REST API](API.md)
-- [ ] search participant by repository
-- [ ] search unit by path
-- [ ] provide python client lib
 ##### Slack integration
-- [x] slack integration spike (3h)
+- [ ] 'slackbot' application in Django
 - [ ] invite users to account (using invite link in )
 ##### [CLI client library](CLI.md)

@@ -12,6 +12,7 @@
       '
     short_description: Study python from scratch
     title: Hello Python I (ai)
+    state: active
   model: study.Course
 - fields:
     code: hpi-1

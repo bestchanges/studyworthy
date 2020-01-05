@@ -10,13 +10,11 @@ migrate:
 tests:
 	pipenv run python manage.py test
 
-load-course:
-	pipenv run python manage.py loaddata out/course-fixture.yaml
-
 sample-data:
 	pipenv run python manage.py loaddata fixtures/sample-admin.yaml
 	pipenv run python manage.py loaddata fixtures/sample-persons.yaml
-	pipenv run python manage.py loaddata fixtures/sample-course.yaml
+	pipenv run python manage.py loaddata fixtures/sample-course-hp.yaml
+	pipenv run python manage.py loaddata fixtures/sample-course-hpi.yaml
 
 data-pipeline: makemigrations migrate sample-data
 
