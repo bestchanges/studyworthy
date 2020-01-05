@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 
-from study.logic import periodic_task_open_lessons, periodic_task_start_learnings
+from lms.logic import periodic_task_open_lessons, periodic_task_start_learnings
 
 
 class Command(BaseCommand):

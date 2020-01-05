@@ -3,8 +3,8 @@ from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
 
-from study.models.base import Document
-from study.models.content import Course
+from lms.models.base import Document
+from lms.models.content import Course
 
 
 def index(request):
@@ -13,44 +13,44 @@ def index(request):
     #     return redirect(dashboard)
 
     active_courses = Course.objects.filter(state__in=('active',))
-    return render(request, 'study/index.html', {'courses': active_courses})
+    return render(request, 'lms/index.html', {'courses': active_courses})
 
 
 def dashboard(request):
-    return render(request, 'study/category.html', {})
+    return render(request, 'lms/category.html', {})
 
 
 def category(request, pk):
-    return render(request, 'study/category.html', {})
+    return render(request, 'lms/category.html', {})
 
 
 def courses_list(request):
-    return render(request, 'study/courses_list.html', {})
+    return render(request, 'lms/courses_list.html', {})
 
 
 def course(request, pk):
     course = Course.objects.get(pk=pk)
-    return render(request, 'study/course.html', {'course': course})
+    return render(request, 'lms/course.html', {'course': course})
 
 
 def study(request, pk):
-    return render(request, 'study/study.html', {})
+    return render(request, 'lms/study.html', {})
 
 
 def study_unit(request, pk, unit_pk):
-    return render(request, 'study/study_unit.html', {})
+    return render(request, 'lms/study_unit.html', {})
 
 
 def user(request):
-    return render(request, 'study/user.html', {})
+    return render(request, 'lms/user.html', {})
 
 
-def user_study(request):
-    return render(request, 'study/user_study.html', {})
+def user_lms(request):
+    return render(request, 'lms/user_study.html', {})
 
 
 def user_settings(request):
-    return render(request, 'study/user_settings.html', {})
+    return render(request, 'lms/user_settings.html', {})
 
 
 def upload(request):
@@ -63,7 +63,7 @@ def upload(request):
         'documents': documents,
         'form': DocumentForm(),
     }
-    return render(request, 'study/document_form.html', context)
+    return render(request, 'lms/document_form.html', context)
 
 
 class DocumentCreateView(CreateView):

@@ -3,6 +3,7 @@
 import os
 import sys
 
+sys.path.append(os.path.join(os.path.dirname(__file__), 'djangoapps'))
 
 def main():
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'studyworthy.settings')

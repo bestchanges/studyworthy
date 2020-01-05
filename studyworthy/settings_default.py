@@ -11,7 +11,7 @@ FIXTURE_DIRS = (
 )
 
 INSTALLED_APPS = [
-    'study',
+    'lms',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -71,7 +71,7 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
-        'study.auth.BearerTokenAuthentication',
+        'lms.auth.BearerTokenAuthentication',
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 50,
@@ -96,7 +96,7 @@ AUTHENTICATION_BACKENDS = [
 LOGIN_URL = '/login/auth0'
 LOGIN_REDIRECT_URL = '/dashboard'
 
-AUTH_USER_MODEL = 'study.UserPerson'
+AUTH_USER_MODEL = 'lms.UserPerson'
 
 LANGUAGE_CODE = 'en-us'
 

@@ -3,9 +3,9 @@ All other models.
 """
 from django.db import models
 
-from study.models.base import Person
-from study.models.content import Course
-from study.models.learning import Learning
+from lms.models.base import Person
+from lms.models.content import Course
+from lms.models.learning import Learning
 
 
 class ApplicationForm(models.Model):

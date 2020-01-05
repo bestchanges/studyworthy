@@ -1,8 +1,8 @@
 from rest_framework import routers, serializers, viewsets, permissions
 
-from study.models.base import Person
-from study.models.content import Unit
-from study.models.learning import Participant, Presence, Decision
+from lms.models.base import Person
+from lms.models.content import Unit
+from lms.models.learning import Participant, Presence, Decision
 
 
 class UnitSerializer(serializers.ModelSerializer):
@@ -18,7 +18,7 @@ class UnitViewSet(viewsets.ModelViewSet):
 
 
 class ParticipantSerializer(serializers.HyperlinkedModelSerializer):
-    url = serializers.HyperlinkedIdentityField(view_name='study:participant-detail')
+    url = serializers.HyperlinkedIdentityField(view_name='lms:participant-detail')
 
     class Meta:
         model = Participant
@@ -34,7 +34,7 @@ class ParticipantViewSet(viewsets.ModelViewSet):
 
 
 class PersonSerializer(serializers.HyperlinkedModelSerializer):
-    url = serializers.HyperlinkedIdentityField(view_name='study:person-detail')
+    url = serializers.HyperlinkedIdentityField(view_name='lms:person-detail')
 
     class Meta:
         model = Person

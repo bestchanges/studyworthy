@@ -1,6 +1,8 @@
 admin-user:
 	pipenv run python manage.py createsuperuser --username admin --email egor.fedorov@gmail.com
 
+data-pipeline: makemigrations migrate sample-data
+
 makemigrations:
 	pipenv run python manage.py makemigrations
 
@@ -11,12 +13,10 @@ tests:
 	pipenv run python manage.py test
 
 sample-data:
-	pipenv run python manage.py loaddata fixtures/sample-admin.yaml
-	pipenv run python manage.py loaddata fixtures/sample-persons.yaml
-	pipenv run python manage.py loaddata fixtures/sample-course-hp.yaml
-	pipenv run python manage.py loaddata fixtures/sample-course-hpi.yaml
-
-data-pipeline: makemigrations migrate sample-data
+	pipenv run python manage.py loaddata sample-admin.yaml
+	pipenv run python manage.py loaddata sample-persons.yaml
+	pipenv run python manage.py loaddata sample-course-hp.yaml
+	pipenv run python manage.py loaddata sample-course-hpi.yaml
 
 dump-data-course:
 	pipenv run python manage.py dumpdata study.Course study.Learning study.Section study.Unit --format yaml --natural-primary --natural-foreign

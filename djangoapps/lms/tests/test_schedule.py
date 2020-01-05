@@ -1,7 +1,7 @@
 from datetime import datetime
 from unittest import TestCase
 
-from study.schedule import events_generator
+from lms.schedule import events_generator
 
 
 class TestLogic(TestCase):

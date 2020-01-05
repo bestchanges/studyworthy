@@ -3,9 +3,9 @@ from django.contrib import admin
 from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy
 
-from study.models.base import UserPerson, Person
-from study.models.content import Section, Course, Unit
-from study.models.learning import Participant, Learning, Lesson
+from lms.models.base import UserPerson, Person
+from lms.models.content import Section, Course, Unit
+from lms.models.learning import Participant, Learning, Lesson
 
 admin.site.register(User, UserPerson)
 

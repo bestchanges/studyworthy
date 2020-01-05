@@ -1,4 +1,4 @@
-- model: study.userPerson
+- model: lms.userPerson
   fields:
     password: pbkdf2_sha256$180000$ebf2fmuUQdKP$Mep++y12aOzBMJ7VD1pybu/K/1o5rclQuqzAT1PfXM8=
     is_superuser: false
@@ -16,7 +16,7 @@
       - sample-teacher
     created: '2019-12-28 21:10:59.005121+00:00'
 
-- model: study.person
+- model: lms.person
   fields:
     code: sample-teacher
     first_name: Ivan
@@ -24,7 +24,7 @@
     email: ivan@rambler-sucks.com
     language: ru
 
-- model: study.person
+- model: lms.person
   fields:
     code: sample-student
     first_name: Daria

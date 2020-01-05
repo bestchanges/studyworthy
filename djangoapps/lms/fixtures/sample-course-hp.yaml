@@ -1,4 +1,4 @@
-- model: study.Course
+- model: lms.Course
   fields:
     title: Hello Python
     code: hp
@@ -8,14 +8,14 @@
     notes: |
       Repository: https://github.com/bestchanges/hello_python
 
-- model: study.Section
+- model: lms.Section
   fields:
     name: "Introduction"
     code: hp-1-s01
     order: 2
     course: ['hp']
 
-- model: study.content
+- model: lms.content
   fields:
     type: text/markdown
     code: courses/hello-python/basics.md#sub-title-slugified
@@ -23,13 +23,13 @@
       # Header
       some text content
 
-- model: study.content
+- model: lms.content
   fields:
     type: video/youtube
     code: https://www.youtube.com/watch?v=k4i5YpyYWmQ # without query string!!
     url: https://www.youtube.com/watch?v=k4i5YpyYWmQ&feature=youtu.be
 
-- model: study.unit
+- model: lms.unit
   fields:
     code: hp-1-s01-1
     name: First program
@@ -41,7 +41,7 @@
     section:
       - hp-1-s01
 
-- model: study.learning
+- model: lms.learning
   fields:
     course: ['hp']
     code: hp-1
@@ -49,7 +49,7 @@
     schedule: Mon 15:00, Tue 18:00, Sat 19:00
     created_at: "2019-12-01 12:42:00+03:00"
 
-- model: study.participant
+- model: lms.participant
   pk: 2
   fields:
     learning:
@@ -58,10 +58,10 @@
       - sample-student
     role: student
     state: active
-    code_repository: https://github.com/bestchanges/study-pipeline
+    code_repository: https://github.com/bestchanges/lms-pipeline
     assigned_at: "2019-12-01 12:42:00+03:00"
 
-- model: study.participant
+- model: lms.participant
   pk: 3
   fields:
     learning:

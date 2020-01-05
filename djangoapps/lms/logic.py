@@ -1,6 +1,7 @@
 from django.utils import timezone
 
-from study.models.learning import Learning, Lesson
+from lms.models.learning import Learning, Lesson
+# TODO: do not like this design. No app shall depend on existence of property in settings. No way!
 from studyworthy.settings_default import PERIODIC_PERIOD_TIMEDELTA
 
 

@@ -1,7 +1,7 @@
 ##### [Architecture](ARCH.md)
-- [ ] rename project's dir to 'project' ?
-- [x] move django apps inside project  
-- [ ] rename app 'study' to 'lms'
+- [x] restructure of django project. Apps now in djangoapps
+- [x] introduced data dir for SQLite DB and other temp stuff
+- [x] rename app 'study' to 'lms'
 - [ ] introduce 'promo'
 - [ ] introduce 'campus'
 - [ ] folder '/settings' ?

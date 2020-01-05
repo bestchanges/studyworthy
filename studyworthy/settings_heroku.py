@@ -32,7 +32,7 @@ AWS_S3_CUSTOM_DOMAIN = get_from_env('AWS_S3_CUSTOM_DOMAIN')
 AWS_S3_OBJECT_PARAMETERS = {
     'CacheControl': 'max-age=86400',
 }
-DEFAULT_FILE_STORAGE = 'study.storage_backends.S3MediaStorage'
+DEFAULT_FILE_STORAGE = 'lms.storage_backends.S3MediaStorage'
 
 # for serving static files
 MIDDLEWARE.append('whitenoise.middleware.WhiteNoiseMiddleware')

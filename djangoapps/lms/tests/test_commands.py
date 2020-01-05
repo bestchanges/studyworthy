@@ -4,12 +4,12 @@ from django.core.management import call_command
 from django.test import TestCase
 from django.utils import timezone
 
-from study.models.content import Course
-from study.models.learning import Learning
+from lms.models.content import Course
+from lms.models.learning import Learning
 
 
 class TestCommands(TestCase):
-    fixtures = ['fixtures/sample-course-hpi.yaml']
+    fixtures = ['sample-course-hpi.yaml']
 
     def test_command_output(self):
         course = Course.objects.get_by_natural_key('hpi')

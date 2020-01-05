@@ -11,10 +11,10 @@ from django.dispatch import receiver
 from django.utils import timezone
 from django.utils.timezone import now
 
-from study import config, signals
-from study.models.base import CodeNaturalKeyAbstractModel, Person
-from study.models.content import Course, Unit
-from study.schedule import events_generator
+from lms import config, signals
+from lms.models.base import CodeNaturalKeyAbstractModel, Person
+from lms.models.content import Course, Unit
+from lms.schedule import events_generator
 
 
 class Learning(CodeNaturalKeyAbstractModel):

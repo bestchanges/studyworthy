@@ -4,14 +4,14 @@ import pytz
 from django.test import TestCase
 from django.utils import timezone
 
-from study import signals
-from study.models.content import Course
-from study.models.learning import Learning, Lesson
-from study.signals import learning_started_signal, learning_finished_signal, lesson_opened_signal
+from lms import signals
+from lms.models.content import Course
+from lms.models.learning import Learning, Lesson
+from lms.signals import learning_started_signal, learning_finished_signal, lesson_opened_signal
 
 
 class TestModels(TestCase):
-    fixtures = ['fixtures/sample-persons.yaml', 'fixtures/sample-course-hpi.yaml']
+    fixtures = ['sample-persons.yaml', 'sample-course-hpi.yaml']
 
     def test_learning_creates_lessons(self):
         course = Course.objects.get_by_natural_key('hpi')

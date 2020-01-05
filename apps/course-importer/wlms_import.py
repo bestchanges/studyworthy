@@ -40,7 +40,7 @@ class Model():
 
 
 class Course(Model):
-    model = 'study.Course'
+    model = 'lms.Course'
 
     required_fields = (
         'title',
@@ -55,7 +55,7 @@ class Course(Model):
 
 
 class Section(Model):
-    model = 'study.Section'
+    model = 'lms.Section'
 
     required_fields = (
         'name',
@@ -68,7 +68,7 @@ class Section(Model):
 
 
 class Unit(Model):
-    model = 'study.Unit'
+    model = 'lms.Unit'
 
     required_fields = (
         'name',
@@ -87,7 +87,7 @@ class Unit(Model):
 
 
 class Content(Model):
-    model = 'study.Content'
+    model = 'lms.Content'
 
     required_fields = (
         'type',

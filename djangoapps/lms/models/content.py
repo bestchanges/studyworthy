@@ -4,7 +4,7 @@ Study content related Models.
 
 from django.db import models
 
-from study.models.base import CodeNaturalKeyAbstractModel, Author
+from lms.models.base import CodeNaturalKeyAbstractModel, Author
 
 
 class Course(CodeNaturalKeyAbstractModel):

@@ -12,9 +12,13 @@ ALLOWED_HOSTS = [
 
 INSTALLED_APPS += ['behave_django']
 
+DATA_DIR = os.path.join(BASE_DIR, 'data')
+if not os.path.exists(DATA_DIR):
+    os.mkdir(DATA_DIR)
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': os.path.join(DATA_DIR, 'db.sqlite3'),
     }
 }

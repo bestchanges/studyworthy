@@ -22,7 +22,7 @@ def test_parse_course():
     assert course
 
     expected_data_yaml = """
-model: study.Course
+model: lms.Course
 fields:
     title: test course
     code: test-code
@@ -74,6 +74,6 @@ def test_import_yaml(yaml_file):
             'notes': 'Content repository: https://github.com/bestchanges/hello_python\n',
             'short_description': 'Study python from scratch',
             'title': 'Hello Python'},
- 'model': 'study.Course'}
+ 'model': 'lms.Course'}
     assert course == expected_course
     save_yaml(objects)

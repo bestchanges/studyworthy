@@ -13,19 +13,19 @@
     short_description: Study python from scratch
     title: Hello Python I (ai)
     state: active
-  model: study.Course
+  model: lms.Course
 - fields:
     code: hpi-1
     course:
     - hpi
     name: Введение
     order: 1
-  model: study.Section
+  model: lms.Section
 - fields:
     code: https://www.youtube.com/watch?v=k4i5YpyYWmQ
     type: video/youtube
     url: https://www.youtube.com/watch?v=k4i5YpyYWmQ&feature=youtu.be
-  model: study.Content
+  model: lms.Content
 - fields:
     code: hpi-1
     contents:
@@ -37,14 +37,14 @@
     section:
     - hpi-1
     slug: U1
-  model: study.Unit
+  model: lms.Unit
 - fields:
     code: hpi-2
     course:
     - hpi
     name: Принципы Python
     order: 2
-  model: study.Section
+  model: lms.Section
 - fields:
     code: hpi-2-1
     text: "# Session 1\n- intro: projects, zen, code_style\n- install & setup (PyCharm)\n\
@@ -62,7 +62,7 @@
       \ и вводит ответ на клавиатуре.\nИгра сообщает был ли ответ верным. По окончании\
       \ игры игра сообщает % верных ответов.\n\n"
     type: text/markdown
-  model: study.Content
+  model: lms.Content
 - fields:
     code: hpi-2
     contents:
@@ -89,7 +89,7 @@
     section:
     - hpi-2
     slug: U2
-  model: study.Unit
+  model: lms.Unit
 - fields:
     code: hpi-3-1
     text: '# Session 2
@@ -144,12 +144,12 @@
 
       '
     type: text/markdown
-  model: study.Content
+  model: lms.Content
 - fields:
     code: https://www.youtube.com/watch?v=k4i5YpyYWmQ
     type: video/youtube
     url: https://www.youtube.com/watch?v=k4i5YpyYWmQ&feature=youtu.be
-  model: study.Content
+  model: lms.Content
 - fields:
     code: hpi-3
     contents:
@@ -173,5 +173,5 @@
     section:
     - hpi-2
     slug: U3
-  model: study.Unit
+  model: lms.Unit
 

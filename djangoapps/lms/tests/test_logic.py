@@ -1,13 +1,13 @@
 from django.test import TestCase
 from django.utils import timezone
 
-from study.logic import periodic_task_start_learnings, periodic_task_open_lessons
-from study.models.content import Course
-from study.models.learning import Learning, Lesson
+from lms.logic import periodic_task_start_learnings, periodic_task_open_lessons
+from lms.models.content import Course
+from lms.models.learning import Learning, Lesson
 
 
 class TestModels(TestCase):
-    fixtures = ['fixtures/sample-course-hpi.yaml']
+    fixtures = ['sample-course-hpi.yaml']
 
     def test_periodic_task_start_learnings(self):
         course = Course.objects.get_by_natural_key('hpi')
