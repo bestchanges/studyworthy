@@ -1,9 +1,10 @@
-{% extends 'campus/layout.html' %}
+{% extends 'layout.html' %}
+{% load lms_custom_tags %}
 
 {% block content %}
     <h1>{{ learning.course.title }}</h1>
     <p class="lead">
-        {{ learning.course.short_description }}
+        {{ learning.course.short_description}}
     </p>
     <div class="row">
         <div class="col-6">
@@ -11,8 +12,7 @@
                 <h2>Teacher:</h2>
                 {% for participant in teachers %}
                     <div>
-                        <img src="{{ participant.person.avatar_url }}" width=50 height=50 alt=""
-                             class="rounded-circle"> {{ participant.person.full_name }}
+                        {% person_avatar participant.person %} {{ participant.person.full_name }}
                     </div>
                 {% endfor %}
             {% endif %}
@@ -33,15 +33,13 @@
             <h2>Students:</h2>
             {% for participant in students %}
                 <div>
-                    <img src="{{ participant.person.avatar_url }}" width=50 height=50 alt=""
-                         class="rounded-circle"> {{ participant.person.full_name }}
+                    {% person_avatar participant.person %} {{ participant.person.full_name }}
                 </div>
             {% endfor %}
             {% if admin %}
                 <h2>Admin:</h2>
                 <div>
-                    <img src="{{ admin.person.avatar_url }}" width=50 height=50 alt=""
-                         class="rounded-circle"> {{ admin.person.full_name }}
+                    {% person_avatar admin %}  {{ admin.full_name }}
                 </div>
             {% endif %}
         </div>

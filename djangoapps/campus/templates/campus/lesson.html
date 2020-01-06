@@ -1,11 +1,30 @@
-{% extends 'campus/layout.html' %}
+{% extends 'layout.html' %}
+{% load lms_custom_tags %}
 
 {% block content %}
-    <h2>{{ unit.name }}</h2>
-    <p class="lead">
-        {{ unit.description }}
-    </p>
-    <p>
-    {{ unit.content }}
-    </p>
+    Урок №{{ lesson.order }}: <h2>{{ unit.name }}</h2>
+    <p>Unit: "{{ unit.slug }}"</p>
+    {% if unit.description %}
+        <p class="lead">
+            {{ unit.description | markdown }}
+        </p>
+    {% endif %}
+    {% for content in contents %}
+        <hr>
+        <p>
+            {% render_content content %}
+        </p>
+    {% endfor %}
+    {% if tasks %}
+        <h3>Задание:</h3>
+        <ol>
+        {% for task in tasks %}
+            <hr>
+            <li>
+                <p>{{ task.description | markdown }}</p>
+            <p>Оценка: XX / {{ task.max_score }}</p>
+            </li>
+        {% endfor %}
+        </ol>
+    {% endif %}
 {% endblock content %}

@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy
 
 from lms.models.base import Person
-from lms.models.content import Section, Course, Unit
+from lms.models.content import Section, Course, Unit, Content, Task
 from lms.models.learning import RoleStudent, RoleTeacher, Learning, Lesson
 
 
@@ -61,6 +61,16 @@ class TeachersInline(admin.TabularInline):
     extra = 1
 
 
+class ContentInline(admin.StackedInline):
+    model = Content
+    extra = 0
+
+
+class TasksInline(admin.StackedInline):
+    model = Task
+    extra = 0
+
+
 @admin.register(Unit)
 class AdminUnit(admin.ModelAdmin):
     list_display = (
@@ -72,6 +82,7 @@ class AdminUnit(admin.ModelAdmin):
     )
     list_filter = ['course']
     search_fields = ['section', 'code', 'name', 'slug']
+    inlines = [ContentInline, TasksInline]
 
 
 class LessonsInline(admin.TabularInline):

@@ -25,6 +25,7 @@ pyyaml = "*"
 gunicorn = "*"
 boto3 = '*'
 whitenoise = '*'
+markdown = '*'
 
 [requires]
 python_version = "3.6"

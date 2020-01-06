@@ -19,8 +19,8 @@ def learning_view(request, learning_code):
     context = {
         'learning': learning,
         'lessons': learning.lesson_set.all(),
-        'students': learning.students.all(),
-        'teachers': learning.teachers.all(),
+        'students': learning.rolestudent_set.all(),
+        'teachers': learning.roleteacher_set.all(),
         'admin': learning.admin,
     }
     return render(request, 'campus/learning.html', context)
@@ -30,5 +30,11 @@ def learning_view(request, learning_code):
 def lesson_view(request, learning_code, unit_slug):
     learning = Learning.objects.get_by_natural_key(learning_code)
     unit = Unit.objects.get(course=learning.course, slug=unit_slug)
-    lesson = Lesson.objects.get(learning=learning, unit=unit)
-    return render(request, 'campus/lesson.html', {'lesson': lesson, 'unit': unit, 'learning': learning})
+    context = {
+        'lesson': Lesson.objects.get(learning=learning, unit=unit),
+        'learning': learning,
+        'unit': unit,
+        'contents': unit.content_set.all(),
+        'tasks': unit.task_set.all(),
+    }
+    return render(request, 'campus/lesson.html', context)

@@ -81,7 +81,7 @@ class Learning(CodeNaturalKeyAbstractModel):
 @receiver(post_save, sender=Learning)
 def on_learning_create(sender, instance: Learning, created, **kwargs):
     """Create Lessons from course's units."""
-    if created:
+    if created and not kwargs.get('raw'):
         for unit in instance.course.unit_set.all():
             lesson = Lesson(unit=unit, order=unit.order, learning=instance, state=Lesson.State.CLOSED)
             lesson.save()
@@ -131,10 +131,8 @@ class RoleTeacher(models.Model):
 
 
 class Lesson(models.Model):
-    # class Meta:
-    #     unique_together = [['learning', 'unit']]
-    # commented out because of strange issue on loaddata:
-    #  Could not load lms.Lesson(pk=2): UNIQUE constraint failed: lms_lesson.unit_id, lms_lesson.learning_id
+    class Meta:
+        unique_together = [['learning', 'unit']]
 
     class State(models.TextChoices):
         HIDDEN = "hidden"

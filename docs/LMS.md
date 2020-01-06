@@ -1,6 +1,7 @@
 # LMS App
 
 # Backlog Tasks
+- [ ] importer: fix bug. Only one content item is added to the course
 - [ ] importer: clean content items not in file but in DB (content-always)
 - [ ] admin: course content modification
 - [ ] admin: Unit with Content Inline
