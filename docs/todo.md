@@ -1,12 +1,13 @@
 ##### [Main app](ROOTAPP.md)
 - [ ] create custom tag for display person's avatar
 ##### [Campus APP](CAMPUS.md)
+- [ ] Content: method: render() (1h)
 - [ ] md plugin for template expansion (1h)
+    * https://neutronx.github.io/django-markdownx/
+    * https://github.com/agusmakmun/django-markdown-editor
 - [ ] view unit (1h)
-##### [Content](CONTENT.md)
-- [x] get rid of many-to-many relations for Content
-##### [Learnings](LEARNINGS.md)
-##### [Domain Model](MODELS.md)
+##### [LMS](LMS.md)
+##### [CRM](CRM.md)
 ##### Student enrollment
 - [ ] student application form (exportable to external sites)
 - [ ] assign student as candidate to learning/course(?)

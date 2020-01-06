@@ -1,16 +1,19 @@
+# LMS App
+
 # Backlog Tasks
 - [ ] importer: clean content items not in file but in DB (content-always)
 - [ ] admin: course content modification
 - [ ] admin: Unit with Content Inline
+- [ ] Learning schedule inherits from course.default_schedule 
+- [ ] auto generate code for Learning
+- [ ] Content: import partly from markdown (2h)
+- [ ] Learning clone (as draft, keep teacher, admin) 
 
+
+# IDEAS / Issues
+- [ ] store course content with mediafiles in this repo. Thus we can easily deliver media files
 
 # Solution
-- unit content = single .md file
-- all media files are external (possible other solution by plugin)
-- clone learning
-
-# IDEAS
-- Separate unit's tasks from study content<br>
 
 # Check Requirements
 - [x]  Удобство создания и визуального обзора материалов
@@ -28,6 +31,16 @@
 - (?)  Возможность Использовать Jupyter, repl.io
 - [x]  Возможность смотреть контент через слак (и текст и видео)
 
-# References
-* https://neutronx.github.io/django-markdownx/
-* https://github.com/agusmakmun/django-markdown-editor
+# LMS Resuirments
+
+- [x]  Добавлять студентов и преподавателей на платформу
+- [x]  Назначать студентов на группу по курсу
+- [x]  Назначать учителя и эксперта' на группу
+- [ ]  Отправить уведомление студентам одной группы о живом вебинаре
+- [ ]  Отправить учебные материалы урока - видео, документ, презентация
+- [ ]  Принять от студента результат задания и передать его учителю
+- [ ]  Принять ответ студента и проверить его автоматически
+- [ ]  Поставить отметку о посещении урока учеником
+- [ ]  Принять отметку учителя на результат задания
+- [ ]  Показать успеваемость студента
+- [ ]  Напомнить студенту о пропущенных уроках
