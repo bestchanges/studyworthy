@@ -1,4 +1,4 @@
 ## Backlog
-- [ ] keep school name in settings 
+- [ ] create fixture with Readme
+- [ ] store site name in settings 
 - [ ] timezone aware views (Middleware)
-- [ ] md plugin for template expansion (1h)

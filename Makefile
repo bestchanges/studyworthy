@@ -5,7 +5,10 @@ tests: tests-unit
 tests-unit:
 	pipenv run python manage.py test djangoapps/
 
-data-pipeline: makemigrations migrate
+data-pipeline: makemigrations migrate git-add-migrations
+
+git-add-migrations:
+	git add djangoapps/*/migrations/*
 
 makemigrations:
 	pipenv run python manage.py makemigrations

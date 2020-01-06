@@ -1,8 +1,8 @@
 ##### [Main app](ROOTAPP.md)
-- [ ] move avatar url from user to person
+- [ ] create custom tag for display person's avatar
 ##### [Campus APP](CAMPUS.md)
-- [ ] create fixture with Readme
-- [ ] view unit
+- [ ] md plugin for template expansion (1h)
+- [ ] view unit (1h)
 ##### [Content](CONTENT.md)
 - [x] get rid of many-to-many relations for Content
 ##### [Learnings](LEARNINGS.md)
