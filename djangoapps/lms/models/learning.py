@@ -110,7 +110,7 @@ class Participant(models.Model):
     updated_at = models.DateTimeField(auto_now=True, null=True, editable=False)
 
     def __str__(self):
-        return f'{self.role} {self.person.get_full_name()}'
+        return f'{self.role} {self.person.full_name}'
 
 
 class Lesson(models.Model):

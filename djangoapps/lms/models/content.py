@@ -42,23 +42,6 @@ class Section(CodeNaturalKeyAbstractModel):
         return f'Section {self.name} ({self.code})'
 
 
-class Content(CodeNaturalKeyAbstractModel):
-    class ContentType(models.TextChoices):
-        TEXT = "text/plain"
-        HTML = "text/html"
-        MARKDOWN = "text/markdown"
-        LINK = "text/uri"
-        VIDEO = "video/youtube"
-
-    type = models.CharField(max_length=20, choices=ContentType.choices, default=ContentType.HTML)
-    text = models.TextField(blank=True, null=True)
-    url = models.URLField(max_length=255, blank=True, null=True)
-    notes = models.CharField(max_length=200, null=True, blank=True)
-
-    def __str__(self):
-        return f'Content {self.code} ({self.type})'
-
-
 class Unit(CodeNaturalKeyAbstractModel):
     class Meta:
         unique_together = [['course', 'order'], ['course', 'slug']]
@@ -71,7 +54,6 @@ class Unit(CodeNaturalKeyAbstractModel):
     order = models.IntegerField()
 
     description = models.TextField(null=True, blank=True)
-    contents = models.ManyToManyField(Content)
     notes = models.CharField(max_length=200, null=True, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True, null=True, editable=False)
@@ -81,7 +63,33 @@ class Unit(CodeNaturalKeyAbstractModel):
         return f'Unit {self.name} ({self.code})'
 
 
+class Content(CodeNaturalKeyAbstractModel):
+    class Meta:
+        unique_together = [['unit', 'order'], ]
+
+    class ContentType(models.TextChoices):
+        TEXT = "text/plain"
+        HTML = "text/html"
+        MARKDOWN = "text/markdown"
+        LINK = "text/uri"
+        VIDEO = "video/youtube"
+
+    type = models.CharField(max_length=20, choices=ContentType.choices, default=ContentType.HTML)
+    text = models.TextField(blank=True, null=True)
+    url = models.URLField(max_length=255, blank=True, null=True)
+    notes = models.CharField(max_length=200, null=True, blank=True)
+
+    unit = models.ForeignKey(Unit, on_delete=models.CASCADE)
+    order = models.IntegerField()
+
+    def __str__(self):
+        return f'Content {self.code} ({self.type})'
+
+
 class Task(CodeNaturalKeyAbstractModel):
+    class Meta:
+        unique_together = [['unit', 'order'], ]
+
     class Type(models.TextChoices):
         QUIZ = "quiz"
         TEXT = "text"
@@ -96,6 +104,7 @@ class Task(CodeNaturalKeyAbstractModel):
     description = models.TextField(null=True, blank=True)
 
     unit = models.ForeignKey(Unit, on_delete=models.CASCADE)
+    order = models.IntegerField()
 
     decision_type = models.CharField(max_length=20, choices=DecisionType.choices)
     decision_deadline_days = models.IntegerField(null=True, blank=True)

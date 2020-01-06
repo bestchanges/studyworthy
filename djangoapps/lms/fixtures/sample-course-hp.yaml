@@ -15,10 +15,22 @@
     order: 2
     course: ['hp']
 
+- model: lms.unit
+  fields:
+    code: hp-1-s01-1
+    name: First program
+    course: ['hp']
+    order: 1
+    section:
+      - hp-1-s01
+
 - model: lms.content
   fields:
     type: text/markdown
     code: courses/hello-python/basics.md#sub-title-slugified
+    unit:
+      - hp-1-s01-1
+    order: 1
     text: >
       # Header
       some text content
@@ -28,18 +40,10 @@
     type: video/youtube
     code: https://www.youtube.com/watch?v=k4i5YpyYWmQ # without query string!!
     url: https://www.youtube.com/watch?v=k4i5YpyYWmQ&feature=youtu.be
+    unit:
+      - hp-1-s01-1
+    order: 2
 
-- model: lms.unit
-  fields:
-    code: hp-1-s01-1
-    name: First program
-    course: ['hp']
-    contents:
-      - [ 'https://www.youtube.com/watch?v=k4i5YpyYWmQ' ]
-      - [ 'courses/hello-python/basics.md#sub-title-slugified' ]
-    order: 1
-    section:
-      - hp-1-s01
 
 - model: lms.learning
   fields:

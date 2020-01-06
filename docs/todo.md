@@ -4,6 +4,7 @@
 - [ ] create fixture with Readme
 - [ ] view unit
 ##### [Content](CONTENT.md)
+- [x] get rid of many-to-many relations for Content
 ##### [Learnings](LEARNINGS.md)
 ##### [Domain Model](MODELS.md)
 ##### Student enrollment

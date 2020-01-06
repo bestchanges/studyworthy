@@ -1,3 +1,5 @@
+import os
+
 import yaml
 
 from lms.models.content import Course, Section, Unit, Content, Task
@@ -34,22 +36,26 @@ def import_course_content(data: dict) -> Course:
             contents = []
             for content_node in unit_node['contents']:
                 content_data = dict(content_node)
+                order = len(contents) + 1
+                content_data['order'] = order
                 if 'code' not in content_data:
                     if 'name' in content_data:
                         code = f'{unit.code}-{content_data["name"]}'
                         content_data.pop('name')
                     else:
-                        code = f'{unit_data["code"]}-{len(contents) + 1}'
+                        code = f'{unit_data["code"]}-C{order}'
                     content_data['code'] = code
+                content_data['unit'] = unit
                 content, created = Content.objects.update_or_create(content_data, code=content_data['code'])
                 contents.append(content)
-            unit.contents.set(contents)
             if 'tasks' in unit_node:
                 tasks = []
                 for task_node in unit_node['tasks']:
                     task_data = dict(task_node)
+                    order = len(tasks) + 1
+                    task_data['order'] = order
                     if 'code' not in task_data:
-                        code = f'{unit_data["code"]}-{len(tasks) + 1}'
+                        code = f'{unit_data["code"]}-T{order}'
                         task_data['code'] = code
                     task_data['unit'] = unit
                     task, created = Task.objects.update_or_create(task_data, code=task_data['code'])
@@ -57,6 +63,22 @@ def import_course_content(data: dict) -> Course:
     return course
 
 
+class YamlLoader(yaml.SafeLoader):
+    def __init__(self, stream):
+        self._root = os.path.split(stream.name)[0]
+        super(YamlLoader, self).__init__(stream)
+
+    def include(self, node):
+        filename = os.path.join(self._root, self.construct_scalar(node))
+        with open(filename, 'r') as f:
+            if filename.endswith('.yaml'):
+                return yaml.load(f, YamlLoader)
+            else:
+                return f.read()
+
+YamlLoader.add_constructor('!include', YamlLoader.include)
+
+
 def load_yaml(filename):
     with open(filename, 'r') as f:
-        return yaml.load(f, Loader=yaml.SafeLoader)
+        return yaml.load(f, Loader=YamlLoader)

@@ -1,4 +1,5 @@
 name: Продолжаем разговор
+slug: basics-2
 description: |
   - complex types (tuple, array, dict, set)
   - iterables

@@ -1,3 +1,7 @@
+.PHONY: tests
+
+tests: tests-unit
+
 tests-unit:
 	pipenv run python manage.py test djangoapps/
 
@@ -19,7 +23,7 @@ data:
 	mkdir -p data
 
 dump-course: data
-	pipenv run python manage.py dumpdata lms.Course lms.Learning lms.Section lms.Unit --format yaml --natural-primary --natural-foreign > data/course.yaml
+	pipenv run python manage.py dumpdata lms.Course lms.Section lms.Unit lms.Task lms.Content --format yaml --natural-primary --natural-foreign > data/course.yaml
 
 dump-persons: data
 	pipenv run python manage.py dumpdata lms.Person lms.Participant --format yaml --natural-primary --natural-foreign > data/persons.yaml

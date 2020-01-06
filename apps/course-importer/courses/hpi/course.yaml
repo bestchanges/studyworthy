@@ -12,6 +12,7 @@ sections:
  - name: Введение
    units:
      - name: Введение в курс
+       slug: intro
        contents:
         - type: video/youtube
           code: https://www.youtube.com/watch?v=k4i5YpyYWmQ

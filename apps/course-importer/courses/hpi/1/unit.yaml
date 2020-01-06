@@ -1,4 +1,5 @@
 name: Основы питона
+slug: bases
 description: |
    - intro: projects, zen, code_style
    - install & setup (PyCharm)
