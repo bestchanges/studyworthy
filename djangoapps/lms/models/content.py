@@ -61,7 +61,7 @@ class Content(CodeNaturalKeyAbstractModel):
 
 class Unit(CodeNaturalKeyAbstractModel):
     class Meta:
-        unique_together = [['course', 'section', 'order'], ['course', 'slug']]
+        unique_together = [['course', 'order'], ['course', 'slug']]
 
     name = models.CharField(max_length=200)
     slug = models.SlugField(max_length=50, help_text="Short code to easily identify this unit across the Course")
@@ -81,7 +81,7 @@ class Unit(CodeNaturalKeyAbstractModel):
         return f'Unit {self.name} ({self.code})'
 
 
-class Task(models.Model):
+class Task(CodeNaturalKeyAbstractModel):
     class Type(models.TextChoices):
         QUIZ = "quiz"
         TEXT = "text"
@@ -93,15 +93,15 @@ class Task(models.Model):
 
     name = models.CharField(max_length=200)
     type = models.CharField(max_length=20, choices=Type.choices, default=Type.TEXT)
-    description = models.TextField(default='')
+    description = models.TextField(null=True, blank=True)
+
+    unit = models.ForeignKey(Unit, on_delete=models.CASCADE)
 
     decision_type = models.CharField(max_length=20, choices=DecisionType.choices)
-    decision_deadline_days = models.IntegerField(null=True)
+    decision_deadline_days = models.IntegerField(null=True, blank=True)
 
-    max_score = models.IntegerField(null=True)
-    pass_score = models.IntegerField(null=True)
+    max_score = models.IntegerField(default=0)
+    pass_score = models.IntegerField(null=True, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True, null=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True, null=True, editable=False)
-
-

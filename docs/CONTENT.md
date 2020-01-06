@@ -2,7 +2,6 @@
 - [ ] importer: clean content items not in file but in DB (content-always)
 - [ ] admin: course content modification
 - [ ] admin: Unit with Content Inline
-- [ ] redo import as django command accepting course.yaml
 
 
 # Solution
