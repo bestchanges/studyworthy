@@ -7,21 +7,22 @@
     </p>
     <div class="row">
         <div class="col-6">
-        {% if teachers %}
-            <h2>Teacher:</h2>
-            {% for participant in teachers %}
-                <div>
-                    <img src="{{ participant.person.avatar_url }}" width=50 height=50 alt="" class="rounded-circle"> {{ participant.person.full_name }}
-                </div>
-            {% endfor %}
-        {% endif %}
+            {% if teachers %}
+                <h2>Teacher:</h2>
+                {% for participant in teachers %}
+                    <div>
+                        <img src="{{ participant.person.avatar_url }}" width=50 height=50 alt=""
+                             class="rounded-circle"> {{ participant.person.full_name }}
+                    </div>
+                {% endfor %}
+            {% endif %}
 
-        <h2>Program:</h2>
+            <h2>Program:</h2>
             <ol>
                 {% for lesson in lessons %}
                     <li>
                         <a href="{% url 'campus:lesson' lesson.learning.code lesson.unit.slug %}">{{ lesson.unit.name }}</a><br>
-                        Open: {{  lesson.open_planned_at | date:"d M Y"  }}
+                        Open: {{ lesson.open_planned_at | date:"d M Y" }}
                     </li>
                 {% endfor %}
             </ol>
@@ -32,15 +33,17 @@
             <h2>Students:</h2>
             {% for participant in students %}
                 <div>
-                    <img src="{{ participant.person.avatar_url }}" width=50 height=50 alt="" class="rounded-circle"> {{ participant.person.full_name }}
+                    <img src="{{ participant.person.avatar_url }}" width=50 height=50 alt=""
+                         class="rounded-circle"> {{ participant.person.full_name }}
                 </div>
             {% endfor %}
-            <h2>Admin:</h2>
-            {% for participant in admins %}
+            {% if admin %}
+                <h2>Admin:</h2>
                 <div>
-                    <img src="{{ participant.person.avatar_url }}" width=50 height=50 alt="" class="rounded-circle"> {{ participant.person.full_name }}
+                    <img src="{{ admin.person.avatar_url }}" width=50 height=50 alt=""
+                         class="rounded-circle"> {{ admin.person.full_name }}
                 </div>
-            {% endfor %}
+            {% endif %}
         </div>
     </div>
 {% endblock content %}

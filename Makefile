@@ -17,25 +17,30 @@ migrate:
 	pipenv run python manage.py migrate
 
 sample-data:
-	pipenv run python manage.py loaddata sample-admin.yaml
 	pipenv run python manage.py loaddata sample-persons.yaml
-	pipenv run python manage.py loaddata sample-course-hp.yaml
-	pipenv run python manage.py loaddata sample-course-hpi.yaml
+	pipenv run python manage.py loaddata sample-auth.yaml
+	pipenv run python manage.py loaddata sample-courses.yaml
+	pipenv run python manage.py loaddata sample-learnings.yaml
 
 data:
 	mkdir -p data
 
+clean:
+	rm -rf data/*
+
 dump-course: data
-	pipenv run python manage.py dumpdata lms.Course lms.Section lms.Unit lms.Task lms.Content --format yaml --natural-primary --natural-foreign > data/course.yaml
+	pipenv run python manage.py dumpdata lms.Course lms.Section lms.Unit lms.Task lms.Content --format yaml --natural-primary --natural-foreign > data/sample-courses.yaml
+
+dump-learnings: data
+	pipenv run python manage.py dumpdata lms.Learning lms.Lesson lms.RoleStudent lms.RoleTeacher --format yaml --natural-primary --natural-foreign > data/sample-learnings.yaml
 
 dump-persons: data
-	pipenv run python manage.py dumpdata lms.Person lms.Participant --format yaml --natural-primary --natural-foreign > data/persons.yaml
+	pipenv run python manage.py dumpdata lms.Person --format yaml --natural-primary --natural-foreign > data/sample-persons.yaml
 
 dump-auth: data
-	pipenv run python manage.py dumpdata authtoken lms.UserPerson --format yaml --natural-primary --natural-foreign > data/auth.yaml
+	pipenv run python manage.py dumpdata authtoken rootapp.SiteUser --format yaml --natural-primary --natural-foreign > data/sample-auth.yaml
 
-
-dump-all: dump-course dump-persons dump-auth
+dump-all: dump-course dump-learnings dump-persons dump-auth
 
 venv:
 	pipenv update --dev

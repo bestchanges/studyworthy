@@ -2,15 +2,14 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
 from lms.models.content import Unit
-from lms.models.learning import Learning, Lesson, Participant
+from lms.models.learning import Learning, Lesson
 from rootapp.models import SiteUser
 
 
 @login_required
 def index(request):
     user: SiteUser = request.user
-    my_learnings = Learning.objects.filter(state__in=(Learning.State.ONGOING, Learning.State.PLANNED),
-                                           participant__person=user.person)
+    my_learnings = user.person.learn_in.all()
     return render(request, 'campus/index.html', {'learnings': my_learnings})
 
 
@@ -20,9 +19,9 @@ def learning_view(request, learning_code):
     context = {
         'learning': learning,
         'lessons': learning.lesson_set.all(),
-        'students': learning.participant_set.filter(role=Participant.Role.STUDENT),
-        'teachers': learning.participant_set.filter(role=Participant.Role.TEACHER),
-        'admins': learning.participant_set.filter(role=Participant.Role.ADMIN),
+        'students': learning.students.all(),
+        'teachers': learning.teachers.all(),
+        'admin': learning.admin,
     }
     return render(request, 'campus/learning.html', context)
 

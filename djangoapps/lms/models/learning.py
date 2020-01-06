@@ -36,6 +36,13 @@ class Learning(CodeNaturalKeyAbstractModel):
     timezone = models.CharField(max_length=100, choices=[(tz, tz) for tz in config.TIMEZONES], default=settings.TIME_ZONE)
     notes = models.CharField(max_length=200, null=True, blank=True)
 
+    students = models.ManyToManyField(Person, through='RoleStudent', related_name='learn_in', )
+
+    # limit_choices_to={'can_teach': True} - (fields.W343) limit_choices_to has no effect on ManyToManyField with a through model.
+    teachers = models.ManyToManyField(Person, through='RoleTeacher', related_name='teach_in', )
+
+    admin = models.ForeignKey(Person, null=True, on_delete=models.SET_NULL, related_name='admin_in', limit_choices_to={'is_admin': True})
+
     start_planned_at = models.DateTimeField(default=now, null=True, blank=True)
     finish_planned_at = models.DateTimeField(null=True, blank=True)
 
@@ -80,11 +87,7 @@ def on_learning_create(sender, instance: Learning, created, **kwargs):
             lesson.save()
 
 
-class Participant(models.Model):
-    class Role(models.TextChoices):
-        STUDENT = 'student'
-        TEACHER = 'teacher'
-        ADMIN = 'admin',
+class RoleStudent(models.Model):
 
     class State(models.TextChoices):
         CANDIDATE = 'candidate'
@@ -92,17 +95,15 @@ class Participant(models.Model):
         CANCELLED = 'cancelled',
 
     class Meta:
-        unique_together = [['learning', 'person', 'role']]
+        unique_together = [['learning', 'person']]
 
     learning = models.ForeignKey(Learning, on_delete=models.CASCADE)
     person = models.ForeignKey(Person, on_delete=models.CASCADE)
-    role = models.CharField(max_length=20, choices=Role.choices)
     state = models.CharField(max_length=20, choices=State.choices)
-    code_repository = models.CharField(max_length=255, default='', blank=True)
+    code_repository = models.CharField(max_length=255, null=True, blank=True)
     total_score = models.IntegerField(null=True, blank=True)
     notes = models.CharField(max_length=200, null=True, blank=True)
 
-    assigned_at = models.DateTimeField(auto_now_add=True, editable=False)
     activated_at = models.DateTimeField(null=True, blank=True)
     deactivated_at = models.DateTimeField(null=True, blank=True)
 
@@ -110,12 +111,30 @@ class Participant(models.Model):
     updated_at = models.DateTimeField(auto_now=True, null=True, editable=False)
 
     def __str__(self):
-        return f'{self.role} {self.person.full_name}'
+        return f'Student {self.person.full_name}'
+
+
+class RoleTeacher(models.Model):
+
+    class Meta:
+        unique_together = [['learning', 'person']]
+
+    learning = models.ForeignKey(Learning, on_delete=models.CASCADE)
+    person = models.ForeignKey(Person, on_delete=models.CASCADE)
+    notes = models.CharField(max_length=200, null=True, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True, null=True, editable=False)
+    updated_at = models.DateTimeField(auto_now=True, null=True, editable=False)
+
+    def __str__(self):
+        return f'Teacher {self.person.full_name}'
 
 
 class Lesson(models.Model):
-    class Meta:
-        unique_together = [['unit', 'learning']]
+    # class Meta:
+    #     unique_together = [['learning', 'unit']]
+    # commented out because of strange issue on loaddata:
+    #  Could not load lms.Lesson(pk=2): UNIQUE constraint failed: lms_lesson.unit_id, lms_lesson.learning_id
 
     class State(models.TextChoices):
         HIDDEN = "hidden"
@@ -159,7 +178,7 @@ class Presence(models.Model):
     class Meta:
         unique_together = [['lesson', 'student'], ]
 
-    student = models.ForeignKey(Participant, limit_choices_to={'role': 'student'}, related_name='+', on_delete=models.CASCADE)
+    student = models.ForeignKey(RoleStudent, on_delete=models.CASCADE)
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
     completed = models.BooleanField(default=False)
     score = models.IntegerField(null=True)
@@ -197,10 +216,7 @@ class Decision(models.Model):
 
 class Review(models.Model):
     decision = models.OneToOneField(Decision, on_delete=models.CASCADE)
-    reviewer = models.ForeignKey(
-        Participant, null=True, limit_choices_to={'role': 'teacher'},
-        related_name='+', on_delete=models.CASCADE,
-    )
+    reviewer = models.ForeignKey(RoleTeacher, null=True, on_delete=models.CASCADE)
     score = models.IntegerField(null=True)
     reviewer_comment = models.TextField(default='')
 

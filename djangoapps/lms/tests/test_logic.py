@@ -7,7 +7,7 @@ from lms.models.learning import Learning, Lesson
 
 
 class TestModels(TestCase):
-    fixtures = ['sample-course-hpi.yaml']
+    fixtures = ['sample-courses.yaml']
 
     def test_periodic_task_start_learnings(self):
         course = Course.objects.get_by_natural_key('hpi')

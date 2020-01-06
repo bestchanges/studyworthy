@@ -1,0 +1,53 @@
+- model: lms.learning
+  fields:
+    code: hpi-L1
+    course:
+    - hpi
+    state: ongoing
+    schedule: Mon 15:00, Tue 15:00, Sat 19:00
+    timezone: Europe/Moscow
+    notes: null
+    admin:
+    - admin
+    start_planned_at: 2020-01-06 11:30:36+00:00
+    finish_planned_at: null
+    started_at: null
+    finished_at: null
+    cancelled_at: null
+    created_at: 2020-01-06 11:31:24.882642+00:00
+    updated_at: 2020-01-06 12:06:17.758084+00:00
+- model: lms.learning
+  fields:
+    code: test-course-1-L1
+    course:
+    - test-course-1
+    state: planned
+    schedule: Mon 15:00, Tue 15:00, Sat 19:00
+    timezone: Europe/Moscow
+    notes: null
+    admin:
+    - admin
+    start_planned_at: 2020-01-06 12:06:27+00:00
+    finish_planned_at: null
+    started_at: null
+    finished_at: null
+    cancelled_at: null
+    created_at: 2020-01-06 12:07:59.210456+00:00
+    updated_at: 2020-01-06 12:07:59.210476+00:00
+
+- model: lms.lesson
+  pk: 2
+  fields:
+    unit:
+      - hpi-intro
+    learning:
+      - hpi-L1
+    state: opened
+    order: 1
+    notes: note for lesson 1
+    open_planned_at: 2020-01-06 11:31:44+00:00
+    opened_at: null
+    finished_at: null
+    cancelled_at: null
+    created_at: 2020-01-06 11:31:24.885260+00:00
+    updated_at: 2020-01-06 11:32:27.043800+00:00

@@ -11,7 +11,7 @@ from lms.signals import learning_started_signal, learning_finished_signal, lesso
 
 
 class TestModels(TestCase):
-    fixtures = ['sample-persons.yaml', 'sample-course-hpi.yaml']
+    fixtures = ['sample-persons.yaml', 'sample-courses.yaml']
 
     def test_learning_creates_lessons(self):
         course = Course.objects.get_by_natural_key('hpi')

@@ -47,6 +47,8 @@ class Person(CodeNaturalKeyAbstractModel):
     country = models.CharField(max_length=100, default='', blank=True)
     city = models.CharField(max_length=100, default='', blank=True)
     timezone = models.CharField(max_length=100, choices=[(tz, tz) for tz in config.TIMEZONES], default=settings.TIME_ZONE)
+    is_admin = models.BooleanField(default=False)
+    can_teach = models.BooleanField(default=False)
 
     created_at = models.DateTimeField(auto_now_add=True, null=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True, null=True, editable=False)
@@ -61,7 +63,31 @@ class Person(CodeNaturalKeyAbstractModel):
 
 class Author(models.Model):
     person = models.OneToOneField(Person, on_delete=models.CASCADE)
-    bio = models.TextField(blank=True, default='')
+    bio = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return f'Author: {self.person.full_name}'
+
+
+class Teacher(models.Model):
+    person = models.OneToOneField(Person, on_delete=models.CASCADE)
+    bio = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return f'Teacher: {self.person.full_name}'
+
+
+
+class Student(models.Model):
+    person = models.OneToOneField(Person, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'Student: {self.person.full_name}'
+
+
+class Admin(models.Model):
+    person = models.OneToOneField(Person, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'Admin: {self.person.full_name}'
+

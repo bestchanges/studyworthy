@@ -10,7 +10,7 @@ from lms.models.learning import Learning
 
 
 class TestCommands(TestCase):
-    fixtures = ['sample-course-hpi.yaml']
+    fixtures = ['sample-courses.yaml']
 
     def test_command_periodic(self):
         course = Course.objects.get_by_natural_key('hpi')

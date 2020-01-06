@@ -14,6 +14,21 @@
     notes: 'Content repository: https://github.com/bestchanges/hello_python
 
 '
+    created_at: null
+    updated_at: null
+    activated_at: null
+    archived_at: null
+    authors: []
+- model: lms.course
+  fields:
+    code: test-course-1
+    title: Test Course 1
+    state: active
+    short_description: Short Description for Course 1
+    long_description: "long description\r\nAnother Lone\r\n# header1"
+    notes: Notes for Course
+    created_at: 2020-01-06 11:41:28.923044+00:00
+    updated_at: 2020-01-06 11:41:54.936468+00:00
     activated_at: null
     archived_at: null
     authors: []
@@ -33,6 +48,22 @@
     course:
     - hpi
     description: null
+- model: lms.section
+  fields:
+    code: test-course-1-1
+    name: Section 1
+    order: 1
+    course:
+    - test-course-1
+    description: Section 1 description
+- model: lms.section
+  fields:
+    code: test-course-1-2
+    name: Section 2
+    order: 2
+    course:
+    - test-course-1
+    description: Section 2 description
 - model: lms.unit
   fields:
     code: hpi-intro
@@ -45,6 +76,8 @@
     order: 1
     description: null
     notes: null
+    created_at: null
+    updated_at: null
 - model: lms.unit
   fields:
     code: hpi-bases
@@ -71,6 +104,8 @@
 
 '
     notes: null
+    created_at: null
+    updated_at: null
 - model: lms.unit
   fields:
     code: hpi-basics-2
@@ -93,6 +128,50 @@
 
 '
     notes: null
+    created_at: null
+    updated_at: null
+- model: lms.unit
+  fields:
+    code: test-course-1-u1
+    name: Unit Intro
+    slug: u1
+    section:
+    - test-course-1-1
+    course:
+    - test-course-1
+    order: 1
+    description: null
+    notes: null
+    created_at: 2020-01-06 11:41:28.940545+00:00
+    updated_at: 2020-01-06 11:41:28.940579+00:00
+- model: lms.unit
+  fields:
+    code: test-course-1-u2
+    name: Unit 2
+    slug: u2
+    section:
+    - test-course-1-2
+    course:
+    - test-course-1
+    order: 2
+    description: null
+    notes: null
+    created_at: 2020-01-06 11:41:28.958920+00:00
+    updated_at: 2020-01-06 11:41:28.958952+00:00
+- model: lms.unit
+  fields:
+    code: test-course-1-u3
+    name: Unit 3
+    slug: u3
+    section:
+    - test-course-1-2
+    course:
+    - test-course-1
+    order: 3
+    description: null
+    notes: null
+    created_at: 2020-01-06 11:41:28.987608+00:00
+    updated_at: 2020-01-06 11:41:28.987639+00:00
 - model: lms.task
   fields:
     code: hpi-bases-T1
@@ -117,6 +196,8 @@
     decision_deadline_days: null
     max_score: 0
     pass_score: null
+    created_at: null
+    updated_at: null
 - model: lms.task
   fields:
     code: hpi-basics-2-T1
@@ -142,6 +223,53 @@
     decision_deadline_days: null
     max_score: 0
     pass_score: null
+    created_at: null
+    updated_at: null
+- model: lms.task
+  fields:
+    code: test-course-1-u2-T1
+    name: task 1 name
+    type: text
+    description: task 1 for unit 2 description
+    unit:
+    - test-course-1-u2
+    order: 1
+    decision_type: link
+    decision_deadline_days: 14
+    max_score: 10
+    pass_score: 6
+    created_at: 2020-01-06 11:41:28.975183+00:00
+    updated_at: 2020-01-06 11:41:28.975215+00:00
+- model: lms.task
+  fields:
+    code: test-course-1-u2-T2
+    name: task 2 name
+    type: text
+    description: task 2 for unit 2 description
+    unit:
+    - test-course-1-u2
+    order: 2
+    decision_type: text
+    decision_deadline_days: 14
+    max_score: 10
+    pass_score: 6
+    created_at: 2020-01-06 11:41:28.981919+00:00
+    updated_at: 2020-01-06 11:41:28.981947+00:00
+- model: lms.task
+  fields:
+    code: test-course-1-u3-T1
+    name: task 1 name
+    type: text
+    description: task 1 for unit 3 description
+    unit:
+    - test-course-1-u3
+    order: 1
+    decision_type: link
+    decision_deadline_days: 14
+    max_score: 10
+    pass_score: 1
+    created_at: 2020-01-06 11:41:29.006357+00:00
+    updated_at: 2020-01-06 11:41:29.006388+00:00
 - model: lms.content
   fields:
     code: https://www.youtube.com/watch?v=k4i5YpyYWmQ
@@ -150,8 +278,8 @@
     url: https://www.youtube.com/watch?v=k4i5YpyYWmQ&feature=youtu.be
     notes: null
     unit:
-    - hpi-basics-2
-    order: 2
+    - test-course-1-u1
+    order: 1
 - model: lms.content
   fields:
     code: hpi-bases-C1
@@ -212,4 +340,34 @@
     notes: null
     unit:
     - hpi-basics-2
+    order: 1
+- model: lms.content
+  fields:
+    code: test-course-1-u2-C1
+    type: text/markdown
+    text: '#Sample Markdown Unit 2 Part 1'
+    url: null
+    notes: null
+    unit:
+    - test-course-1-u2
+    order: 1
+- model: lms.content
+  fields:
+    code: test-course-1-u2-C2
+    type: text/markdown
+    text: '#Sample Markdown Unit 2 Part 2'
+    url: null
+    notes: null
+    unit:
+    - test-course-1-u2
+    order: 2
+- model: lms.content
+  fields:
+    code: test-course-1-u3-C1
+    type: text/markdown
+    text: '#Sample Markdown Unit 3'
+    url: null
+    notes: null
+    unit:
+    - test-course-1-u3
     order: 1

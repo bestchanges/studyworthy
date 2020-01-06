@@ -5,7 +5,7 @@ from django.utils.translation import gettext_lazy
 
 from lms.models.base import Person
 from lms.models.content import Section, Course, Unit
-from lms.models.learning import Participant, Learning, Lesson
+from lms.models.learning import RoleStudent, RoleTeacher, Learning, Lesson
 
 
 @admin.register(Person)
@@ -48,8 +48,17 @@ class AdminCourse(admin.ModelAdmin):
     inlines = [SectionInline, UnitsInline]
 
 
-class ParticipantInline(admin.StackedInline):
-    model = Participant
+class StudentsInline(admin.TabularInline):
+    fields = ['person', 'state', 'notes', 'created_at', 'activated_at']
+    readonly_fields = ['created_at', 'activated_at']
+    model = RoleStudent
+    extra = 1
+
+class TeachersInline(admin.TabularInline):
+    fields = ['person', 'notes', 'created_at', ]
+    readonly_fields = ['created_at', ]
+    model = RoleTeacher
+    extra = 1
 
 
 @admin.register(Unit)
@@ -72,13 +81,6 @@ class LessonsInline(admin.TabularInline):
     extra = 0
 
 
-class ParticipantsInline(admin.TabularInline):
-    fields = ['person', 'role', 'state', 'notes', 'created_at', 'activated_at']
-    readonly_fields = ['created_at', 'activated_at']
-    model = Participant
-    extra = 0
-
-
 def reschedule_selected(modeladmin, request, queryset):
     for learning in queryset:
         learning.reschedule()
@@ -94,7 +96,7 @@ class Adminlearning(admin.ModelAdmin):
     search_fields = ('code', 'course')
     fieldsets = (
         ('Properties', {
-            'fields': ('code', 'course', 'state')
+            'fields': ('code', 'course', 'state', 'admin')
         }),
         ('Schedule', {
             'fields': (('start_planned_at', 'finish_planned_at'), ('schedule', 'timezone'))
@@ -108,5 +110,5 @@ class Adminlearning(admin.ModelAdmin):
             'fields': (('started_at', 'finished_at', 'cancelled_at'), ('created_at', 'updated_at'),),
         }),
     )
-    inlines = [ParticipantsInline, LessonsInline]
+    inlines = [StudentsInline, TeachersInline, LessonsInline]
     actions = [reschedule_selected]

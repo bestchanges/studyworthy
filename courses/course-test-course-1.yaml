@@ -1,0 +1,58 @@
+course:
+  title: Test Course 1
+  code: test-course-1
+  short_description: Short Description for Course 1
+  long_description: |
+    long description
+    Another Lone
+    # header1
+  notes: >
+    Notes for Course
+sections:
+  - name: Section 1
+    description: Section 1 description
+    units:
+      - name: Unit Intro
+        slug: u1
+        contents:
+          - type: video/youtube
+            code: https://www.youtube.com/watch?v=k4i5YpyYWmQ
+            url: https://www.youtube.com/watch?v=k4i5YpyYWmQ&feature=youtu.be
+  - name: Section 2
+    description: Section 2 description
+    units:
+      - name: Unit 2
+        slug: u2
+        contents:
+          - type: text/markdown
+            text: "#Sample Markdown Unit 2 Part 1"
+          - type: text/markdown
+            text: "#Sample Markdown Unit 2 Part 2"
+        tasks:
+          - name: task 1 name
+            type: text
+            description: task 1 for unit 2 description
+            decision_type: link
+            decision_deadline_days: 14
+            max_score: 10
+            pass_score: 6
+          - name: task 2 name
+            type: text
+            description: task 2 for unit 2 description
+            decision_type: text
+            decision_deadline_days: 14
+            max_score: 10
+            pass_score: 6
+      - name: Unit 3
+        slug: u3
+        contents:
+          - type: text/markdown
+            text: "#Sample Markdown Unit 3"
+        tasks:
+          - name: task 1 name
+            type: text
+            description: task 1 for unit 3 description
+            decision_type: link
+            decision_deadline_days: 14
+            max_score: 10
+            pass_score: 1

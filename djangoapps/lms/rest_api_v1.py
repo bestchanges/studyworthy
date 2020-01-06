@@ -2,7 +2,7 @@ from rest_framework import routers, serializers, viewsets, permissions
 
 from lms.models.base import Person
 from lms.models.content import Unit
-from lms.models.learning import Participant, Presence, Decision
+from lms.models.learning import Presence, Decision
 
 
 class UnitSerializer(serializers.ModelSerializer):
