@@ -1,13 +1,6 @@
 ##### [Main app](ROOTAPP.md)
-- [x] create custom tag for display person's avatar
-- [x] make common layout
-- [x] display avatars in navbar
 ##### [Campus APP](CAMPUS.md)
-- [x] Content: method: render() (1h)
-- [x] md plugin for template expansion (1h)
-- [x] view unit (1h)
 ##### [LMS](LMS.md)
-- [x] fix bug with loading from fixtures when lessons were created twice
 ##### [CRM](CRM.md)
 ##### Student enrollment
 - [ ] student application form (exportable to external sites)
