@@ -3,10 +3,7 @@
 # Backlog Tasks
 - [ ] importer: fix bug. Only one content item is added to the course
 - [ ] importer: clean content items not in file but in DB (content-always)
-- [ ] admin: course content modification
-- [ ] admin: Unit with Content Inline
 - [ ] Learning schedule inherits from course.default_schedule 
-- [ ] auto generate code for Learning
 - [ ] Content: import partly from markdown (2h)
 - [ ] Learning clone (as draft, keep teacher, admin) 
 

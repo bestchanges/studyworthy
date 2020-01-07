@@ -26,6 +26,7 @@ gunicorn = "*"
 boto3 = '*'
 whitenoise = '*'
 markdown = '*'
+django-money = '*'
 
 [requires]
 python_version = "3.6"

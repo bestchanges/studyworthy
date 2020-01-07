@@ -7,11 +7,16 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.utils.http import urlencode
 
+from crm.models.crm_models import CourseProduct
 from rootapp.models import SiteUser
 
 
 def index(request):
-    return render(request, 'index.html', {})
+    courses = CourseProduct.objects.filter(state=CourseProduct.State.ACTIVE)
+    context = {
+        'courses': courses,
+    }
+    return render(request, 'index.html', context)
 
 
 @login_required

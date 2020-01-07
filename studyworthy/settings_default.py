@@ -15,6 +15,8 @@ FIXTURE_DIRS = (
 
 INSTALLED_APPS = [
     'lms',
+    'djmoney',
+    'crm',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -114,3 +116,5 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 PERIODIC_PERIOD_TIMEDELTA = timezone.timedelta(hours=24)
+
+BASE_CURRENCY = 'RUB'

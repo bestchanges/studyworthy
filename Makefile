@@ -38,9 +38,13 @@ dump-persons: data
 	pipenv run python manage.py dumpdata lms.Person --format yaml --natural-primary --natural-foreign > data/sample-persons.yaml
 
 dump-auth: data
-	pipenv run python manage.py dumpdata authtoken rootapp.SiteUser --format yaml --natural-primary --natural-foreign > data/sample-auth.yaml
+	pipenv run python manage.py dumpdata authtoken rootapp.SiteUser social_django --format yaml --natural-primary --natural-foreign > data/sample-auth.yaml
 
 dump-all: dump-course dump-learnings dump-persons dump-auth
+
+dump-install:
+	# Install all dump files to fixtures in lms module
+	cp -v data/sample-*.yaml djangoapps/lms/fixtures
 
 venv:
 	pipenv update --dev
