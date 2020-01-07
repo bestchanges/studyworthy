@@ -27,6 +27,7 @@ boto3 = '*'
 whitenoise = '*'
 markdown = '*'
 django-money = '*'
+sentry-sdk = '*'
 
 [requires]
 python_version = "3.6"

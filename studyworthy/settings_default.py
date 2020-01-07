@@ -1,14 +1,23 @@
 """
 Common settings which applies to all environments.
 """
+
 import os
 
 import dotenv
+import sentry_sdk
 from django.utils import timezone
+from sentry_sdk.integrations.django import DjangoIntegration
 
 dotenv.load_dotenv()
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+if 'SENTRY_DSN' in os.environ:
+    sentry_sdk.init(
+        dsn=os.environ['SENTRY_DSN'],
+        integrations=[DjangoIntegration()]
+    )
 
 FIXTURE_DIRS = (
 )
