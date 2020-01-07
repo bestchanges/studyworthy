@@ -23,7 +23,7 @@ class ByCodeManager(models.Manager):
 
 
 class CodeNaturalKeyAbstractModel(models.Model):
-    code = models.CharField(max_length=36, unique=True)
+    code = models.CharField(max_length=200, unique=True)
 
     objects = ByCodeManager()
 

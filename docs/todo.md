@@ -3,9 +3,9 @@
 ##### [LMS](LMS.md)
 ##### [CRM](CRM.md)
 ##### [REST API](API.md)
-##### Slack integration
-- [ ] 'slackbot' application in Django
-- [ ] invite users to account (using invite link in )
+##### Notification app
+- [ ] 'notifications' application in Django
+- [ ] skackbot dependency
 ##### [CLI client library](CLI.md)
 ##### [Architecture](ARCH.md)
 - [ ] Model's code generator
