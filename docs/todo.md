@@ -11,6 +11,4 @@
 - [ ] Model's code generator
 - [ ] auto generate code (uuid, or dependant on properties with prefix/suffix)
 ##### [Systems](SYSTEMS.md)
-- [x] restore heroku deploy
-- [ ] install Sentry
 - [ ] utilize of heroku scheduler
