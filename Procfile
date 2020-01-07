@@ -1,2 +1,1 @@
-web: gunicorn studyworthy.wsgi --log-file -
-deploy: python manage.py migrate
+web: python manage.py migrate && gunicorn studyworthy.wsgi --log-file -
