@@ -1,9 +1,9 @@
 # Tasks Backlog
 - [ ] Model: generate CourseProduct from Course (in before_save)
-    - [ ] Course.calculate_duration(schedule=)
+    - [ ] Course.calculate_duration(schedule=None)
 - [ ] admin: Order[InlinePaymentIn}
 - [ ] catch signal when invoice payed
-- [ ] concept easy-try. Money back guarantee in first two weeks
+- [ ] add concept easy-try. Money back guarantee in first two weeks
 # IDEAS
 - [ ] introduce video duration attribute
 ### Student enrollment
