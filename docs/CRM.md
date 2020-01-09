@@ -6,10 +6,14 @@
 - [ ] add concept easy-try. Money back guarantee in first two weeks
 # IDEAS
 - [ ] introduce video duration attribute
-### Student enrollment
+# Enrollment algorithm
+- if there are some Planning learning
+  - then assign user to one of them (randomly)
+    - setting status to 'candidate' if it's payed course
+    - setting status to 'active' if it's free course
+### ERP tasks
 - [ ] map 'applicable' to State. (Move State to Enum)
 - [ ] test applicable
-- [ ] student application form (exportable to external sites)
 - [ ] assign student as candidate to learning/course(?)
 - [ ] application notification to course manager(!)
 - [ ] update payment and participant status  

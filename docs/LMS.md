@@ -1,6 +1,8 @@
 # LMS App
 
 # Backlog Tasks
+- [ ] make order field not unique with! And order by open_planned_date
+  - [ ] add number as string maybe?
 - [ ] importer: fix bug. Only one content item is added to the course
 - [ ] importer: clean content items not in file but in DB (content-always)
 - [ ] Learning schedule inherits from course.default_schedule 
