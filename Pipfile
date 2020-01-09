@@ -16,10 +16,9 @@ djangorestframework = "*"
 django-storages = '*'
 psycopg2-binary = "*"
 python-dotenv = "*"
-# django-cors-headers = "*"
 social-auth-app-django = "*"
 python-jose = "*"
-# requests = "*"
+requests = "*"
 dj_database_url = "*"
 pyyaml = "*"
 gunicorn = "*"
@@ -28,6 +27,7 @@ whitenoise = '*'
 markdown = '*'
 django-money = '*'
 sentry-sdk = '*'
+django-bootstrap-form = '*'
 
 [requires]
 python_version = "3.6"
