@@ -1,6 +1,9 @@
 ## Backlog
-- [ ] add L to learnings code
-# Design
+- [ ] CHALLENGE! How to share materials between different courses???
+- [ ] use of https://docs.djangoproject.com/en/3.0/ref/contrib/humanize/
+
+## IDEAs
+- [ ] use django-debug-toolbar (only on deev)
 
 ## Проблема с именем пользователя.
 Если человек приходит с Auth0 с формы регистрации,

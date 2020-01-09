@@ -1,0 +1,28 @@
+{% extends 'layout.html' %}
+{% load lms_custom_tags %}
+{% load bootstrap %}
+
+{% block content %}
+    <div class="jumbotron">
+        <h1>{{ product.name }}</h1>
+        <p class="lead">{{ product.short_description }}</p>
+        <p><a class="btn btn-lg btn-success" href="#enrollment-form" role="button">Зарегистрироваться</a></p>
+    </div>
+
+    <hr>
+    <div>
+    {{ course.long_description | markdown }}
+    </div>
+
+    <hr>
+
+    <h2>Зарегистрироваться</h2>
+    <form id="enrollment-form" method="POST" class="post-form">
+        {% csrf_token %}
+        {{ form | bootstrap }}
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+    </form>
+
+{% endblock content %}

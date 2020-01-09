@@ -1,4 +1,4 @@
-.container { padding-top: 70px; }
+.container { padding-top: 80px; }
 @media screen and (max-width: 768px) {
   .container { padding-top: 0px; }
 }

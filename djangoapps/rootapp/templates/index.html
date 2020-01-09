@@ -9,13 +9,13 @@
                 <h4 class="my-0 font-weight-normal">{{ course.name }}</h4>
             </div>
             <div class="card-body">
-                <h1 class="card-title pricing-card-title"><small class="text-muted">26000 руб.</small></h1>
+                <h1 class="card-title pricing-card-title"><small class="text-muted">{{ course.price }}</small></h1>
                 <ul class="list-unstyled mt-3 mb-4">
-                    <li>25 уроков</li>
-                    <li>20 практических заданий</li>
-                    <li><i class="far fa-calendar-alt"></i> 3 месяца и 2 недели</li>
+                    <li><i class="far fa-list-alt"></i> {{ course.number_of_lessons }} уроков</li>
+                    <li><i class="far fa-check-square"></i> {{ course.number_of_tasks }} практических заданий</li>
+                    <li><i class="far fa-calendar-alt"></i> {{ course.duration }}</li>
                 </ul>
-                <button type="button" class="btn btn-lg btn-block btn-success">Попробовать</button>
+                <a href="{% url 'course_product' course.code %}" type="button" class="btn btn-lg btn-block btn-success">Попробовать</a>
             </div>
         </div>
     {% endfor %}

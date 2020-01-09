@@ -8,7 +8,7 @@ from djmoney.money import Money
 from lms.models.base import CodeNaturalKeyAbstractModel, Person
 
 
-class Product(models.Model):
+class Product(CodeNaturalKeyAbstractModel):
     class State(models.TextChoices):
         DRAFT = 'draft'
         ACTIVE = 'active'
