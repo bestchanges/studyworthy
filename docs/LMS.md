@@ -1,13 +1,17 @@
 # LMS App
 
 # Backlog Tasks
-- [ ] make order field not unique with! And order by open_planned_date
-  - [ ] add number as string maybe?
+- [ ] make Lessons to order by order
+- [ ] admin Content add: list_fields, search_fields
+- [ ] model Content introduce 'data' JSONFiled
+  solution for sqlite: https://medium.com/@philamersune/using-postgresql-jsonfield-in-sqlite-95ad4ad2e5f1
 - [ ] importer: fix bug. Only one content item is added to the course
 - [ ] importer: clean content items not in file but in DB (content-always)
 - [ ] Learning schedule inherits from course.default_schedule 
 - [ ] Content: import partly from markdown (2h)
 - [ ] Learning clone (as draft, keep teacher, admin) 
+- [ ] make section field limit_choises_to 
+    sample solution: https://stackoverflow.com/questions/31578559/django-foreignkey-limit-choices-to-a-different-foreignkey-id
 
 
 # IDEAS / Issues

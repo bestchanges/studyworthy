@@ -34,13 +34,13 @@ dump-course: data
 dump-learnings: data
 	pipenv run python manage.py dumpdata lms.Learning lms.Lesson lms.RoleStudent lms.RoleTeacher --format yaml --natural-primary --natural-foreign > data/sample-learnings.yaml
 
-dump-persons: data
-	pipenv run python manage.py dumpdata lms.Person --format yaml --natural-primary --natural-foreign > data/sample-persons.yaml
+dump-people: data
+	pipenv run python manage.py dumpdata lms.Person lms.Author lms.Teacher lms.Student --format yaml --natural-primary --natural-foreign > data/sample-persons.yaml
 
 dump-auth: data
 	pipenv run python manage.py dumpdata authtoken rootapp.SiteUser social_django --format yaml --natural-primary --natural-foreign > data/sample-auth.yaml
 
-dump-all: dump-course dump-learnings dump-persons dump-auth
+dump-all: dump-course dump-learnings dump-people dump-auth
 
 dump-install:
 	# Install all dump files to fixtures in lms module

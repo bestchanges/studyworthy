@@ -15,9 +15,9 @@ def import_course_content(data: dict) -> Course:
         section_data = dict(section_node)
         section_data['order'] = section_number
         section_data['course'] = course
-        section_data['code'] = f'{course.code}-{section_number}'
+        section_data['code'] = f'S{section_number}'
         section_data.pop('units')
-        section, created = Section.objects.update_or_create(section_data, code=section_data['code'])
+        section, created = Section.objects.get_or_create_by_natural_key(course.code, section_data['code'], defaults=section_data)
         unit_number_across_section = 0
         for unit_node in section_node['units']:
             unit_number_across_course += 1
@@ -26,8 +26,8 @@ def import_course_content(data: dict) -> Course:
             unit_data['course'] = course
             unit_data['section'] = section
             unit_data['order'] = unit_number_across_course
-            assert unit_data["slug"], "Slug is required for unit {unit_data}"
-            unit_data['code'] = f'{course.code}-{unit_data["slug"]}'
+            assert unit_data["code"], "Code is required for unit {unit_data}"
+            unit_data['code'] = f'U{unit_data["code"]}'
             if 'tasks' in unit_data:
                 unit_data.pop('tasks')
             if 'contents' in unit_data:

@@ -2,6 +2,7 @@
 Learning process related models.
 """
 import datetime
+import uuid
 
 import pytz
 from django.conf import settings
@@ -10,6 +11,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
 from django.utils.timezone import now
+from natural_keys import NaturalKeyModel
 
 from lms import config, signals
 from lms.models.base import CodeNaturalKeyAbstractModel, Person
@@ -17,7 +19,7 @@ from lms.models.content import Course, Unit
 from lms.schedule import events_generator
 
 
-class Learning(CodeNaturalKeyAbstractModel):
+class Learning(NaturalKeyModel):
 
     class Meta:
         verbose_name = 'learning'
@@ -31,6 +33,7 @@ class Learning(CodeNaturalKeyAbstractModel):
         CANCELLED = 'cancelled'
 
     course = models.ForeignKey(Course, on_delete=models.PROTECT)
+    code = models.SlugField(max_length=100, default=uuid.uuid4, unique=True)
     state = models.CharField(max_length=20, choices=State.choices, default=State.PLANNED)
     schedule = models.CharField(max_length=200, null=True, default="Mon 15:00, Tue 15:00, Sat 19:00", help_text='Regular plan of learning of units')
     timezone = models.CharField(max_length=100, choices=[(tz, tz) for tz in config.TIMEZONES], default=settings.TIME_ZONE)
@@ -75,7 +78,7 @@ class Learning(CodeNaturalKeyAbstractModel):
             lesson.save()
 
     def __str__(self):
-        return f'Learning {self.code}'
+        return self.code
 
 
 @receiver(post_save, sender=Learning)
@@ -87,7 +90,7 @@ def on_learning_create(sender, instance: Learning, created, **kwargs):
             lesson.save()
 
 
-class RoleStudent(models.Model):
+class RoleStudent(NaturalKeyModel):
 
     class State(models.TextChoices):
         CANDIDATE = 'candidate'
@@ -114,7 +117,7 @@ class RoleStudent(models.Model):
         return f'Student {self.person.full_name}'
 
 
-class RoleTeacher(models.Model):
+class RoleTeacher(NaturalKeyModel):
 
     class Meta:
         unique_together = [['learning', 'person']]
@@ -130,7 +133,7 @@ class RoleTeacher(models.Model):
         return f'Teacher {self.person.full_name}'
 
 
-class Lesson(models.Model):
+class Lesson(NaturalKeyModel):
     class Meta:
         unique_together = [['learning', 'unit']]
 
@@ -168,7 +171,7 @@ class Lesson(models.Model):
         return f'Lesson: {self.unit} for {self.learning}'
 
 
-class Presence(models.Model):
+class Presence(NaturalKeyModel):
     """
     Represents state of processing of the Lesson by the Student. Unique for combination of unit and student.
     """

@@ -28,6 +28,7 @@ markdown = '*'
 django-money = '*'
 sentry-sdk = '*'
 django-bootstrap-form = '*'
+natural-keys = '*'
 
 [requires]
 python_version = "3.6"

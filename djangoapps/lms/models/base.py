@@ -1,6 +1,8 @@
 """
 The most common root models. They are used by most of other models
 """
+import uuid
+
 from django.conf.global_settings import LANGUAGES
 from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ObjectDoesNotExist
@@ -8,6 +10,7 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.conf import settings
+from natural_keys import NaturalKeyModel
 
 from lms import config
 
@@ -34,7 +37,8 @@ class CodeNaturalKeyAbstractModel(models.Model):
         return (self.code,)
 
 
-class Person(CodeNaturalKeyAbstractModel):
+class Person(NaturalKeyModel):
+    code = models.SlugField(max_length=100, default=uuid.uuid4, unique=True)
     first_name = models.CharField(max_length=100, blank=True)
     last_name = models.CharField(max_length=150, blank=True)
     email = models.EmailField(null=True, unique=True)  # TODO: can we use unique=True for nullable ?
@@ -61,33 +65,33 @@ class Person(CodeNaturalKeyAbstractModel):
         return f'{self.full_name} {self.email}'
 
 
-class Author(models.Model):
-    person = models.OneToOneField(Person, on_delete=models.CASCADE)
+class Author(NaturalKeyModel):
+    person = models.OneToOneField(Person, on_delete=models.CASCADE, unique=True)
     bio = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return f'Author: {self.person.full_name}'
+        return self.person.full_name
 
 
-class Teacher(models.Model):
-    person = models.OneToOneField(Person, on_delete=models.CASCADE)
+class Teacher(NaturalKeyModel):
+    person = models.OneToOneField(Person, on_delete=models.CASCADE, unique=True)
     bio = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return f'Teacher: {self.person.full_name}'
+        return self.person.full_name
 
 
 
-class Student(models.Model):
-    person = models.OneToOneField(Person, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return f'Student: {self.person.full_name}'
-
-
-class Admin(models.Model):
-    person = models.OneToOneField(Person, on_delete=models.CASCADE)
+class Student(NaturalKeyModel):
+    person = models.OneToOneField(Person, on_delete=models.CASCADE, unique=True)
 
     def __str__(self):
-        return f'Admin: {self.person.full_name}'
+        return self.person.full_name
+
+
+class Admin(NaturalKeyModel):
+    person = models.OneToOneField(Person, on_delete=models.CASCADE, unique=True)
+
+    def __str__(self):
+        return self.person.full_name
 

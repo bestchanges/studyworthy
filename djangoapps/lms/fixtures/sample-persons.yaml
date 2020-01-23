@@ -15,8 +15,8 @@
     timezone: Europe/Moscow
     is_admin: true
     can_teach: true
-    created_at: 2020-01-06 11:15:57.624044+00:00
-    updated_at: 2020-01-06 12:03:17.562510+00:00
+    created_at: 2020-01-06 11:15:57.624000+00:00
+    updated_at: 2020-01-06 12:03:17.562000+00:00
 - model: lms.person
   fields:
     code: sample-teacher
@@ -72,8 +72,8 @@
     timezone: Europe/Moscow
     is_admin: false
     can_teach: false
-    created_at: 2020-01-06 11:45:11.740514+00:00
-    updated_at: 2020-01-06 11:54:28.159030+00:00
+    created_at: 2020-01-06 11:45:11.740000+00:00
+    updated_at: 2020-01-06 11:54:28.159000+00:00
 - model: lms.person
   fields:
     code: student3
@@ -91,8 +91,8 @@
     timezone: Europe/Moscow
     is_admin: false
     can_teach: false
-    created_at: 2020-01-06 11:52:01.043726+00:00
-    updated_at: 2020-01-06 11:54:07.968143+00:00
+    created_at: 2020-01-06 11:52:01.043000+00:00
+    updated_at: 2020-01-06 11:54:07.968000+00:00
 - model: lms.person
   fields:
     code: egor
@@ -110,8 +110,8 @@
     timezone: Europe/Moscow
     is_admin: false
     can_teach: false
-    created_at: 2020-01-06 12:00:48.007162+00:00
-    updated_at: 2020-01-06 12:00:48.087965+00:00
+    created_at: 2020-01-06 12:00:48.007000+00:00
+    updated_at: 2020-01-06 12:00:48.087000+00:00
 - model: lms.person
   fields:
     code: student4
@@ -129,5 +129,10 @@
     timezone: Europe/Moscow
     is_admin: false
     can_teach: false
-    created_at: 2020-01-06 12:02:46.185723+00:00
-    updated_at: 2020-01-06 12:02:46.246924+00:00
+    created_at: 2020-01-06 12:02:46.185000+00:00
+    updated_at: 2020-01-06 12:02:46.246000+00:00
+- model: lms.author
+  fields:
+    person:
+    - sample-teacher
+    bio: bio of the teacher

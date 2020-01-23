@@ -1,8 +1,8 @@
 from django.contrib import admin
 from django.utils.translation import gettext_lazy
 
-from lms.models.base import Person
-from lms.models.content import Section, Course, Unit, Content, Task
+from lms.models.base import Person, Author
+from lms.models.content import Section, Course, Unit, Content, Task, UnitContent
 from lms.models.learning import RoleStudent, RoleTeacher, Learning, Lesson
 
 
@@ -11,14 +11,20 @@ class AdminPerson(admin.ModelAdmin):
     pass
 
 
+@admin.register(Author)
+class AdminAuthor(admin.ModelAdmin):
+    search_fields = ('person__first_name', 'person__last_name', )
+
+
 class SectionInline(admin.TabularInline):
     model = Section
     extra = 0
 
 
 class UnitsInline(admin.TabularInline):
-    fields = ['order', 'name', 'slug', 'code', 'section']
+    fields = ['order', 'name', 'code', 'section']
     model = Unit
+    show_change_link = True
     extra = 0
 
 
@@ -36,14 +42,16 @@ class AdminCourse(admin.ModelAdmin):
             'fields': ('title', 'short_description', 'long_description')
         }),
         ('Additional options', {
-            'classes': ('collapse',),
+            #'classes': ('collapse',),
             'fields': ('notes', 'authors'),
         }),
         ('Datetime', {
             'fields': (('created_at', 'updated_at'),),
         }),
     )
-    inlines = [SectionInline, UnitsInline]
+    autocomplete_fields = ('authors', )
+    # filter_horizontal = ('authors', )
+    inlines = [UnitsInline, SectionInline]
 
 
 class StudentsInline(admin.TabularInline):
@@ -52,6 +60,7 @@ class StudentsInline(admin.TabularInline):
     model = RoleStudent
     extra = 1
 
+
 class TeachersInline(admin.TabularInline):
     fields = ['person', 'notes', 'created_at', ]
     readonly_fields = ['created_at', ]
@@ -59,8 +68,14 @@ class TeachersInline(admin.TabularInline):
     extra = 1
 
 
+@admin.register(Content)
+class AdminContent(admin.ModelAdmin):
+    search_fields = ('code', 'name')
+
+
 class ContentInline(admin.StackedInline):
-    model = Content
+    model = Unit.contents.through
+    autocomplete_fields = ('content',)
     extra = 0
 
 
@@ -72,16 +87,23 @@ class TasksInline(admin.StackedInline):
 @admin.register(Unit)
 class AdminUnit(admin.ModelAdmin):
     list_display = (
+        'code',
         'name',
-        'slug',
+        'course',
+        'section'
+    )
+    fields = (
         'course',
         'section',
         'code',
+        'order',
+        'name',
+        'description',
+        'notes',
     )
     list_filter = ['course']
-    search_fields = ['section', 'code', 'name', 'slug']
-    inlines = [ContentInline, TasksInline]
-
+    search_fields = ['section', 'code', 'name']
+    inlines = [ContentInline]
 
 class LessonsInline(admin.TabularInline):
     fields = ['unit', 'state', 'order', 'notes', 'open_planned_at', 'opened_at', 'finished_at', 'cancelled_at']
@@ -94,8 +116,10 @@ def reschedule_selected(modeladmin, request, queryset):
     for learning in queryset:
         learning.reschedule()
 
+
 reschedule_selected.allowed_permissions = ('delete',)
 reschedule_selected.short_description = gettext_lazy("Reschedule")
+
 
 @admin.register(Learning)
 class Adminlearning(admin.ModelAdmin):

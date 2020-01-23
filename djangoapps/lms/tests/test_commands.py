@@ -1,3 +1,6 @@
+"""
+Test custom commands for manage.py
+"""
 import os
 from io import StringIO
 
@@ -10,7 +13,7 @@ from lms.models.learning import Learning
 
 
 class TestCommands(TestCase):
-    fixtures = ['sample-courses.yaml']
+    fixtures = ['sample-persons.yaml', 'sample-courses.yaml']
 
     def test_command_periodic(self):
         course = Course.objects.get_by_natural_key('hpi')

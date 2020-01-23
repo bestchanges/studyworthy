@@ -13,20 +13,25 @@ sections:
     description: Section 1 description
     units:
       - name: Unit Intro
-        slug: u1
+        code: u1
         contents:
           - type: video/youtube
+            name: Sample youtube video
             code: https://www.youtube.com/watch?v=k4i5YpyYWmQ
             url: https://www.youtube.com/watch?v=k4i5YpyYWmQ&feature=youtu.be
   - name: Section 2
     description: Section 2 description
     units:
       - name: Unit 2
-        slug: u2
+        code: u2
         contents:
           - type: text/markdown
+            code: tc1-u2-c1
+            name: "Unit 2 Part 1"
             text: "#Sample Markdown Unit 2 Part 1"
           - type: text/markdown
+            name: "Unit 2 Part 2"
+            code: tc1-u2-c2
             text: "#Sample Markdown Unit 2 Part 2"
         tasks:
           - name: task 1 name
@@ -44,9 +49,11 @@ sections:
             max_score: 10
             pass_score: 6
       - name: Unit 3
-        slug: u3
+        code: u3
         contents:
           - type: text/markdown
+            name: Unit 3
+            code: tc1-u3-c1
             text: "#Sample Markdown Unit 3"
         tasks:
           - name: task 1 name
