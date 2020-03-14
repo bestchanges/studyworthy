@@ -1,12 +1,11 @@
 # LMS App
 
 # Backlog Tasks
+- [ ] Admin: create Learning generate code (Lnumber-course)
 - [ ] make Lessons to order by order
 - [ ] admin Content add: list_fields, search_fields
 - [ ] model Content introduce 'data' JSONFiled
   solution for sqlite: https://medium.com/@philamersune/using-postgresql-jsonfield-in-sqlite-95ad4ad2e5f1
-- [ ] importer: fix bug. Only one content item is added to the course
-- [ ] importer: clean content items not in file but in DB (content-always)
 - [ ] Learning schedule inherits from course.default_schedule 
 - [ ] Content: import partly from markdown (2h)
 - [ ] Learning clone (as draft, keep teacher, admin) 

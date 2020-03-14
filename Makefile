@@ -29,7 +29,7 @@ clean:
 	rm -rf data/*
 
 dump-course: data
-	pipenv run python manage.py dumpdata lms.Course lms.Section lms.Unit lms.Task lms.Content --format yaml --natural-primary --natural-foreign > data/sample-courses.yaml
+	pipenv run python manage.py dumpdata lms.Course lms.Section lms.Unit lms.Content --format yaml --natural-primary --natural-foreign > data/sample-courses.yaml
 
 dump-learnings: data
 	pipenv run python manage.py dumpdata lms.Learning lms.Lesson lms.RoleStudent lms.RoleTeacher --format yaml --natural-primary --natural-foreign > data/sample-learnings.yaml

@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.utils.translation import gettext_lazy
 
 from lms.models.base import Person, Author
-from lms.models.content import Section, Course, Unit, Content, Task, UnitContent
+from lms.models.content import Section, Course, Unit, Content, UnitContent, Form, Question
 from lms.models.learning import RoleStudent, RoleTeacher, Learning, Lesson
 
 
@@ -73,14 +73,22 @@ class AdminContent(admin.ModelAdmin):
     search_fields = ('code', 'name')
 
 
+class FormQuestionsInline(admin.TabularInline):
+    fields = ['code', 'name', 'choices', 'correct_choices', 'score']
+    model = Question
+    extra = 3
+
+
+@admin.register(Form)
+class AdminForm(admin.ModelAdmin):
+    fields = ('code', 'name', 'type', 'text', 'notes', 'decision_deadline_days', 'pass_score')
+    search_fields = ('code', 'name')
+    inlines = [FormQuestionsInline]
+
+
 class ContentInline(admin.StackedInline):
     model = Unit.contents.through
     autocomplete_fields = ('content',)
-    extra = 0
-
-
-class TasksInline(admin.StackedInline):
-    model = Task
     extra = 0
 
 
@@ -104,6 +112,7 @@ class AdminUnit(admin.ModelAdmin):
     list_filter = ['course']
     search_fields = ['section', 'code', 'name']
     inlines = [ContentInline]
+
 
 class LessonsInline(admin.TabularInline):
     fields = ['unit', 'state', 'order', 'notes', 'open_planned_at', 'opened_at', 'finished_at', 'cancelled_at']

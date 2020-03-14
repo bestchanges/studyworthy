@@ -1,30 +1,40 @@
 ##### [Root app](ROOTAPP.md)
-- [ ] EnrollmentForm make logged-aware (actually use two different forms)
+- [ ] EnrollmentForm make logged-in (use two different forms / hide some fields)
 - [ ] Enrollment Form map to existing / creating new Person
     - [ ] use lookup Person for authorization dashboard (and rename it from dashboard to after-auth0-auth)
-- [ ] Enrollment also Invoice
 ##### [Campus APP](CAMPUS.md)
 ##### [LMS](LMS.md)
-- [ ] model Unit has many-to-many relations with Content
-    - [x] model Unit display content inline according to order
-    - [x] can create new Content from Unit edit
-    - [x] can go to unit from Course edit
-    - [x] fix fixtures
-    - [ ] update importer to use UnitContent
-- [x] models in learning.py inherit NaturalKeyModel
-- [x] make Unit order field not unique with!
-- [x] make Units to order by order in admin
-- [x] admin Course: authors should autocompletion by name
+- [ ] spike for forms / quizzes
+  - [x] model: Form(Content) (slug, name, type: quiz/poll)
+  - [x] model: Question (code, name, hint, type, values, correct_values, score)
+  - [ ] admin: Form with inline questions
+  - [ ] views: render Form
+  - [ ] views: response = form.get_response(request)
+  - [ ] views: form.render_response(response)
+  - [x] investigate https://github.com/stephenmcd/django-forms-builder,
+       https://github.com/tomwalker/django_quiz
+- [ ] rename Decision to StudentResponse
+- [ ] rename Review to TeacherFeedback
+- [ ] mapping from content type to proxy model (no need to model inheritance)
+  - [ ] extract ContentType to separate class (remove Content/Type)
+  - [ ] proxy models for Content types
+  - [ ] method render
+- [ ] support for webinar/youtube as content-type
+  - [ ] render player
+   https://developers.google.com/youtube/youtube_player_demo
+  - [ ] render chat
+- [ ] CHALLENGE! How to share materials between different courses???
+  - [ ] model Unit has many-to-many relations with Content
+  - [ ] update importer to use UnitContent
+- [ ] importer: fix bug. Only one content item is added to the course
+- [ ] importer: clean units items not in file but in DB
+  - [ ] importer: use field delete to delete units, sections
 ##### [CRM](CRM.md)
-##### [REST API](API.md)
 ##### Notification app
 - [ ] 'notifications' application in Django
 - [ ] skackbot dependency
-##### [CLI client library](CLI.md)
 ##### [Architecture](ARCH.md)
-- [ ] Model's code generator
-    - [x] Let's use this: https://github.com/wq/django-natural-keys
-    - [x] auto generate code (uuid, or dependant on properties with prefix/suffix)
-    - [ ] add L to learnings code
+- [ ] Webinar is a specific case of Course (with Content webinar)
 ##### [Systems](SYSTEMS.md)
+- [ ] use django-debug-toolbar (only on dev)
 ##### [Design](DESIGN.md)

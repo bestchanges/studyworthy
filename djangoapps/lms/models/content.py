@@ -53,6 +53,7 @@ class Content(NaturalKeyModel):
         MARKDOWN = "text/markdown"
         LINK = "link/uri"
         VIDEO = "video/youtube"
+        TASK = "lms/task"
 
     code = models.CharField(max_length=200, unique=True, default=uuid.uuid4)
     name = models.CharField(max_length=200)
@@ -91,36 +92,62 @@ class UnitContent(models.Model):
     unit = models.ForeignKey(Unit, on_delete=models.CASCADE)
     content = models.ForeignKey(Content, on_delete=models.CASCADE)
     order = models.IntegerField()
+
     class Meta:
-        ordering = ['order', 'unit', 'content']
+        ordering = ['unit', 'order']
 
 
-# TODO: Actually kind of content. Proxy model for Content!
-class Task(CodeNaturalKeyAbstractModel):
-    class Meta:
-        unique_together = [['unit', 'order'], ]
-
-    class Type(models.TextChoices):
-        QUIZ = "quiz"
-        TEXT = "text"
-
-    class DecisionType(models.TextChoices):
-        NUMBER = "number"
-        TEXT = "text"
-        LINK = "link"
-
+class Seminar(NaturalKeyModel):
+    code = models.SlugField(max_length=50, help_text="code to easily identify this Seminar across all others", default=uuid.uuid4, unique=True)
     name = models.CharField(max_length=200)
-    type = models.CharField(max_length=20, choices=Type.choices, default=Type.TEXT)
     description = models.TextField(null=True, blank=True)
+    notes = models.CharField(max_length=200, null=True, blank=True)
+    contents = models.ManyToManyField(Content, through='SeminarContent')
 
-    unit = models.ForeignKey(Unit, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, editable=False)
+    updated_at = models.DateTimeField(auto_now=True, null=True, editable=False)
+
+    class Meta:
+        ordering = ['code']
+
+    def __str__(self):
+        return f'{self.code} ({self.name})'
+
+
+class SeminarContent(models.Model):
+    seminar = models.ForeignKey(Seminar, on_delete=models.CASCADE)
+    content = models.ForeignKey(Content, on_delete=models.CASCADE)
     order = models.IntegerField()
 
-    decision_type = models.CharField(max_length=20, choices=DecisionType.choices)
-    decision_deadline_days = models.IntegerField(null=True, blank=True)
+    class Meta:
+        ordering = ['seminar', 'order']
 
-    max_score = models.IntegerField(default=0)
+
+class Form(Content):
+    class Type(models.TextChoices):
+        QUIZ = "lmsForm/quiz"
+        POLL = "lmsForm/poll"
+
+    decision_deadline_days = models.IntegerField(null=True, blank=True)
     pass_score = models.IntegerField(null=True, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True, null=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True, null=True, editable=False)
+
+
+class Question(models.Model):
+    class Type(models.TextChoices):
+        TEXT = 'text'
+        TEXTAREA = 'textarea'
+        RADIO = 'radio'
+        CHECKBOXES = 'checkboxes'
+
+    code = models.SlugField(max_length=100, help_text="code for HTML input field", default=uuid.uuid4)
+    name = models.CharField(max_length=200, help_text="Text of question visible to human")
+    type = models.CharField(max_length=20, choices=Type.choices, default=Type.TEXT)
+    choices = models.CharField(max_length=500, null=True, blank=True, help_text="Pipe-separated ('choice1|choice2') choices")
+    correct_choices = models.CharField(max_length=500, null=True, blank=True, help_text="Correct choices (if multiple then pipe-separated)")
+    auto_check = models.BooleanField(default=True, help_text="Check answer automatically (if possible)")
+    score = models.IntegerField(null=True, blank=True, default=1, help_text="Score value for correct answer")
+    form = models.ForeignKey(Form, on_delete=models.CASCADE)
+

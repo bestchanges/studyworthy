@@ -1,9 +1,8 @@
 ## Backlog
-- [ ] CHALLENGE! How to share materials between different courses???
+- [ ] extract created_at, updated_at as Mixin (what to do with readonly fields?)
 - [ ] use of https://docs.djangoproject.com/en/3.0/ref/contrib/humanize/
 
 ## IDEAs
-- [ ] use django-debug-toolbar (only on deev)
 - [ ] stop redefining AuthUser. We can match it to person on fly. And keep it in session by the way on signal login.
 
 ## Проблема с именем пользователя.

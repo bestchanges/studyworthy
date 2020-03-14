@@ -1,5 +1,5 @@
 ## Backlog tasks
-- [ ] Transit from Travis to Github actions
+- [ ] (?) Transit from Travis to Github actions
 
 ## Scope
 - administration

@@ -12,6 +12,7 @@
     - setting status to 'candidate' if it's payed course
     - setting status to 'active' if it's free course
 ### ERP tasks
+- [ ] Enrollment also Invoice
 - [ ] map 'applicable' to State. (Move State to Enum)
 - [ ] test applicable
 - [ ] assign student as candidate to learning/course(?)

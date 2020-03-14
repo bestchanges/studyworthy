@@ -1,5 +1,6 @@
 Build:
  [![Travis](https://travis-ci.org/bestchanges/studyworthy.svg?branch=master)](https://travis-ci.org/bestchanges/studyworthy)
+ [![Coverage Status](https://coveralls.io/repos/github/bestchanges/studyworthy/badge.svg?branch=master)](https://coveralls.io/github/bestchanges/studyworthy?branch=master)
 # References
 
 * [Canban board](https://github.com/bestchanges/studyworthy/projects/1)
