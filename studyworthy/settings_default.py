@@ -7,6 +7,7 @@ import os
 import dotenv
 import sentry_sdk
 from django.utils import timezone
+import moneyed
 from sentry_sdk.integrations.django import DjangoIntegration
 
 dotenv.load_dotenv()
@@ -23,9 +24,7 @@ FIXTURE_DIRS = (
 )
 
 INSTALLED_APPS = [
-    'lms',
     'djmoney',
-    'crm',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -36,8 +35,10 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'social_django',
     'bootstrapform',
-    'campus',
-    'rootapp',
+    'djangoapps.crm',
+    'djangoapps.lms',
+    'djangoapps.campus',
+    'djangoapps.rootapp',
 ]
 
 MIDDLEWARE = [
@@ -127,4 +128,4 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 PERIODIC_PERIOD_TIMEDELTA = timezone.timedelta(hours=24)
 
-BASE_CURRENCY = 'RUB'
+DEFAULT_CURRENCY = moneyed.RUB

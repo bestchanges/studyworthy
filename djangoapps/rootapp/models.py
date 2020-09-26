@@ -4,7 +4,7 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from lms.models.base import Person
+from djangoapps.lms.models.base import Person
 
 
 class SiteUser(AbstractUser):

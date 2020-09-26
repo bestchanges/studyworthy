@@ -6,12 +6,15 @@
     <div class="jumbotron">
         <h1>{{ product.name }}</h1>
         <p class="lead">{{ product.short_description }}</p>
-        <p><a class="btn btn-lg btn-success" href="#enrollment-form" role="button">Зарегистрироваться</a></p>
+        <p>
+            <a class="btn btn-lg btn-success" href="#enrollment-form" role="button">Зарегистрироваться</a>
+            <a class="btn btn-lg btn-success" href="#enrollment-form" role="button">Купить</a>
+        </p>
     </div>
 
     <hr>
     <div>
-    {{ course.long_description | markdown }}
+        {{ course.long_description | markdown }}
     </div>
 
     <hr>

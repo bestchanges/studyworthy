@@ -1,5 +1,10 @@
 from django.apps import AppConfig
 
+from djangoapps.crm.api import yandex_kassa
 
-class CrmConfig(AppConfig):
-    name = 'crm'
+
+class MyAppConfig(AppConfig):
+    name = 'djangoapps.crm'
+
+    def ready(self):
+        yandex_kassa.init()

@@ -1,5 +1,5 @@
 from django.apps import AppConfig
 
 
-class LmsAppConfig(AppConfig):
-    name = 'lms'
+class MyAppConfig(AppConfig):
+    name = 'djangoapps.lms'

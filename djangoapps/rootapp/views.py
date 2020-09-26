@@ -1,16 +1,14 @@
 import json
 
 from django.conf import settings
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
-from django.shortcuts import render, redirect
-from django.urls import reverse
+from django.shortcuts import render
 from django.utils.http import urlencode
 
-from crm.forms import EnrollmentForm
-from crm.models.crm_models import CourseProduct
-from rootapp.models import SiteUser
+from djangoapps.crm.models.crm_models import CourseProduct
+from djangoapps.rootapp.models import SiteUser
 
 
 def index(request):
@@ -19,25 +17,6 @@ def index(request):
         'courses': courses,
     }
     return render(request, 'index.html', context)
-
-
-def course_product(request, code):
-    product = CourseProduct.objects.get(code=code)
-    if request.method == "POST":
-        form = EnrollmentForm(request.POST)
-        if form.is_valid():
-            enrollment = form.save(commit=False)
-            enrollment.product = product
-            enrollment.save()
-            return redirect(reverse('enrollment_accepted'))
-    else:
-        form = EnrollmentForm()
-    context = {
-        'product': product,
-        'course': product.items.all()[0],
-        'form': form,
-    }
-    return render(request, 'course_product.html', context)
 
 
 @login_required
@@ -77,7 +56,3 @@ def logout_view(request):
     logout_url = 'https://%s/v2/logout?client_id=%s&%s' % \
                  (settings.SOCIAL_AUTH_AUTH0_DOMAIN, settings.SOCIAL_AUTH_AUTH0_KEY, return_to)
     return HttpResponseRedirect(logout_url)
-
-
-def enrollment_accepted(request):
-    return render(request, 'enrollment_accepted.html', {})

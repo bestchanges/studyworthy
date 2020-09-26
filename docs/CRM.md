@@ -1,6 +1,4 @@
 # Tasks Backlog
-- [ ] Model: generate CourseProduct from Course (in before_save)
-    - [ ] Course.calculate_duration(schedule=None)
 - [ ] admin: Order[InlinePaymentIn}
 - [ ] catch signal when invoice payed
 - [ ] add concept easy-try. Money back guarantee in first two weeks

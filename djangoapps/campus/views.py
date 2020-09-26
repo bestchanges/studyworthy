@@ -1,9 +1,9 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
-from lms.models.content import Unit
-from lms.models.learning import Learning, Lesson
-from rootapp.models import SiteUser
+from djangoapps.lms.models.content import Unit
+from djangoapps.lms.models.learning import Learning, Lesson
+from djangoapps.rootapp.models import SiteUser
 
 
 @login_required

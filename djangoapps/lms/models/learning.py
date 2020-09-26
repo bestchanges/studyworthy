@@ -13,10 +13,10 @@ from django.utils import timezone
 from django.utils.timezone import now
 from natural_keys import NaturalKeyModel
 
-from lms import config, signals
-from lms.models.base import CodeNaturalKeyAbstractModel, Person
-from lms.models.content import Course, Unit
-from lms.schedule import events_generator
+from djangoapps.lms import config, signals
+from djangoapps.lms.models.base import CodeNaturalKeyAbstractModel, Person
+from djangoapps.lms.models.content import Course, Unit
+from djangoapps.lms.schedule import events_generator
 
 
 class Learning(NaturalKeyModel):

@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.models import User
 
-from rootapp.models import SiteUser
+from djangoapps.rootapp.models import SiteUser
 
 
 admin.site.register(User, SiteUser)

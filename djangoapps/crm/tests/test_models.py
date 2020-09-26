@@ -1,24 +1,57 @@
+import datetime
+
 from django.test import TestCase
+from django.utils import timezone
 from djmoney.money import Money
 
-from crm.models import Product, Invoice, PaymentIn, Shipment
-from lms.models.base import Person
+from djangoapps.crm.models.erp_models import Invoice, PaymentIn, Shipment, Product, ClientOrder
+from djangoapps.lms.models.base import Person
 
 
 class TestModels(TestCase):
 
-    def test_invoice(self):
-        product_1, product_2 = self._create_products()
+    def setUp(self):
+        self.product_1, self.product_2 = self._create_products()
 
+    def tearDown(self):
+        self.product_1.delete()
+        self.product_2.delete()
+
+    def test_document_number(self):
+        order = ClientOrder()
+        order.save()
+        self.assertEquals("CO-1", order.document_number)
+
+        order_2 = ClientOrder()
+        order_2.save()
+        self.assertEquals("CO-2", order_2.document_number)
+
+        invoice = order.create_invoice()
+        invoice.save()
+        self.assertEquals("I-1", invoice.document_number)
+
+        invoice_2 = order.create_invoice()
+        invoice_2.save()
+        self.assertEquals("I-2", invoice_2.document_number)
+
+        # create invoice one month later
+        self.assertTrue('{number_month}' in Invoice.document_number_template,
+                        "Invoices suppose to be month-dependant")
+        invoice_3 = order.create_invoice()
+        invoice_3.created_at = timezone.now() + datetime.timedelta(days=31)
+        invoice_3.save()
+        self.assertEquals("I-1", invoice_3.document_number)
+
+    def test_client_order(self):
         buyer = Person()
         buyer.save()
-        invoice = Invoice(code='Invoice-1', buyer=buyer, currency='RUB')
-        invoice.save()
-        invoice.add_item(product_1, 2)
-        invoice.add_item(product_2, 1)
+        order = ClientOrder(client=buyer, currency='RUB')
+        order.save()
+        order.add_item(self.product_1, 2)
+        order.add_item(self.product_2, 1)
 
-        self.assertEqual(invoice.invoiceitem_set.count(), 2)
-        self.assertEqual(invoice.amount, Money(35, 'RUB'))
+        self.assertEqual(order.items.count(), 2)
+        self.assertEqual(order.amount, Money(35, 'RUB'))
 
     def test_payment_in(self):
         buyer = Person()
@@ -75,9 +108,9 @@ class TestModels(TestCase):
 
     def _create_products(self):
         Product(name='test product 1', price=Money(10, 'RUB'))
-        product_1 = Product(name='test product 1', price=Money(10, 'RUB'))
+        product_1 = Product(code='product-1', name='test product 1', price=Money(10, 'RUB'))
         product_1.save()
-        product_2 = Product(name='test product 2', price=Money(15, 'RUB'))
+        product_2 = Product(code='product-2', name='test product 2', price=Money(15, 'RUB'))
         product_2.save()
         return product_1, product_2
 

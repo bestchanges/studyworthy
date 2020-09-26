@@ -3,8 +3,8 @@ from django import template
 from django.templatetags.static import static
 from django.utils.safestring import mark_safe
 
-from lms.models.base import Person
-from lms.models.content import Content
+from djangoapps.lms.models.base import Person
+from djangoapps.lms.models.content import Content
 
 register = template.Library()
 

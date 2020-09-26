@@ -6,7 +6,7 @@ import uuid
 from django.db import models
 from natural_keys import NaturalKeyModel
 
-from lms.models.base import CodeNaturalKeyAbstractModel, Author
+from djangoapps.lms.models.base import CodeNaturalKeyAbstractModel, Author
 
 
 class Course(NaturalKeyModel):

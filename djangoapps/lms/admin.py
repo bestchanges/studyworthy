@@ -1,9 +1,9 @@
 from django.contrib import admin
 from django.utils.translation import gettext_lazy
 
-from lms.models.base import Person, Author
-from lms.models.content import Section, Course, Unit, Content, UnitContent, Form, Question
-from lms.models.learning import RoleStudent, RoleTeacher, Learning, Lesson
+from djangoapps.lms.models.base import Person, Author
+from djangoapps.lms.models.content import Section, Course, Unit, Content, UnitContent, Form, Question
+from djangoapps.lms.models.learning import RoleStudent, RoleTeacher, Learning, Lesson
 
 
 @admin.register(Person)

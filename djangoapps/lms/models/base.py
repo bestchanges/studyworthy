@@ -3,16 +3,12 @@ The most common root models. They are used by most of other models
 """
 import uuid
 
-from django.conf.global_settings import LANGUAGES
-from django.contrib.auth.models import AbstractUser
-from django.core.exceptions import ObjectDoesNotExist
-from django.db import models
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 from django.conf import settings
+from django.conf.global_settings import LANGUAGES
+from django.db import models
 from natural_keys import NaturalKeyModel
 
-from lms import config
+from djangoapps.lms import config
 
 
 class Document(models.Model):

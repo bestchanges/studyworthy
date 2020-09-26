@@ -29,6 +29,7 @@ django-money = '*'
 sentry-sdk = '*'
 django-bootstrap-form = '*'
 natural-keys = '*'
+yandex_checkout = '*'
 
 [requires]
 python_version = "3.6"

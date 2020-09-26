@@ -1,10 +1,16 @@
 from django.contrib import admin
 
-from crm.models.crm_models import CourseProduct, Enrollment
+from djangoapps.crm.models.crm_models import CourseProduct
+from djangoapps.crm.models.erp_models import ClientOrder, Invoice
 
 
-@admin.register(Enrollment)
-class AdminCourseProduct(admin.ModelAdmin):
+@admin.register(ClientOrder)
+class AdminClientOrder(admin.ModelAdmin):
+    pass
+
+
+@admin.register(Invoice)
+class AdminInvoice(admin.ModelAdmin):
     pass
 
 

@@ -15,7 +15,7 @@
                     <li><i class="far fa-check-square"></i> {{ course.number_of_tasks }} практических заданий</li>
                     <li><i class="far fa-calendar-alt"></i> {{ course.duration }}</li>
                 </ul>
-                <a href="{% url 'course_product' course.code %}" type="button" class="btn btn-lg btn-block btn-success">Подробнее</a>
+                <a href="{% url 'crm:course_product' course.code %}" type="button" class="btn btn-lg btn-block btn-success">Подробнее</a>
             </div>
         </div>
     {% endfor %}

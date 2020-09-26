@@ -1,0 +1,11 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    <h2>SUM</h2>
+    Sum: {{ invoice.amount }}
+    <h2>Product</h2>
+    Product: {{ invoice.client_order.items.0.name }}
+    <h2>Parameters</h2>
+    <h2>payment method</h2>
+    <a class="btn btn-lg btn-success" href="" role="button">Купить</a>
+{% endblock content %}
