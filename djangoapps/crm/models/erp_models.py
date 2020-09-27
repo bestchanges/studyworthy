@@ -1,21 +1,18 @@
-import datetime
 from functools import reduce
 
-import uuid
 from django.db import models
-from django.db.models import Field
-from django.utils import timezone
 from djmoney.models.fields import MoneyField, CurrencyField
 from djmoney.money import Money
 
+from djangoapps.common.models import Document
 from djangoapps.lms.models.base import CodeNaturalKeyAbstractModel, Person
 
 
 class Product(CodeNaturalKeyAbstractModel):
     class State(models.TextChoices):
-        DRAFT = 'draft'
-        ACTIVE = 'active'
-        ARCHIVED = 'archived'
+        DRAFT = 'DRAFT', 'Черновик'
+        ACTIVE = 'ACTIVE', 'Активен'
+        ARCHIVED = 'ARCHIVED', 'Архивирован'
 
     price = MoneyField(max_digits=14, decimal_places=2)
     name = models.CharField(max_length=250)
@@ -25,80 +22,15 @@ class Product(CodeNaturalKeyAbstractModel):
     updated_at = models.DateTimeField(auto_now=True, null=True, editable=False)
 
 
-# class StateMixin(models.Model):
-#
-#     class State(models.TextChoices):
-#         DRAFT = 'draft'
-#         ACTIVE = 'active'
-#         ARCHIVED = 'archived'
-#
-#     state = models.CharField(max_length=200, choices=State.choices, default=State.DRAFT)
-#
-#     class Meta:
-#         abstract: True
-
-
-class Document(models.Model):
-    document_number_template = 'D-{number_total}'
-    document_number = models.CharField(max_length=200, blank=True, null=True)
-    document_date = models.DateField(blank=True, null=True)
-    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
-    # document_applicable = models.BooleanField(default=True)
-
-    created_at = models.DateTimeField(auto_now_add=True, null=True, editable=False)
-    updated_at = models.DateTimeField(auto_now=True, null=True, editable=False)
-
-    def notify_state_change(self, child_model: 'Document', old_state):
-        pass
-
-    def set_state(self, new_state):
-        """Besides saving state it notifies all interested partners about it."""
-        old_state = self.state
-        if old_state == new_state:
-            return
-        self.state = new_state
-        self.save()
-
-        # notify all refernced docs about state change
-        for field in self.__class__._meta.get_fields():  # type: Field
-            if field.__class__ == models.ForeignKey:
-                model: 'Document' = getattr(self, field.name)
-                if issubclass(model.__class__, Document):
-                    model.notify_state_change(child_model=self, old_state=old_state)
-
-    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        is_create = self.pk is None
-        if is_create and not self.document_number:
-            template = self.document_number_template
-            if not self.document_date:
-                self.document_date = timezone.now().date()
-            today_start = self.document_date
-            month_start = today_start.replace(day=1)
-            year_start = month_start.replace(month=1)
-            number = template.format(
-                number_today = self.__class__.objects.filter(document_date__gte=today_start).count() + 1,
-                number_month = self.__class__.objects.filter(document_date__gte=month_start).count() + 1,
-                number_year = self.__class__.objects.filter(document_date__gte=year_start).count() + 1,
-                number_total = self.__class__.objects.all().count() + 1,
-            )
-            self.document_number = number
-        super().save(force_insert, force_update, using, update_fields)
-
-    def __str__(self):
-        return f'{self.document_number} at {self.document_date}'
-
-    class Meta:
-        abstract = True
-
-
 class ClientOrder(Document):
     document_number_template = 'CO-{number_month}'
 
     class State(models.TextChoices):
-        NEW = 'new'
-        WAITING = 'waiting'
-        COMPLETED = 'completed'
-        CANCELLED = 'cancelled'
+        NEW = 'NEW', "Новый"
+        WAITING = 'WAITING', "Ожидает"
+        COMPLETED = 'COMPLETED', "Выполнен"
+        PROCESSING = 'PROCESSING', "Исполняется"
+        CANCELLED = 'CANCELLED', "Отменён"
 
     client = models.ForeignKey(Person, on_delete=models.CASCADE, null=True, blank=True)
     currency = CurrencyField()
@@ -148,11 +80,11 @@ class Invoice(Document):
     document_number_template = 'I-{number_month}'
 
     class State(models.TextChoices):
-        NEW = 'new'
-        WAITING = 'waiting'
-        PAYED_PARTLY = 'payed_partly'
-        PAYED_FULLY = 'payed_fully'
-        CANCELLED = 'cancelled'
+        NEW = 'NEW', 'Новый'
+        WAITING = 'WAITING', 'Ожидает'
+        PAYED_PARTLY = 'PAYED_PARTLY', 'Частично оплачен'
+        PAYED_FULLY = 'PAYED_FULLY', 'Полностью оплачен'
+        CANCELLED = 'CANCELLED', 'Отменен'
 
     client = models.ForeignKey(Person, on_delete=models.CASCADE, null=True, blank=True)
     state = models.CharField(max_length=20, choices=State.choices, default=State.NEW)
@@ -200,10 +132,10 @@ class PaymentIn(Document):
     document_number_template = 'PI-{number_year}'
 
     class State(models.TextChoices):
-        NEW = 'Новый'
-        WAITING = 'Ожидает оплаты'
-        PROCESSED = 'Получен'
-        CANCELLED = 'Отменен'
+        NEW = 'NEW', 'Новый'
+        WAITING = 'WAITING', 'Ожидает оплаты'
+        PROCESSED = 'PROCESSED', 'Получен'
+        CANCELLED = 'CANCELLED', 'Отменен'
 
     state = models.CharField(max_length=20, choices=State.choices, default=State.NEW)
 

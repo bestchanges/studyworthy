@@ -8,7 +8,7 @@ from django.shortcuts import render
 from django.utils.http import urlencode
 
 from djangoapps.crm.models.crm_models import CourseProduct
-from djangoapps.rootapp.models import SiteUser
+from djangoapps.siteroot.models import SiteUser
 
 
 def index(request):

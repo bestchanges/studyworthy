@@ -3,7 +3,7 @@ from django.shortcuts import render
 
 from djangoapps.lms.models.content import Unit
 from djangoapps.lms.models.learning import Learning, Lesson
-from djangoapps.rootapp.models import SiteUser
+from djangoapps.siteroot.models import SiteUser
 
 
 @login_required
