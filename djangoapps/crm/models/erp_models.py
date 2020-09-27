@@ -184,16 +184,16 @@ class Invoice(Document):
                 self.set_state(self.State.WAITING)
 
     def create_payment(self) -> 'PaymentIn':
+        if self.document_number and self.document_date:
+            description = f"Оплата по счёту \"{self.document_number}\" от {self.document_date.strftime('%d.%m.%Y')}"
+        else:
+            description = ''
         return PaymentIn(
             invoice=self,
             amount=self.amount,
-            payer=self.client
+            payer=self.client,
+            description=description
         )
-
-
-
-class PaymentGateway(CodeNaturalKeyAbstractModel):
-    name = models.CharField(max_length=250)
 
 
 class PaymentIn(Document):
@@ -207,13 +207,14 @@ class PaymentIn(Document):
 
     state = models.CharField(max_length=20, choices=State.choices, default=State.NEW)
 
-    gateway = models.ForeignKey(PaymentGateway, null=True, blank=True, help_text="Payment gateway", on_delete=models.PROTECT)
-    gateway_payment_id = models.CharField(max_length=255, null=True, blank=True, help_text="Payment ID in the gateway")
-    gateway_payment_url = models.URLField(null=True, blank=True, help_text="URL to pay this payment")
     payer = models.ForeignKey(Person, on_delete=models.PROTECT, null=True, blank=True)
     invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE, null=True, blank=True)
     amount = MoneyField(max_digits=14, decimal_places=2)
     description = models.CharField(max_length=255, null=True, blank=True)
+
+    payment_gateway = models.CharField(max_length=255, null=True, blank=True, help_text="Payment gateway")
+    gateway_payment_id = models.CharField(max_length=255, null=True, blank=True, help_text="Payment ID in the gateway")
+    gateway_payment_url = models.URLField(null=True, blank=True, help_text="URL to pay this payment")
     completed_at = models.DateTimeField(null=True, blank=True)
 
     def is_completed(self):

@@ -13,9 +13,3 @@ class ClientOrderForm(ModelForm):
     class Meta:
         model = ClientOrder
         fields = ['client_name', 'client_email', 'client_phone', 'comment']
-
-
-class PaymentInForm(ModelForm):
-    class Meta:
-        model = PaymentIn
-        fields = ['gateway']

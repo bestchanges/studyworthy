@@ -45,7 +45,7 @@ def create_payment(amount, currency, description, return_url, auto_capture: bool
 
 def list_recent_payments(duration: datetime.timedelta = None):
     if not duration:
-        duration = datetime.timedelta(days=1)
+        duration = datetime.timedelta(days=30)
 
     now = datetime.datetime.today()
     period_start = now - duration
@@ -57,3 +57,7 @@ def list_recent_payments(duration: datetime.timedelta = None):
     if 'next_cursor' in response:
         logger.warning(f'Returned partial list. Which is NOT supported yet. Some data will not be processed')
     return response.items
+
+
+def get_payment_by_id(payment_id):
+    return yandex_checkout.Payment.find_one(payment_id)

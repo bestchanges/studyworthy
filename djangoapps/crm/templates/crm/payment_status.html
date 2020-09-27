@@ -1,0 +1,17 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    <h1>Ваш платеж:</h1>
+    <ul>
+        <li>
+            Номер: {{ paymentin.document_number }} от {{ paymentin.document_date }}
+        </li>
+        <li>
+            Сумма: {{ paymentin.amount }}
+        </li>
+        <li>
+            Статус: {{ paymentin.state }}
+        </li>
+    </ul>
+    <a class="btn btn-lg btn-success" href="" role="button">Купить</a>
+{% endblock content %}

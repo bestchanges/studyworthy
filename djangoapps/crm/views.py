@@ -1,6 +1,6 @@
 from djangoapps.crm.forms import ClientOrderForm
 from djangoapps.crm.models.crm_models import CourseProduct
-from djangoapps.crm.models.erp_models import ClientOrder, Invoice
+from djangoapps.crm.models.erp_models import ClientOrder, Invoice, PaymentIn
 from django.shortcuts import render, redirect
 from django.urls import reverse
 
@@ -39,11 +39,11 @@ def course_product(request, code):
         'course': product.items.all()[0],
         'form': form,
     }
-    return render(request, 'course_product.html', context)
+    return render(request, 'crm/course_product.html', context)
 
 
 def enrollment_accepted(request):
-    return render(request, 'enrollment_accepted.html', {})
+    return render(request, 'crm/enrollment_accepted.html', {})
 
 
 def invoice(request, uuid):
@@ -51,10 +51,30 @@ def invoice(request, uuid):
     context = {
         'invoice': invoice,
     }
-    return render(request, 'invoice_payment.html', context)
+    return render(request, 'crm/invoice_payment.html', context)
 
 
 def invoice_payment(request, uuid):
     invoice = Invoice.objects.get(uuid=uuid)
-    payment_in = logic.create_yandex_payment_from_invoice(invoice)
-    return redirect(payment_in.gateway_payment_url)
+    paymentin = invoice.create_payment()
+    payment_url = logic.pay_by_yandex_kassa(
+        paymentin=paymentin,
+        seccess_url=request.build_absolute_uri(reverse('crm:payment_status', args=[paymentin.uuid])),
+    )
+    return redirect(payment_url)
+
+
+def payment_status(request, uuid):
+    """
+    Check payment status and display it to user.
+
+    :param request:
+    :param uuid:
+    :return:
+    """
+    paymentin = PaymentIn.objects.get(uuid=uuid)
+    logic.update_payment_status(paymentin)
+    context = {
+        "paymentin": paymentin,
+    }
+    return render(request, 'crm/payment_status.html', context)

@@ -53,6 +53,18 @@ class TestModels(TestCase):
         self.assertEqual(order.items.count(), 2)
         self.assertEqual(order.amount, Money(35, 'RUB'))
 
+    def test_client_order_state_update(self):
+        """Upon ivoice getting paid the order start processing """
+        buyer = Person()
+        buyer.save()
+        order = ClientOrder(client=buyer, currency='RUB')
+        order.save()
+        order.add_item(self.product_1, 2)
+        order.add_item(self.product_2, 1)
+
+        self.assertEqual(order.items.count(), 2)
+        self.assertEqual(order.amount, Money(35, 'RUB'))
+
     def test_payment_in(self):
         buyer = Person()
         buyer.save()
