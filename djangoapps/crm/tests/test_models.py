@@ -11,11 +11,11 @@ from djangoapps.lms.models.base import Person
 class TestModels(TestCase):
 
     def setUp(self):
+        self._delete_products()
         self.product_1, self.product_2 = self._create_products()
 
     def tearDown(self):
-        self.product_1.delete()
-        self.product_2.delete()
+        self._delete_products()
 
     def test_document_number(self):
         order = ClientOrder()
@@ -38,7 +38,7 @@ class TestModels(TestCase):
         self.assertTrue('{number_month}' in Invoice.document_number_template,
                         "Invoices suppose to be month-dependant")
         invoice_3 = order.create_invoice()
-        invoice_3.created_at = timezone.now() + datetime.timedelta(days=31)
+        invoice_3.document_date = timezone.now().date() + datetime.timedelta(days=31)
         invoice_3.save()
         self.assertEquals("I-1", invoice_3.document_number)
 
@@ -60,51 +60,74 @@ class TestModels(TestCase):
         payment = PaymentIn(payer=buyer, amount=amount)
         payment.save()
 
-        self.assertTrue(payment.is_applicable)
         self.assertEqual(payment.amount, amount)
 
     def test_invoice_and_payment(self):
-        product_1, product_2 = self._create_products()
+        """
+        1. Create ClientOrder -> Invoice -> PaymentIn
+        2. When Payment is payed -> Invoice state shall be updated
+        :return:
+        """
+        order = ClientOrder()
+        order.save()
+        order.add_item(self.product_1, 2)
+        order.add_item(self.product_2, 1)
+        amount = self.product_1.price * 2 + self.product_2.price
+        self.assertEqual(order.amount, amount)
 
-        buyer = Person()
-        buyer.save()
-        invoice = Invoice(code='Invoice-1', buyer=buyer, currency='RUB')
+        invoice = order.create_invoice()
         invoice.save()
-        invoice.add_item(product_1, 2)
-        invoice.add_item(product_2, 1)
+        self.assertEqual(order.amount, invoice.amount)
+        self.assertEqual(order, invoice.client_order)
+        self.assertEqual(invoice.state, invoice.State.NEW)
 
-        amount_1 = Money(10, 'RUB')
-        payment_1 = PaymentIn(code='p1', payer=buyer, amount=amount_1, invoice=invoice)
-        payment_1.save()
+        payment_in = invoice.create_payment()
+        payment_in.save()
+        self.assertEqual(invoice.amount, payment_in.amount)
+        self.assertEqual(invoice.state, invoice.State.NEW)
+        self.assertEqual(invoice, payment_in.invoice)
+        self.assertFalse(payment_in.is_completed())
 
-        self.assertEqual(invoice.payed_amount, amount_1)
+        payment_in.set_state(payment_in.State.PROCESSED)
+        self.assertEqual(payment_in.state, payment_in.State.PROCESSED)
+        self.assertTrue(payment_in.is_completed())
+        # invoice should respect payment_in state change
+        self.assertEqual(invoice.state, invoice.State.PAYED_FULLY)
+
+    def test_invoice_partial_payment(self):
+        invoice = Invoice(
+            amount=Money(25, 'RUB')
+        )
+        invoice.save()
+        self.assertEqual(invoice.state, invoice.State.NEW)
         self.assertFalse(invoice.is_payed)
+
+        amount_1 = Money(18, 'RUB')
 
         amount_2 = Money(7, 'RUB')
-        payment_2 = PaymentIn(code='p2', payer=buyer, amount=amount_2, invoice=invoice)
+        payment_2 = PaymentIn(amount=amount_2, invoice=invoice)
         payment_2.save()
 
-        self.assertEqual(invoice.payed_amount, amount_1 + amount_2)
+        # waiting state doesn't change anything
+        payment_2.set_state(payment_2.State.WAITING)
+        self.assertEqual(invoice.state, invoice.State.WAITING)
         self.assertFalse(invoice.is_payed)
 
-        amount_3 = Money(18, 'RUB')
-        payment_3 = PaymentIn(code='p3', payer=buyer, amount=amount_3, invoice=invoice)
-        payment_3.save()
+        # partly payed invoice
+        payment_2.set_state(PaymentIn.State.PROCESSED)
+        self.assertEqual(invoice.state, Invoice.State.PAYED_PARTLY)
+        self.assertFalse(invoice.is_payed)
 
-        self.assertEqual(invoice.payed_amount, amount_1 + amount_2 + amount_3)
+        payment_1 = PaymentIn(amount=amount_1, invoice=invoice)
+        payment_1.save()
+        # newly created payment has not processed yet, so no state change
+        self.assertEqual(invoice.state, invoice.State.PAYED_PARTLY)
+        self.assertFalse(invoice.is_payed)
+
+        # fully payed invoice
+        payment_1.set_state(PaymentIn.State.PROCESSED)
+        self.assertEqual(invoice.state, invoice.State.PAYED_FULLY)
         self.assertTrue(invoice.is_payed)
-
-    def test_shipment(self):
-        product_1, product_2 = self._create_products()
-
-        buyer = Person()
-        buyer.save()
-        shipment = Shipment(receiver=buyer)
-        shipment.save()
-        shipment.add_item(product_1, 2)
-        shipment.add_item(product_2, 1)
-
-        self.assertEqual(shipment.shipmentitem_set.count(), 2)
 
     def _create_products(self):
         Product(name='test product 1', price=Money(10, 'RUB'))
@@ -113,5 +136,8 @@ class TestModels(TestCase):
         product_2 = Product(code='product-2', name='test product 2', price=Money(15, 'RUB'))
         product_2.save()
         return product_1, product_2
+
+    def _delete_products(self):
+        Product.objects.filter(code__in=['product-1', 'product-2']).delete()
 
 

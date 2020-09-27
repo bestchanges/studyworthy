@@ -93,6 +93,20 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 50,
 }
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
+}
+
 SOCIAL_AUTH_TRAILING_SLASH = False  # Remove trailing slash from routes
 SOCIAL_AUTH_AUTH0_DOMAIN = os.environ.get('AUTH0_DOMAIN')
 SOCIAL_AUTH_AUTH0_KEY =  os.environ.get('AUTH0_CLIENT_ID')
@@ -105,7 +119,7 @@ SOCIAL_AUTH_AUTH0_SCOPE = [
 ]
 
 AUTHENTICATION_BACKENDS = [
-    'rootapp.auth0backend.Auth0',
+    'djangoapps.rootapp.auth0backend.Auth0',
     'django.contrib.auth.backends.ModelBackend',
 ]
 

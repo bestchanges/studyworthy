@@ -3,6 +3,7 @@ from functools import reduce
 
 import uuid
 from django.db import models
+from django.db.models import Field
 from django.utils import timezone
 from djmoney.models.fields import MoneyField, CurrencyField
 from djmoney.money import Money
@@ -24,6 +25,19 @@ class Product(CodeNaturalKeyAbstractModel):
     updated_at = models.DateTimeField(auto_now=True, null=True, editable=False)
 
 
+# class StateMixin(models.Model):
+#
+#     class State(models.TextChoices):
+#         DRAFT = 'draft'
+#         ACTIVE = 'active'
+#         ARCHIVED = 'archived'
+#
+#     state = models.CharField(max_length=200, choices=State.choices, default=State.DRAFT)
+#
+#     class Meta:
+#         abstract: True
+
+
 class Document(models.Model):
     document_number_template = 'D-{number_total}'
     document_number = models.CharField(max_length=200, blank=True, null=True)
@@ -34,6 +48,23 @@ class Document(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, null=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True, null=True, editable=False)
 
+    def notify_state_change(self, child_model: 'Document', old_state):
+        pass
+
+    def set_state(self, new_state):
+        """Besides saving state it notifies all interested partners about it."""
+        old_state = self.state
+        if old_state == new_state:
+            return
+        self.state = new_state
+        self.save()
+
+        # notify all refernced docs about state change
+        for field in self.__class__._meta.get_fields():  # type: Field
+            if field.__class__ == models.ForeignKey:
+                model: 'Document' = getattr(self, field.name)
+                if issubclass(model.__class__, Document):
+                    model.notify_state_change(child_model=self, old_state=old_state)
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         is_create = self.pk is None
@@ -52,6 +83,9 @@ class Document(models.Model):
             )
             self.document_number = number
         super().save(force_insert, force_update, using, update_fields)
+
+    def __str__(self):
+        return f'{self.document_number} at {self.document_date}'
 
     class Meta:
         abstract = True
@@ -91,7 +125,7 @@ class ClientOrder(Document):
             quantity=quantity
         )
 
-    def create_invoice(self):
+    def create_invoice(self) -> 'Invoice':
         return Invoice(
             client_order=self,
             amount=self.amount,
@@ -100,7 +134,7 @@ class ClientOrder(Document):
 
 
 class ClientOrderItem(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.PROTECT)
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
     client_order = models.ForeignKey(ClientOrder, on_delete=models.CASCADE, related_name='items')
     price = MoneyField(max_digits=14, decimal_places=2)
     quantity = models.IntegerField(default=1)
@@ -115,6 +149,7 @@ class Invoice(Document):
 
     class State(models.TextChoices):
         NEW = 'new'
+        WAITING = 'waiting'
         PAYED_PARTLY = 'payed_partly'
         PAYED_FULLY = 'payed_fully'
         CANCELLED = 'cancelled'
@@ -128,12 +163,33 @@ class Invoice(Document):
 
     @property
     def payed_amount(self):
-        # TODO: filter payments by state
-        return reduce(lambda x, payment: x + payment.amount, self.paymentin_set.all(), Money(0, self.amount.default_currency))
+        return reduce(
+            lambda x, payment: x + payment.amount,
+            self.paymentin_set.filter(state=PaymentIn.State.PROCESSED),
+            Money(0, self.amount.currency))
 
     @property
     def is_payed(self):
         return self.payed_amount >= self.amount
+
+    def notify_state_change(self, child_model: Document, old_state):
+        if child_model.__class__ == PaymentIn:
+            payed_amount = self.payed_amount
+            if payed_amount:
+                if payed_amount >= self.amount:
+                    self.set_state(self.State.PAYED_FULLY)
+                else:
+                    self.set_state(self.State.PAYED_PARTLY)
+            else:
+                self.set_state(self.State.WAITING)
+
+    def create_payment(self) -> 'PaymentIn':
+        return PaymentIn(
+            invoice=self,
+            amount=self.amount,
+            payer=self.client
+        )
+
 
 
 class PaymentGateway(CodeNaturalKeyAbstractModel):
@@ -142,6 +198,14 @@ class PaymentGateway(CodeNaturalKeyAbstractModel):
 
 class PaymentIn(Document):
     document_number_template = 'PI-{number_year}'
+
+    class State(models.TextChoices):
+        NEW = 'new'
+        WAITING = 'waiting'
+        PROCESSED = 'processed'
+        CANCELLED = 'cancelled'
+
+    state = models.CharField(max_length=20, choices=State.choices, default=State.NEW)
 
     gateway = models.ForeignKey(PaymentGateway, null=True, blank=True, help_text="Payment gateway", on_delete=models.PROTECT)
     gateway_payment_id = models.CharField(max_length=255, null=True, blank=True, help_text="Payment ID in the gateway")
@@ -153,8 +217,10 @@ class PaymentIn(Document):
     completed_at = models.DateTimeField(null=True, blank=True)
 
     def is_completed(self):
-        return bool(self.completed_at)
+        return self.state == self.State.PROCESSED
 
+    def __str__(self):
+        return f'{super().__str__()} {self.amount} ({self.state})'
 
 class ShipmentItem(models.Model):
     shipment = models.ForeignKey('Shipment', on_delete=models.CASCADE)
