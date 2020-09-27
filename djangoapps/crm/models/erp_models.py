@@ -200,10 +200,10 @@ class PaymentIn(Document):
     document_number_template = 'PI-{number_year}'
 
     class State(models.TextChoices):
-        NEW = 'new'
-        WAITING = 'waiting'
-        PROCESSED = 'processed'
-        CANCELLED = 'cancelled'
+        NEW = 'Новый'
+        WAITING = 'Ожидает оплаты'
+        PROCESSED = 'Получен'
+        CANCELLED = 'Отменен'
 
     state = models.CharField(max_length=20, choices=State.choices, default=State.NEW)
 
@@ -221,7 +221,7 @@ class PaymentIn(Document):
         return self.state == self.State.PROCESSED
 
     def __str__(self):
-        return f'{super().__str__()} {self.amount} ({self.state})'
+        return f'#{self.id} {self.amount} ({self.state})'
 
 class ShipmentItem(models.Model):
     shipment = models.ForeignKey('Shipment', on_delete=models.CASCADE)

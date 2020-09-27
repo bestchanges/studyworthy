@@ -128,7 +128,7 @@ LOGIN_REDIRECT_URL = '/dashboard'
 
 AUTH_USER_MODEL = 'rootapp.SiteUser'
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ru-ru'
 
 TIME_ZONE = 'Europe/Moscow'
 

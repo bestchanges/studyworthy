@@ -1,4 +1,5 @@
 from djangoapps.crm.forms import ClientOrderForm
+from djangoapps.crm.logic import payments
 from djangoapps.crm.models.crm_models import CourseProduct
 from djangoapps.crm.models.erp_models import ClientOrder, Invoice, PaymentIn
 from django.shortcuts import render, redirect
@@ -57,7 +58,7 @@ def invoice(request, uuid):
 def invoice_payment(request, uuid):
     invoice = Invoice.objects.get(uuid=uuid)
     paymentin = invoice.create_payment()
-    payment_url = logic.pay_by_yandex_kassa(
+    payment_url = payments.pay_by_yandex_kassa(
         paymentin=paymentin,
         seccess_url=request.build_absolute_uri(reverse('crm:payment_status', args=[paymentin.uuid])),
     )
@@ -73,7 +74,7 @@ def payment_status(request, uuid):
     :return:
     """
     paymentin = PaymentIn.objects.get(uuid=uuid)
-    logic.update_payment_status(paymentin)
+    payments.update_payment_status(paymentin)
     context = {
         "paymentin": paymentin,
     }

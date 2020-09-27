@@ -1,10 +1,9 @@
 import datetime
 import logging
-from decimal import Decimal
 
 from django.utils import timezone
 from djmoney.money import Money
-from yandex_checkout import Payment, PaymentResponse
+from yandex_checkout import PaymentResponse
 
 from djangoapps.crm.api import yandex_kassa
 from djangoapps.crm.models.erp_models import PaymentIn
@@ -14,38 +13,38 @@ YANDEX_KASSA_PAYMENT_GATEWAY = 'yandex-kassa'
 logger = logging.getLogger(__name__)
 
 
-def pay_by_yandex_kassa(payment_in: PaymentIn, seccess_url):
+def pay_by_yandex_kassa(paymentin: PaymentIn, seccess_url):
     """
     Create Payment object for Yandex Kassa for given Payment and save it's status
     After this call the user should be directed to returned URL.
     Note: payment_in object will be saved.
 
-    :param payment_in: Not yet payed, positive amount, with empty payment_gateway PaymentIn
+    :param paymentin: Not yet payed, positive amount, with empty payment_gateway PaymentIn
     :param seccess_url: Full URL to which user shall be redirected after payment.
     :return: payment URL
     """
-    assert payment_in.payment_gateway in (None, '', YANDEX_KASSA_PAYMENT_GATEWAY), \
-        f"Payment gateway '{payment_in.payment_gateway}' not applicable for {payment_in}"
-    assert payment_in.amount and payment_in.amount.amount > 0, \
-        f"Inappropriate amount {payment_in.amount} for {payment_in}"
-    assert payment_in.state in [PaymentIn.State.WAITING,PaymentIn.State.NEW], \
-        f"Inappropriate state {payment_in.state} for {payment_in}"
-    assert not payment_in.gateway_payment_id, \
-        f"Yandex payment {payment_in.gateway_payment_id} is already created for {payment_in}"
+    assert paymentin.payment_gateway in (None, '', YANDEX_KASSA_PAYMENT_GATEWAY), \
+        f"Payment gateway '{paymentin.payment_gateway}' not applicable for {paymentin}"
+    assert paymentin.amount and paymentin.amount.amount > 0, \
+        f"Inappropriate amount {paymentin.amount} for {paymentin}"
+    assert paymentin.state in [PaymentIn.State.WAITING, PaymentIn.State.NEW], \
+        f"Inappropriate state {paymentin.state} for {paymentin}"
+    assert not paymentin.gateway_payment_id, \
+        f"Yandex payment {paymentin.gateway_payment_id} is already created for {paymentin}"
 
     yk_payment = yandex_kassa.create_payment(
-        amount=str(payment_in.amount.amount),
-        currency=str(payment_in.amount.currency.code),
-        description=payment_in.description,
+        amount=str(paymentin.amount.amount),
+        currency=str(paymentin.amount.currency.code),
+        description=paymentin.description,
         auto_capture=True,
         return_url=seccess_url,
     )
 
-    payment_in.payment_gateway = YANDEX_KASSA_PAYMENT_GATEWAY
-    payment_in.gateway_payment_id = yk_payment.id
+    paymentin.payment_gateway = YANDEX_KASSA_PAYMENT_GATEWAY
+    paymentin.gateway_payment_id = yk_payment.id
     payment_url = yk_payment.confirmation.confirmation_url
-    payment_in.gateway_payment_url = payment_url
-    payment_in.save()
+    paymentin.gateway_payment_url = payment_url
+    paymentin.save()
 
     return payment_url
 
@@ -73,7 +72,7 @@ def _yandex_kassa_update_payment_in_info(paymentin: PaymentIn, yk_payment: Payme
 
     yk_amount = float(yk_payment.amount.value)
     yk_currency = yk_payment.amount.currency
-    paymentin_amount = paymentin.amount.amount
+    paymentin_amount = float(paymentin.amount.amount)
     paymentin_currency = paymentin.amount.currency.code
     if yk_amount != paymentin_amount:
         logger.error(f'Incorrect amount {paymentin_amount} in PaymentIn. Correcting it to {yk_amount}')
@@ -103,7 +102,10 @@ def update_status_yandex_payments(days=3):
             continue
 
         logger.info(f'Processing yandex kassa payment {payment_id}, PaymentIn={payment_in}')
-        _yandex_kassa_update_payment_in_info(payment_in, yk_payment)
+        try:
+            _yandex_kassa_update_payment_in_info(payment_in, yk_payment)
+        except AssertionError as e:
+            logging.exception(e)
 
 
 def run_periodic():

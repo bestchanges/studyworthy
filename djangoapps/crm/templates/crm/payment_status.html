@@ -4,14 +4,20 @@
     <h1>Ваш платеж:</h1>
     <ul>
         <li>
-            Номер: {{ paymentin.document_number }} от {{ paymentin.document_date }}
+            Номер документа: {{ paymentin.document_number }} от {{ paymentin.document_date }}
         </li>
         <li>
             Сумма: {{ paymentin.amount }}
         </li>
         <li>
-            Статус: {{ paymentin.state }}
+            Статус: <strong>{{ paymentin.state }}</strong>
+        </li>
+        <li>
+            Создан: {{ paymentin.created_at }}
+        </li>
+        <li>
+            Обновлен: {{ paymentin.updated_at }}
         </li>
     </ul>
-    <a class="btn btn-lg btn-success" href="" role="button">Купить</a>
+    <a class="btn btn-lg btn-info" href="javascript:window.location.href=window.location.href" role="button">Обновить</a>
 {% endblock content %}

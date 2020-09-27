@@ -1,12 +1,10 @@
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 
-
-# from djangoapps.crm.logic import
-from djangoapps.crm import logic
+from djangoapps.crm.logic import payments
 
 
 class Command(BaseCommand):
     help = "Process periodic CRM tasks. Payments, etc."
 
     def handle(self, *args, **options):
-        logic.run_periodic()
+        payments.run_periodic()
