@@ -23,12 +23,13 @@ def course_product(request, code):
         if form.is_valid():
             client_order: ClientOrder = form.save(commit=False)
             client_order.product = product
-            document_number = ClientOrder.objects.count() + 1
-            # todo: try match client
-            client_order.number = f'CO-{document_number}'
             client_order.save()
 
             client_order.add_item(product, 1)
+
+            # after added child object we can state NEW
+            client_order.state = ClientOrder.State.NEW
+            client_order.save()
 
             invoice = client_order.create_invoice()
             invoice.save()

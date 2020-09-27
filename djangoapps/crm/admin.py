@@ -1,24 +1,29 @@
 from django.contrib import admin
 
 from djangoapps.crm.models.crm_models import CourseProduct
-from djangoapps.crm.models.erp_models import ClientOrder, Invoice, PaymentIn
+from djangoapps.crm.models.erp_models import ClientOrder, Invoice, PaymentIn, ClientOrderItem
+
+
+class ClientOrderItemAdmin(admin.TabularInline):
+    model = ClientOrderItem
+    extra = 0
 
 
 @admin.register(ClientOrder)
-class AdminClientOrder(admin.ModelAdmin):
-    pass
+class ClientOrderAdmin(admin.ModelAdmin):
+    inlines = [ClientOrderItemAdmin]
 
 
 @admin.register(Invoice)
-class AdminInvoice(admin.ModelAdmin):
+class InvoiceAdmin(admin.ModelAdmin):
     pass
 
 
 @admin.register(PaymentIn)
-class AdminPaymentIn(admin.ModelAdmin):
+class PaymentInAdmin(admin.ModelAdmin):
     pass
 
 
 @admin.register(CourseProduct)
-class AdminCourseProduct(admin.ModelAdmin):
+class CourseProductAdmin(admin.ModelAdmin):
     pass

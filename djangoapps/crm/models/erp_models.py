@@ -32,10 +32,10 @@ class ClientOrder(Document):
         PROCESSING = 'PROCESSING', "Исполняется"
         CANCELLED = 'CANCELLED', "Отменён"
 
+    state = models.CharField(max_length=20, choices=State.choices, null=True, blank=True)
     client = models.ForeignKey(Person, on_delete=models.CASCADE, null=True, blank=True)
     currency = CurrencyField()
     valid_until = models.DateField(null=True, blank=True)
-    state = models.CharField(max_length=20, choices=State.choices, default=State.NEW)
 
     client_name = models.CharField(max_length=200, null=True, blank=True)
     client_email = models.EmailField(null=True, blank=True)
@@ -104,17 +104,6 @@ class Invoice(Document):
     def is_payed(self):
         return self.payed_amount >= self.amount
 
-    def notify_state_change(self, child_model: Document, old_state):
-        if child_model.__class__ == PaymentIn:
-            payed_amount = self.payed_amount
-            if payed_amount:
-                if payed_amount >= self.amount:
-                    self.set_state(self.State.PAYED_FULLY)
-                else:
-                    self.set_state(self.State.PAYED_PARTLY)
-            else:
-                self.set_state(self.State.WAITING)
-
     def create_payment(self) -> 'PaymentIn':
         if self.document_number and self.document_date:
             description = f"Оплата по счёту \"{self.document_number}\" от {self.document_date.strftime('%d.%m.%Y')}"
@@ -154,6 +143,7 @@ class PaymentIn(Document):
 
     def __str__(self):
         return f'#{self.id} {self.amount} ({self.state})'
+
 
 class ShipmentItem(models.Model):
     shipment = models.ForeignKey('Shipment', on_delete=models.CASCADE)

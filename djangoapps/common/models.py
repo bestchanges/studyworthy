@@ -28,28 +28,23 @@ class Document(models.Model):
     def _notify_state_change(self, old_state):
         # send signal to everybody
         state_changed.send(sender=self.__class__, old_state=old_state, instance=self)
-        # notify all refernced docs about state change (?)
-        for field in self.__class__._meta.get_fields():  # type: Field
-            if field.__class__ == models.ForeignKey:
-                model: 'Document' = getattr(self, field.name)
-                if issubclass(model.__class__, Document):
-                    model.notify_state_change(child_model=self, old_state=old_state)
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         is_create = self.pk is None
 
+        # detect state change
         if not is_create:
-            # detect state change
             old = self.__class__.objects.get(pk=self.pk)
+            old_state = old.state
         else:
-            old = None
+            old_state = None
 
         if is_create and not self.document_number:
             self.document_number = self._generate_document_number()
         super().save(force_insert, force_update, using, update_fields)
 
-        if old and old.state != self.state:
-            self._notify_state_change(old_state=old.state)
+        if old_state != self.state:
+            self._notify_state_change(old_state=old_state)
 
 
     def _generate_document_number(self):
