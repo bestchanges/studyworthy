@@ -15,24 +15,13 @@ class TestModels(TestCase):
             short_description='Sample course',
             long_description='Hello Python header',
         )
-        self.unit1 = Unit.objects.create(
-            code='unit1',
-            name='Intro',
-            course=self.course,
-            order=1,
-        )
-        self.unit1 = Unit.objects.create(
-            code='unit-2',
-            name='Sceond',
-            course=self.course,
-            order=2,
-        )
-        self.unit1 = Unit.objects.create(
-            code='unit-3',
-            name='Third',
-            course=self.course,
-            order=3,
-        )
+        for num in range(3):
+            Unit.objects.create(
+                code=f'unit-{num}',
+                name=f'Unit #{num}',
+                course=self.course,
+                order=num,
+            )
 
     def test_periodic_task_start_learnings(self):
         course = Course.objects.get_by_natural_key('hpi')
