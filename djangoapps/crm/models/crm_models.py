@@ -1,41 +1,13 @@
+import logging
 from django.db import models
 
 from djangoapps.crm.models.erp_models import Product, ClientOrder
 from djangoapps.lms.models.content import Course
 
-def enroll_student(client_order: ClientOrder):
-    print('HELLO STUDENT!!!!')
-    pass
-
-ACTIONS = {
-    ClientOrder: {
-        'ENROLL': {
-            'action_name': 'Enroll student',
-            'method': enroll_student
-        },
-    }
-}
-
-def action_choices_for_class(cls):
-    result = []
-    for action_code, action in ACTIONS.get(cls, {}).items():
-        result.append([
-            action_code,
-            action['action_name'],
-        ])
-    return result
-
-
-def get_action_method_by_code(cls, action_code):
-    class_actions = ACTIONS.get(cls, {})
-    method = class_actions.get(action_code, {}).get('method')
-    return method
+logger = logging.getLogger(__name__)
 
 
 class CourseProduct(Product):
-    class Actions(models.TextChoices):
-        ENROLL = 'ENROLL'
-
     class Level(models.IntegerChoices):
         BEGINNER = 1
         EASY = 2
@@ -55,5 +27,10 @@ class CourseProduct(Product):
         null=True, blank=True,
         help_text="Что студент будет уметь после прохождения курса"
     )
-    on_order_new = models.CharField(max_length=100, choices=action_choices_for_class(ClientOrder), null=True, blank=True)
-    on_invoice_payed = models.CharField(max_length=100, choices=action_choices_for_class(ClientOrder), null=True, blank=True)
+
+    def enroll_from_client_order(self, client_order: ClientOrder):
+        logger.info(f'Enrolling from {client_order}')
+        # create client
+        # optionally create user
+        # map order, invoice, payments to the person
+

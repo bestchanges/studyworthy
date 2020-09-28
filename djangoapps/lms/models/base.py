@@ -60,6 +60,10 @@ class Person(NaturalKeyModel):
     def __str__(self):
         return f'{self.full_name} {self.email}'
 
+    @classmethod
+    def lookup_by_email(cls, email):
+        return cls.objects.filter(email__iexact=email).first()
+
 
 class Author(NaturalKeyModel):
     person = models.OneToOneField(Person, on_delete=models.CASCADE, unique=True)

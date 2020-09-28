@@ -9,9 +9,15 @@ class ClientOrderItemAdmin(admin.TabularInline):
     extra = 0
 
 
+def fulfill(modeladmin, request, queryset):
+    for client_order in queryset:
+        client_order.fulfill()
+
+
 @admin.register(ClientOrder)
 class ClientOrderAdmin(admin.ModelAdmin):
     inlines = [ClientOrderItemAdmin]
+    actions = [fulfill]
 
 
 @admin.register(Invoice)

@@ -1,5 +1,6 @@
 from functools import reduce
 
+from django.conf import settings
 from django.db import models
 from djmoney.models.fields import MoneyField, CurrencyField
 from djmoney.money import Money
@@ -22,15 +23,37 @@ class Product(CodeNaturalKeyAbstractModel):
     updated_at = models.DateTimeField(auto_now=True, null=True, editable=False)
 
 
+class Client(models.Model):
+    name = models.CharField(max_length=255)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True, blank=True
+    )
+    email = models.EmailField(unique=True)
+    phone = models.CharField(max_length=200, null=True, blank=True)
+
+    @classmethod
+    def lookup_by_email(cls, email):
+        return cls.objects.filter(email__iexact=email).first()
+
+
 class ClientOrder(Document):
     document_number_template = 'CO-{number_month}'
 
     class State(models.TextChoices):
         NEW = 'NEW', "Новый"
         WAITING = 'WAITING', "Ожидает"
+        CONFIRMED = 'CONFIRMED', "Подтверждён"
         COMPLETED = 'COMPLETED', "Выполнен"
         PROCESSING = 'PROCESSING', "Исполняется"
         CANCELLED = 'CANCELLED', "Отменён"
+
+    class FulfillOn(models.TextChoices):
+        CREATED = 'CREATED', "Заказ создан"
+        CONFIRMED = 'CONFIRMED', "Заказ подтвердён"
+        ORDER_PAYED_FULL = 'ORDER_PAYED_FULL', "Счет оплачен полностью"
+        ORDER_PAYED_PARTLY = 'ORDER_PAYED_PARTLY', "Счет оплачен частично"
 
     state = models.CharField(max_length=20, choices=State.choices, null=True, blank=True)
     client = models.ForeignKey(Person, on_delete=models.CASCADE, null=True, blank=True)
@@ -41,6 +64,7 @@ class ClientOrder(Document):
     client_email = models.EmailField(null=True, blank=True)
     client_phone = models.CharField(max_length=200, null=True, blank=True)
     comment = models.TextField(null=True, blank=True)
+    fulfill_on = models.CharField(max_length=200, choices=FulfillOn.choices, null=True, blank=True)
 
     @property
     def amount(self):
@@ -63,6 +87,46 @@ class ClientOrder(Document):
             amount=self.amount,
             client=self.client,
         )
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        is_create = self.pk is None
+        if is_create and not self.client:
+            self.client = self.lookup_or_create_person()
+        super().save(force_insert, force_update, using, update_fields)
+
+    def fulfill(self):
+        self.state = self.State.PROCESSING
+        self.save()
+        for item in self.items.all():
+            courseproduct = item.product.courseproduct
+            if courseproduct:
+                courseproduct.enroll_from_client_order(self)
+        self.state = self.State.COMPLETED
+        self.save()
+
+    def lookup_or_create_person(self) -> Person:
+        email = self.client_email.lower()
+        person = Person.lookup_by_email(email)
+        if person:
+            if not person.phone and self.client_phone:
+                person.phone = self.client_phone
+                person.save()
+        else:
+            first_name, last_name = guess_first_and_last_names_from_string(self.client_name)
+            person = Person.objects.create(
+                first_name=first_name,
+                last_name=last_name,
+                email=email,
+                phone=self.client_phone,
+            )
+        return person
+
+
+def guess_first_and_last_names_from_string(name: str):
+    names = iter(name.split(maxsplit=1) if name else [])
+    first_name = next(names, '')
+    last_name = next(names, '')
+    return first_name.strip(), last_name.strip()
 
 
 class ClientOrderItem(models.Model):

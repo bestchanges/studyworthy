@@ -4,7 +4,8 @@ from django.test import TestCase
 from django.utils import timezone
 from djmoney.money import Money
 
-from djangoapps.crm.models.erp_models import Invoice, PaymentIn, Shipment, Product, ClientOrder
+from djangoapps.crm.models.erp_models import Invoice, PaymentIn, Shipment, Product, ClientOrder, \
+    guess_first_and_last_names_from_string
 from djangoapps.lms.models.base import Person
 
 
@@ -96,7 +97,8 @@ class TestModels(TestCase):
         payment_in = invoice.create_payment()
         payment_in.save()
         self.assertEqual(invoice.amount, payment_in.amount)
-        self.assertEqual(invoice.state, invoice.State.NEW)
+        # after create paymentIn the signal should update invoice state
+        self.assertEqual(invoice.state, invoice.State.WAITING)
         self.assertEqual(invoice, payment_in.invoice)
         self.assertFalse(payment_in.is_completed())
 
@@ -140,6 +142,15 @@ class TestModels(TestCase):
         payment_1.set_state(PaymentIn.State.PROCESSED)
         self.assertEqual(invoice.state, invoice.State.PAYED_FULLY)
         self.assertTrue(invoice.is_payed)
+
+    def test_guess_first_and_last_names_from_string(self):
+        self.assertEqual(guess_first_and_last_names_from_string('John Deer'), ('John', 'Deer'))
+        self.assertEqual(guess_first_and_last_names_from_string('John'), ('John', ''))
+        self.assertEqual(guess_first_and_last_names_from_string('John '), ('John', ''))
+        self.assertEqual(guess_first_and_last_names_from_string(' John '), ('John', ''))
+        self.assertEqual(guess_first_and_last_names_from_string('John Somer Deer'), ('John', 'Somer Deer'))
+        self.assertEqual(guess_first_and_last_names_from_string('John   Somer '), ('John', 'Somer'))
+        self.assertEqual(guess_first_and_last_names_from_string(None), ('', ''))
 
     def _create_products(self):
         Product(name='test product 1', price=Money(10, 'RUB'))

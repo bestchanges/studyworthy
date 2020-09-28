@@ -1,7 +1,7 @@
 from djangoapps.crm.forms import ClientOrderForm
 from djangoapps.crm.logic import payments
 from djangoapps.crm.models.crm_models import CourseProduct
-from djangoapps.crm.models.erp_models import ClientOrder, Invoice, PaymentIn
+from djangoapps.crm.models.erp_models import ClientOrder, Invoice, PaymentIn, Client
 from django.shortcuts import render, redirect
 from django.urls import reverse
 
@@ -28,6 +28,11 @@ def course_product(request, code):
             client_order.add_item(product, 1)
 
             # after added child object we can state NEW
+            if client_order.amount.amount == 0:
+                fulfill_event = ClientOrder.FulfillOn.CREATED
+            else:
+                fulfill_event = ClientOrder.FulfillOn.ORDER_PAYED_FULL
+            client_order.fulfill_on = fulfill_event
             client_order.state = ClientOrder.State.NEW
             client_order.save()
 

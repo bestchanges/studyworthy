@@ -1,6 +1,6 @@
 from django.forms import ModelForm
 
-from djangoapps.crm.models.erp_models import ClientOrder, PaymentIn
+from djangoapps.crm.models.erp_models import ClientOrder, Client
 
 
 class ClientOrderForm(ModelForm):

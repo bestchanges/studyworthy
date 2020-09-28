@@ -3,7 +3,6 @@ import logging
 from django.dispatch import receiver
 
 from djangoapps.common.signals import state_changed
-from djangoapps.crm.models.crm_models import ACTIONS
 from djangoapps.crm.models.erp_models import Invoice, PaymentIn, ClientOrder
 
 logger = logging.getLogger(__name__)
@@ -34,20 +33,26 @@ def on_invoice_state_change(sender, instance: Invoice, old_state, **kwargs):
     # if invoice to CourseProduct fully payed then enroll student
     invoice = instance
     client_order = invoice.client_order
-    if invoice.state == Invoice.State.PAYED_FULLY and client_order:
-        for product_item in client_order.items.all():
-            action_code = product_item.product.courseproduct.on_invoice_payed
-            if action_code:
-                method = ACTIONS[ClientOrder][action_code]['method']
-                method(client_order)
+    if not client_order:
+        return
+    invoice_state_to_event = {
+        Invoice.State.PAYED_FULLY: ClientOrder.FulfillOn.ORDER_PAYED_FULL,
+        Invoice.State.PAYED_PARTLY: ClientOrder.FulfillOn.ORDER_PAYED_PARTLY,
+    }
+    event_name = invoice_state_to_event.get(invoice.state)
+    if event_name and client_order.fulfill_on == event_name:
+        logger.info(f"Initiate fulfillment for {client_order} (order: {client_order.state}, invoice: {invoice.state}")
+        client_order.fulfill()
 
 
 @receiver(state_changed, sender=ClientOrder)
 def on_client_order_state_change(sender, instance: ClientOrder, old_state, **kwargs):
     client_order = instance
-    if client_order.state == client_order.State.NEW:
-        for product_item in client_order.items.all():
-            action_code = product_item.product.courseproduct.on_order_new
-            if action_code:
-                method = ACTIONS[ClientOrder][action_code]['method']
-                method(client_order)
+    order_state_to_event = {
+        ClientOrder.State.NEW: ClientOrder.FulfillOn.CREATED,
+        ClientOrder.State.CONFIRMED: ClientOrder.FulfillOn.CONFIRMED,
+    }
+    event_name = order_state_to_event.get(client_order.state)
+    if event_name and client_order.fulfill_on == event_name:
+        logger.info(f"Initiate fulfillment for {client_order} (order state={client_order.state}, fulfill_on={client_order.fulfill_on}")
+        client_order.fulfill()
