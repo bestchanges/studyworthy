@@ -30,5 +30,4 @@ def on_user_create(sender, instance: SiteUser, created, **kwargs):
                 email=instance.email,
             )
         instance.person = person
-
-
+        instance.save()

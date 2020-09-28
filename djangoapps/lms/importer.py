@@ -2,7 +2,7 @@ import os
 
 import yaml
 
-from lms.models.content import Course, Section, Unit, Content, Task
+from djangoapps.lms.models.content import Course, Section, Unit, Content
 
 
 def import_course_content(data: dict) -> Course:
