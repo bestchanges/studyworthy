@@ -6,7 +6,7 @@ from djmoney.money import Money
 from yandex_checkout import PaymentResponse
 
 from djangoapps.crm.api import yandex_kassa
-from djangoapps.crm.models.erp_models import PaymentIn
+from djangoapps.erp.models import PaymentIn
 
 YANDEX_KASSA_PAYMENT_GATEWAY = 'yandex-kassa'
 

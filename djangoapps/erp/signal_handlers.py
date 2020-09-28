@@ -2,8 +2,8 @@ import logging
 
 from django.dispatch import receiver
 
-from djangoapps.common.signals import state_changed
-from djangoapps.crm.models.erp_models import Invoice, PaymentIn, ClientOrder
+from djangoapps.erp.models import ClientOrder, Invoice, PaymentIn
+from djangoapps.erp.signals import state_changed
 
 logger = logging.getLogger(__name__)
 
@@ -54,5 +54,6 @@ def on_client_order_state_change(sender, instance: ClientOrder, old_state, **kwa
     }
     event_name = order_state_to_event.get(client_order.state)
     if event_name and client_order.fulfill_on == event_name:
-        logger.info(f"Initiate fulfillment for {client_order} (order state={client_order.state}, fulfill_on={client_order.fulfill_on}")
+        logger.info(
+            f"Initiate fulfillment for {client_order} (order state={client_order.state}, fulfill_on={client_order.fulfill_on}")
         client_order.fulfill()

@@ -1,11 +1,10 @@
-from djangoapps.crm.forms import ClientOrderForm
-from djangoapps.crm.logic import payments
-from djangoapps.crm.models.crm_models import CourseProduct
-from djangoapps.crm.models.erp_models import ClientOrder, Invoice, PaymentIn, Client
 from django.shortcuts import render, redirect
 from django.urls import reverse
 
-from djangoapps.crm import logic
+from djangoapps.crm.forms import ClientOrderForm
+from djangoapps.crm.logic import payments
+from djangoapps.crm.models import CourseProduct
+from djangoapps.erp.models import ClientOrder, Invoice, PaymentIn
 
 
 def index(request):

@@ -1,7 +1,8 @@
 from django.apps import AppConfig
 
+
 class MyAppConfig(AppConfig):
-    name = 'djangoapps.common'
+    name = 'djangoapps.erp'
 
     def ready(self):
-        pass
+        from . import signal_handlers  # noqa:

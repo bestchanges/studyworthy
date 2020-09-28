@@ -4,9 +4,8 @@ from django.test import TestCase
 from django.utils import timezone
 from djmoney.money import Money
 
-from djangoapps.crm.models.erp_models import Invoice, PaymentIn, Shipment, Product, ClientOrder, \
-    guess_first_and_last_names_from_string
-from djangoapps.lms.models.base import Person
+from djangoapps.erp.models import Person, Product, ClientOrder, guess_first_and_last_names_from_string, Invoice, \
+    PaymentIn, Shipment
 
 
 class TestModels(TestCase):

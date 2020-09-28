@@ -1,12 +1,138 @@
+import uuid
 from functools import reduce
 
 from django.conf import settings
+from django.conf.global_settings import LANGUAGES
 from django.db import models
+from django.utils import timezone
 from djmoney.models.fields import MoneyField, CurrencyField
 from djmoney.money import Money
+from natural_keys import NaturalKeyModel
 
-from djangoapps.common.models import Document
-from djangoapps.lms.models.base import CodeNaturalKeyAbstractModel, Person
+from djangoapps.erp.signals import state_changed
+from djangoapps.lms import config
+
+
+class ByCodeManager(models.Manager):
+    def get_by_natural_key(self, code):
+        return self.get(code=code)
+
+
+class CodeNaturalKeyAbstractModel(models.Model):
+    code = models.CharField(max_length=200, unique=True)
+
+    objects = ByCodeManager()
+
+    class Meta:
+        abstract = True
+
+    def natural_key(self):
+        return (self.code,)
+
+
+class StateMixin(models.Model):
+    """Triggers state signal on update of state. Derives should redefine state field."""
+
+    state = models.CharField(max_length=200, null=True, blank=True)
+
+    def set_state(self, new_state):
+        """Besides saving state it notifies all interested partners about it."""
+        self.state = new_state
+        self.save()
+
+    def _notify_state_change(self, old_state):
+        # send signal
+        state_changed.send(sender=self.__class__, old_state=old_state, instance=self)
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        old = self.__class__.objects.filter(pk=self.pk).first
+        old_state = old.state if old else None
+
+        super().save(force_insert, force_update, using, update_fields)
+
+        if old_state != self.state:
+            self._notify_state_change(old_state=old_state)
+
+    class Meta:
+        abstract = True
+
+
+class Document(StateMixin):
+    class State(models.TextChoices):
+        DRAFT = 'DRAFT', "Черновик"
+        FINAL = 'FINAL', "Окончательный"
+
+    DOCUMENT_NUMBER_TEMPLATE = 'D-{number_total}'
+
+    state = models.CharField(max_length=200, choices=State.choices, null=True, blank=True)
+    document_number = models.CharField(max_length=200, blank=True, null=True)
+    document_date = models.DateField(blank=True, null=True)
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+
+    created_at = models.DateTimeField(auto_now_add=True, null=True, editable=False)
+    updated_at = models.DateTimeField(auto_now=True, null=True, editable=False)
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        is_create = self.pk is None
+
+        if is_create and not self.document_number:
+            self.document_number = self._generate_document_number()
+
+        super().save(force_insert, force_update, using, update_fields)
+
+    def _generate_document_number(self):
+        template = self.DOCUMENT_NUMBER_TEMPLATE
+        if not self.document_date:
+            self.document_date = timezone.now().date()
+        today_start = self.document_date
+        month_start = today_start.replace(day=1)
+        year_start = month_start.replace(month=1)
+        number = template.format(
+            number_today=self.__class__.objects.filter(document_date__gte=today_start).count() + 1,
+            number_month=self.__class__.objects.filter(document_date__gte=month_start).count() + 1,
+            number_year=self.__class__.objects.filter(document_date__gte=year_start).count() + 1,
+            number_total=self.__class__.objects.all().count() + 1,
+        )
+        return number
+
+    def __str__(self):
+        return f'{self.document_number} at {self.document_date}'
+
+    class Meta:
+        abstract = True
+
+
+class Person(NaturalKeyModel):
+    code = models.SlugField(max_length=100, default=uuid.uuid4, unique=True)
+    first_name = models.CharField(max_length=100, blank=True)
+    last_name = models.CharField(max_length=150, blank=True)
+    email = models.EmailField(null=True, unique=True)  # TODO: can we use unique=True for nullable ?
+    phone = models.CharField(max_length=20, default='', blank=True)
+    skype = models.CharField(max_length=100, default='', blank=True)
+    google_account = models.CharField(max_length=200, default='', blank=True)
+    github_account = models.CharField(max_length=200, default='', blank=True)
+    avatar_url = models.URLField(null=True, blank=True)
+    language = models.CharField(max_length=10, choices=LANGUAGES, default='ru')
+    country = models.CharField(max_length=100, default='', blank=True)
+    city = models.CharField(max_length=100, default='', blank=True)
+    timezone = models.CharField(max_length=100, choices=[(tz, tz) for tz in config.TIMEZONES],
+                                default=settings.TIME_ZONE)
+    is_admin = models.BooleanField(default=False)
+    can_teach = models.BooleanField(default=False)
+
+    created_at = models.DateTimeField(auto_now_add=True, null=True, editable=False)
+    updated_at = models.DateTimeField(auto_now=True, null=True, editable=False)
+
+    @property
+    def full_name(self):
+        return f'{self.first_name} {self.last_name}'
+
+    def __str__(self):
+        return f'{self.full_name} {self.email}'
+
+    @classmethod
+    def lookup_by_email(cls, email):
+        return cls.objects.filter(email__iexact=email).first()
 
 
 class Product(CodeNaturalKeyAbstractModel):
@@ -23,23 +149,8 @@ class Product(CodeNaturalKeyAbstractModel):
     updated_at = models.DateTimeField(auto_now=True, null=True, editable=False)
 
 
-class Client(models.Model):
-    name = models.CharField(max_length=255)
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.SET_NULL,
-        null=True, blank=True
-    )
-    email = models.EmailField(unique=True)
-    phone = models.CharField(max_length=200, null=True, blank=True)
-
-    @classmethod
-    def lookup_by_email(cls, email):
-        return cls.objects.filter(email__iexact=email).first()
-
-
 class ClientOrder(Document):
-    document_number_template = 'CO-{number_month}'
+    DOCUMENT_NUMBER_TEMPLATE = 'CO-{number_month}'
 
     class State(models.TextChoices):
         NEW = 'NEW', "Новый"
@@ -55,7 +166,7 @@ class ClientOrder(Document):
         ORDER_PAYED_FULL = 'ORDER_PAYED_FULL', "Счет оплачен полностью"
         ORDER_PAYED_PARTLY = 'ORDER_PAYED_PARTLY', "Счет оплачен частично"
 
-    state = models.CharField(max_length=20, choices=State.choices, null=True, blank=True)
+    state = models.CharField(max_length=200, choices=State.choices, null=True, blank=True)
     client = models.ForeignKey(Person, on_delete=models.CASCADE, null=True, blank=True)
     currency = CurrencyField()
     valid_until = models.DateField(null=True, blank=True)
@@ -141,7 +252,7 @@ class ClientOrderItem(models.Model):
 
 
 class Invoice(Document):
-    document_number_template = 'I-{number_month}'
+    DOCUMENT_NUMBER_TEMPLATE = 'I-{number_month}'
 
     class State(models.TextChoices):
         NEW = 'NEW', 'Новый'
@@ -151,7 +262,7 @@ class Invoice(Document):
         CANCELLED = 'CANCELLED', 'Отменен'
 
     client = models.ForeignKey(Person, on_delete=models.CASCADE, null=True, blank=True)
-    state = models.CharField(max_length=20, choices=State.choices, default=State.NEW)
+    state = models.CharField(max_length=200, choices=State.choices, default=State.NEW)
 
     client_order = models.ForeignKey(ClientOrder, on_delete=models.PROTECT, null=True, blank=True)
     valid_until = models.DateField(null=True, blank=True)
@@ -182,7 +293,7 @@ class Invoice(Document):
 
 
 class PaymentIn(Document):
-    document_number_template = 'PI-{number_year}'
+    DOCUMENT_NUMBER_TEMPLATE = 'PI-{number_year}'
 
     class State(models.TextChoices):
         NEW = 'NEW', 'Новый'
@@ -190,7 +301,7 @@ class PaymentIn(Document):
         PROCESSED = 'PROCESSED', 'Получен'
         CANCELLED = 'CANCELLED', 'Отменен'
 
-    state = models.CharField(max_length=20, choices=State.choices, default=State.NEW)
+    state = models.CharField(max_length=200, choices=State.choices, default=State.NEW)
 
     payer = models.ForeignKey(Person, on_delete=models.PROTECT, null=True, blank=True)
     invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE, null=True, blank=True)
@@ -216,7 +327,7 @@ class ShipmentItem(models.Model):
 
 
 class Shipment(Document):
-    document_number_template = 'S-{number_year}'
+    DOCUMENT_NUMBER_TEMPLATE = 'S-{number_year}'
 
     receiver = models.ForeignKey(Person, on_delete=models.PROTECT)
     order = models.ForeignKey(ClientOrder, on_delete=models.CASCADE, null=True, blank=True)

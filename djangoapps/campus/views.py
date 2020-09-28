@@ -3,13 +3,11 @@ from django.shortcuts import render
 
 from djangoapps.lms.models.content import Unit
 from djangoapps.lms.models.learning import Learning, Lesson
-from djangoapps.siteroot.models import SiteUser
 
 
 @login_required
 def index(request):
-    user: SiteUser = request.user
-    my_learnings = user.person.learn_in.all()
+    my_learnings = []
     return render(request, 'campus/index.html', {'learnings': my_learnings})
 
 

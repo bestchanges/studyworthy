@@ -1,7 +1,7 @@
 from django.contrib import admin
 
-from djangoapps.crm.models.crm_models import CourseProduct
-from djangoapps.crm.models.erp_models import ClientOrder, Invoice, PaymentIn, ClientOrderItem
+from djangoapps.crm.models import CourseProduct
+from djangoapps.erp.models import ClientOrder, ClientOrderItem, Invoice, PaymentIn
 
 
 class ClientOrderItemAdmin(admin.TabularInline):
@@ -28,7 +28,6 @@ class InvoiceAdmin(admin.ModelAdmin):
 @admin.register(PaymentIn)
 class PaymentInAdmin(admin.ModelAdmin):
     pass
-
 
 @admin.register(CourseProduct)
 class CourseProductAdmin(admin.ModelAdmin):

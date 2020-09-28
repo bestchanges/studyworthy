@@ -3,7 +3,7 @@ from django import template
 from django.templatetags.static import static
 from django.utils.safestring import mark_safe
 
-from djangoapps.lms.models.base import Person
+from djangoapps.erp.models import Person
 from djangoapps.lms.models.content import Content
 
 register = template.Library()

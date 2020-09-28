@@ -2,8 +2,8 @@ import logging
 
 from django.dispatch import receiver
 
-from djangoapps.crm.models.erp_models import Invoice
-from djangoapps.crm.signals import state_changed
+from djangoapps.erp.models import Invoice
+from djangoapps.erp.signals import state_changed
 
 logger = logging.getLogger(__name__)
 

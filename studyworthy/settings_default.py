@@ -35,7 +35,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'social_django',
     'bootstrapform',
-    'djangoapps.common',
+    'djangoapps.erp',
     'djangoapps.lms',
     'djangoapps.crm',
     'djangoapps.campus',
@@ -126,8 +126,6 @@ AUTHENTICATION_BACKENDS = [
 
 LOGIN_URL = '/login/auth0'
 LOGIN_REDIRECT_URL = '/dashboard'
-
-AUTH_USER_MODEL = 'siteroot.SiteUser'
 
 LANGUAGE_CODE = 'ru-ru'
 

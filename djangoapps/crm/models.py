@@ -1,7 +1,8 @@
 import logging
+
 from django.db import models
 
-from djangoapps.crm.models.erp_models import Product, ClientOrder
+from djangoapps.erp.models import Product, ClientOrder
 from djangoapps.lms.models.content import Course
 
 logger = logging.getLogger(__name__)
@@ -33,4 +34,3 @@ class CourseProduct(Product):
         # create client
         # optionally create user
         # map order, invoice, payments to the person
-

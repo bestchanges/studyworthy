@@ -2,4 +2,4 @@ from django.apps import AppConfig
 
 
 class CampusConfig(AppConfig):
-    name = 'campus'
+    name = 'djangoapps.campus'

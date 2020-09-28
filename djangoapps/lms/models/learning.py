@@ -14,7 +14,7 @@ from django.utils.timezone import now
 from natural_keys import NaturalKeyModel
 
 from djangoapps.lms import config, signals
-from djangoapps.lms.models.base import CodeNaturalKeyAbstractModel, Person
+from djangoapps.erp.models import CodeNaturalKeyAbstractModel, Person
 from djangoapps.lms.models.content import Course, Unit
 from djangoapps.lms.schedule import events_generator
 
@@ -225,6 +225,3 @@ class Review(models.Model):
     updated_at = models.DateTimeField(auto_now=True, null=True, editable=False)
     assigned_at = models.DateTimeField(null=True, blank=True)
     checked_at = models.DateTimeField(null=True, blank=True)
-
-
-

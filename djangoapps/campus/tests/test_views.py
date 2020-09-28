@@ -1,13 +1,11 @@
-from django.conf import settings
+from django.contrib.auth.models import User
 from django.test import TestCase, Client
 from django.urls import reverse
-
-from djangoapps.siteroot.models import SiteUser
 
 
 class TestViews(TestCase):
     def setUp(self) -> None:
-        self.user = SiteUser.objects.create_user(
+        self.user = User.objects.create_user(
             username='sample-student',
             email='email@sample-student.zzz',
             password='UserPassword'

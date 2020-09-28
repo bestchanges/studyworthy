@@ -1,6 +1,7 @@
 from django.forms import ModelForm
 
 from djangoapps.erp.models import ClientOrder
+from djangoapps.erp.models.erp import Client
 
 
 class ClientOrderForm(ModelForm):
