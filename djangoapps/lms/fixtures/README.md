@@ -1,3 +1,0 @@
-# Fixture for testing
-
-### Participants

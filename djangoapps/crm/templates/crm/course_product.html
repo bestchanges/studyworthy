@@ -1,6 +1,5 @@
 {% extends 'layout.html' %}
-{% load lms_custom_tags %}
-{% load bootstrap %}
+{% load crispy_forms_tags %}
 
 {% block content %}
     <div class="jumbotron">
@@ -14,18 +13,12 @@
 
     <hr>
     <div>
-        {{ course.long_description | markdown }}
+        {{ course.long_description }}
     </div>
 
     <hr>
 
     <h2>Зарегистрироваться</h2>
-    <form id="enrollment-form" method="POST" class="post-form">
-        {% csrf_token %}
-        {{ form | bootstrap }}
-        <div class="form-group">
-            <button type="submit" class="btn btn-primary">Submit</button>
-        </div>
-    </form>
+    {% crispy form %}
 
 {% endblock content %}

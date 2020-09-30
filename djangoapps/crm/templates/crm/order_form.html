@@ -1,0 +1,8 @@
+{% extends 'layout.html' %}
+{% load lms_custom_tags %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <h2>Форма записи</h2>
+    {% crispy form %}
+{% endblock content %}

@@ -1,0 +1,295 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-09-22 23:58+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n"
+"%100>=11 && n%100<=14)? 2 : 3);\n"
+
+#: project/apps/lms/models/lms_models.py:23
+msgid "Course name"
+msgstr "Название курса"
+
+#: project/apps/lms/models/lms_models.py:31
+#: project/apps/lms/models/lms_models.py:58
+msgid "Course"
+msgstr "Название курса"
+
+#: project/apps/lms/models/lms_models.py:32
+msgid "Courses"
+msgstr "Курсы"
+
+#: project/apps/lms/models/lms_models.py:46
+#: project/apps/lms/models/lms_models.py:60
+msgid "Unit"
+msgstr "Модуль"
+
+#: project/apps/lms/models/lms_models.py:47
+msgid "Units"
+msgstr "Модули"
+
+#: project/apps/lms/models/lms_models.py:52
+#: project/apps/lms/models/lms_models.py:340
+msgid "Lesson ordering number among the course"
+msgstr "Порядковый номер урока на курсе. Если 0, то назначить автоматически"
+
+#: project/apps/lms/models/lms_models.py:53
+msgid "Number"
+msgstr "Номер"
+
+#: project/apps/lms/models/lms_models.py:54
+msgid "Lesson name"
+msgstr "Название урока"
+
+#: project/apps/lms/models/lms_models.py:54
+msgid "Title"
+msgstr "Название"
+
+#: project/apps/lms/models/lms_models.py:56
+msgid "Code"
+msgstr "Код"
+
+#: project/apps/lms/models/lms_models.py:63
+msgid "Stop lesson"
+msgstr "Стоп урок"
+
+#: project/apps/lms/models/lms_models.py:67
+#, fuzzy
+#| msgid "Lesson name"
+msgid "Lesson"
+msgstr "Название урока"
+
+#: project/apps/lms/models/lms_models.py:68
+#, fuzzy
+#| msgid "Lesson name"
+msgid "Lessons"
+msgstr "Название урока"
+
+#: project/apps/lms/models/lms_models.py:100
+msgid "Flow"
+msgstr "Поток"
+
+#: project/apps/lms/models/lms_models.py:101
+msgid "Flows"
+msgstr "Потоки"
+
+#: project/apps/lms/models/lms_models.py:121
+msgid "Regular plan of learning"
+msgstr "Расписание обучения"
+
+#: project/apps/lms/models/lms_models.py:169
+msgid "Participant"
+msgstr "Участник"
+
+#: project/apps/lms/models/lms_models.py:170
+msgid "Participants"
+msgstr "Участники"
+
+#: project/apps/lms/models/lms_models.py:181
+msgid "Notes"
+msgstr "Заметки"
+
+#: project/apps/lms/models/lms_models.py:181
+msgid "Visible for stuff only"
+msgstr "Видно только сотрудникам"
+
+#: project/apps/lms/models/lms_models.py:220
+msgid "Teacher"
+msgstr "Куратор"
+
+#: project/apps/lms/models/lms_models.py:221
+msgid "Teachers"
+msgstr "Кураторы"
+
+#: project/apps/lms/models/lms_models.py:228
+msgid "Admin"
+msgstr "Админ"
+
+#: project/apps/lms/models/lms_models.py:229
+msgid "Admins"
+msgstr "Админы"
+
+#: project/apps/lms/models/lms_models.py:236
+msgid "Student"
+msgstr "Студент"
+
+#: project/apps/lms/models/lms_models.py:237
+msgid "Students"
+msgstr "Студенты"
+
+#: project/apps/lms/models/lms_models.py:240
+msgid "Type Generator"
+msgstr "Генератор"
+
+#: project/apps/lms/models/lms_models.py:241
+msgid "Type ManGenerator"
+msgstr "Манифестирующий генератор"
+
+#: project/apps/lms/models/lms_models.py:242
+msgid "Type Manifestor"
+msgstr "Манифестор"
+
+#: project/apps/lms/models/lms_models.py:243
+msgid "Type Projector"
+msgstr "Проектор"
+
+#: project/apps/lms/models/lms_models.py:244
+msgid "Type Reflector"
+msgstr "Рефлектор"
+
+#: project/apps/lms/models/lms_models.py:250
+msgid "Authority SolarPlexus"
+msgstr "Авторитет Солнечного Сплетения"
+
+#: project/apps/lms/models/lms_models.py:251
+msgid "Authority Sacral"
+msgstr "Сакральный Авторитет"
+
+#: project/apps/lms/models/lms_models.py:252
+msgid "Authority Splenic"
+msgstr "Селезёночный Авторитет"
+
+#: project/apps/lms/models/lms_models.py:253
+msgid "Authority Ego"
+msgstr "Эго-Манифестируемый Авторитет"
+
+#: project/apps/lms/models/lms_models.py:254
+msgid "Authority G"
+msgstr "Самопроецируемый Авторитет"
+
+#: project/apps/lms/models/lms_models.py:255
+msgid "Authority EgoProjected"
+msgstr "Эго-Проецируемый Авторитет"
+
+#: project/apps/lms/models/lms_models.py:257
+msgid "Authority Moon"
+msgstr "Лунный Авторитет"
+
+#: project/apps/lms/models/lms_models.py:258
+msgid "Authority Mental"
+msgstr "Ментальный Авторитет"
+
+#: project/apps/lms/models/lms_models.py:265
+msgid "Center open"
+msgstr "Открыт"
+
+#: project/apps/lms/models/lms_models.py:266
+msgid "Center defined"
+msgstr "Определён"
+
+#: project/apps/lms/models/lms_models.py:267
+msgid "Center full open"
+msgstr "Полностью открыт"
+
+#: project/apps/lms/models/lms_models.py:281
+msgid "Birth date"
+msgstr "Дата рождения"
+
+#: project/apps/lms/models/lms_models.py:282
+msgid "Birth time"
+msgstr "Время рождения"
+
+#: project/apps/lms/models/lms_models.py:283
+msgid "Birth datetime"
+msgstr "Дата и время рождения"
+
+#: project/apps/lms/models/lms_models.py:284
+msgid "Birth timezone"
+msgstr "Часовой пояс места рождения"
+
+#: project/apps/lms/models/lms_models.py:285
+msgid "Birthplace"
+msgstr "Место рождения"
+
+#: project/apps/lms/models/lms_models.py:287
+msgid "Type"
+msgstr "Тип"
+
+#: project/apps/lms/models/lms_models.py:289
+msgid "Profile"
+msgstr "Профиль"
+
+#: project/apps/lms/models/lms_models.py:291
+msgid "Authority"
+msgstr "Авторитет"
+
+#: project/apps/lms/models/lms_models.py:292
+msgid "Root Center"
+msgstr "Корневой Центр"
+
+#: project/apps/lms/models/lms_models.py:293
+msgid "Sacral Center"
+msgstr "Сакральный Центр"
+
+#: project/apps/lms/models/lms_models.py:294
+msgid "Splenic Center"
+msgstr "Селезёночный Центр"
+
+#: project/apps/lms/models/lms_models.py:295
+msgid "Solar Plexus Center"
+msgstr "Центр Солнечного Сплетения"
+
+#: project/apps/lms/models/lms_models.py:296
+msgid "Heart Center"
+msgstr "Сердечный Центр"
+
+#: project/apps/lms/models/lms_models.py:297
+msgid "G Center"
+msgstr "Центр Джи"
+
+#: project/apps/lms/models/lms_models.py:298
+msgid "Throat Center"
+msgstr "Горловой Центр"
+
+#: project/apps/lms/models/lms_models.py:299
+msgid "Ajna Center"
+msgstr "Центр Аджна"
+
+#: project/apps/lms/models/lms_models.py:300
+msgid "Head Center"
+msgstr "Теменной Центр"
+
+#: project/apps/lms/models/lms_models.py:380
+msgid "Accepted"
+msgstr "Принято"
+
+#: project/apps/lms/models/lms_models.py:381
+msgid "Failed"
+msgstr "Провален"
+
+#: project/apps/lms/models/lms_models.py:382
+msgid "Rejected"
+msgstr "Требуется доработка"
+
+#: project/apps/lms/models/lms_models.py:388
+msgid "When the student has marked lesson as completed"
+msgstr "Когда студент отметил урок как выполненный"
+
+#: project/apps/lms/models/lms_models.py:389
+msgid "When the teacher has checked the task"
+msgstr "Когда учитель проверил задание"
+
+#: project/apps/lms/models/lms_models.py:392
+msgid "Check result"
+msgstr "Результат проверки"
+
+#: project/apps/lms/models/lms_models.py:394
+msgid "Score"
+msgstr "Оценка"
+
+#: project/apps/lms/models/lms_models.py:394
+msgid "Score for student response"
+msgstr "Оценка работы студента"

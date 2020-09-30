@@ -1,10 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
-from djangoapps.lms.models.content import Unit
-from djangoapps.lms.models.learning import Learning, Lesson
-
-
 @login_required
 def index(request):
     my_learnings = []

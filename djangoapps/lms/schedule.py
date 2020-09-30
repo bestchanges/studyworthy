@@ -28,7 +28,7 @@ def events_generator(schedule: str, start_at: datetime):
             try:
                 dow_index = DAY_OF_WEEKS.index(day_of_week)
             except ValueError:
-                raise ValueError(f"Unexpected daw of week {day_of_week}. Possible values are: {DAY_OF_WEEKS}")
+                raise ValueError(f"Unexpected day of week '{day_of_week}'. Possible values are: {DAY_OF_WEEKS}")
             day_incrementor = None
 
         if len(parts) == 2:

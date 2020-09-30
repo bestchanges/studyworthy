@@ -9,25 +9,62 @@ behave = "*"
 behave-django = "*"
 splinter = '*'
 pytest = '*'
+zappa = "*"
+parameterized = "*"
+responses = "*"
 
 [packages]
-Django = ">=3.0"
-djangorestframework = "*"
-django-storages = '*'
+django = "<2.3"
+django-classy-tags = ">=0.9"
+django-cms = "<3.8,>=3.7"
+django-crispy-forms = "*"
+django-debug-toolbar = "*"
+django-filer = ">=1.3"
+django-mptt = ">0.9"
+django-sekizai = ">=1.0"
+django-storages = "*"
+django-treebeard = "<5.0,>=4.0"
+djangocms-admin-style = "<1.5,>=1.4"
+djangocms-bootstrap = "*"
+djangocms-bootstrap4 = "<1.6,>=1.5"
+djangocms-file = "<3.0,>=2.3"
+djangocms-googlemap = "<1.4,>=1.3"
+djangocms-link = "<2.6,>=2.5"
+djangocms-picture = "<2.4,>=2.3"
+djangocms-snippet = "<2.3,>=2.2"
+djangocms-style = "<2.3,>=2.2"
+djangocms-text-ckeditor = "<3.9,>=3.7"
+djangocms-video = "<2.3,>=2.1"
+djangocms-youtube = "*"
+easy-thumbnails = "*"
+gunicorn = "*"
+html5lib = ">=1.0.1"
+pillow = ">=3.0"
 psycopg2-binary = "*"
 python-dotenv = "*"
-social-auth-app-django = "*"
-python-jose = "*"
-requests = "*"
-dj_database_url = "*"
-pyyaml = "*"
-gunicorn = "*"
-boto3 = '*'
-whitenoise = '*'
-markdown = '*'
+
+zappa-django-utils = "*"
+
+#Django = ">=3.0"
+#djangorestframework = "*"
+#
+#django-storages = '*'
+#dj-database-url = "*"
+#psycopg2-binary = "*"
+#python-dotenv = "*"
+#social-auth-app-django = "*"
+#python-jose = "*"
+#requests = "*"
+#dj_database_url = "*"
+#pyyaml = "*"
+#gunicorn = "*"
+#boto3 = '*'
+#whitenoise = '*'
+#markdown = '*'
+
 django-money = '*'
 sentry-sdk = '*'
-django-bootstrap-form = '*'
+#django-bootstrap-form = '*'
 natural-keys = '*'
 yandex_checkout = '*'
 

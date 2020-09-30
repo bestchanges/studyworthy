@@ -1,1 +1,1 @@
-default_app_config = 'djangoapps.lms.apps.MyAppConfig'
+default_app_config = 'djangoapps.lms.apps.LmsConfig'

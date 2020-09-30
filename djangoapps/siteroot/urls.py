@@ -1,13 +1,24 @@
+from django.conf import settings
 from django.conf.urls import url
 from django.urls import path, include
+from django.contrib import admin
 from . import views
 
+admin.autodiscover()
+
 urlpatterns = [
-    path('', views.index, name='index'),
-    path('dashboard', views.dashboard),
-    path('logout', views.logout_view),
-    url(r'^crm/', include('djangoapps.crm.urls', namespace='crm')),
+    path('admin/', admin.site.urls),
+    # path('lms/', include('djangoapps.lms.urls')),
+    path('campus/', include('djangoapps.campus.urls')),
+    path('crm/', include('djangoapps.crm.urls', namespace='crm')),
     path('', include('django.contrib.auth.urls')),
-    path('', include('django.contrib.auth.urls')),
-    path('', include('social_django.urls')),
+    path('courses/', views.index, name='index'),
+    url(r'^', include('cms.urls')),
 ]
+
+if settings.DJANGO_DEBUG_TOOLBAR:
+    import debug_toolbar
+
+    urlpatterns += [
+        path('__debug__/', include(debug_toolbar.urls)),
+    ]

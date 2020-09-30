@@ -33,14 +33,14 @@ def on_invoice_state_change(sender, instance: Invoice, old_state, **kwargs):
     # if invoice to CourseProduct fully payed then enroll student
     invoice = instance
     client_order = invoice.client_order
-    if not client_order:
+    if not client_order or not client_order.fulfill_on:
         return
-    invoice_state_to_event = {
-        Invoice.State.PAYED_FULLY: ClientOrder.FulfillOn.ORDER_PAYED_FULL,
-        Invoice.State.PAYED_PARTLY: ClientOrder.FulfillOn.ORDER_PAYED_PARTLY,
+    invoice_state_to_events = {
+        Invoice.State.PAYED_FULLY: [ClientOrder.FulfillOn.ORDER_PAYED_FULL, ClientOrder.FulfillOn.ORDER_PAYED_PARTLY],
+        Invoice.State.PAYED_PARTLY: [ClientOrder.FulfillOn.ORDER_PAYED_PARTLY],
     }
-    event_name = invoice_state_to_event.get(invoice.state)
-    if event_name and client_order.fulfill_on == event_name:
+    fulfill_on_events = invoice_state_to_events.get(invoice.state, [])
+    if client_order.fulfill_on in fulfill_on_events:
         logger.info(f"Initiate fulfillment for {client_order} (order: {client_order.state}, invoice: {invoice.state}")
         client_order.fulfill()
 

@@ -4,8 +4,10 @@ Do not define any config vars in this module. Instead use settings_default.py of
 """
 import os
 
-if 'DYNO' in os.environ:
-    from .settings_heroku import *
+deployment_default = 'local'
+deployment = os.environ.get('DEPLOYMENT', deployment_default)
+
+if deployment == 'local':
+    from .settings_local import *
 else:
-    # DEV Environment
-    from .settings_dev import *
+    from .settings_default import *

@@ -1,5 +1,5 @@
-from django.db.models.signals import ModelSignal
+import django.dispatch
 
-learning_started_signal = ModelSignal(providing_args=["learning"], use_caching=True)
-learning_finished_signal = ModelSignal(providing_args=["learning"], use_caching=True)
-lesson_opened_signal = ModelSignal(providing_args=["lesson"], use_caching=True)
+lesson_available = django.dispatch.Signal(providing_args=["flow_lesson", "by_user"])
+lesson_unavailable = django.dispatch.Signal(providing_args=["flow_lesson", "by_user"])
+flow_started = django.dispatch.Signal(providing_args=["flow"])

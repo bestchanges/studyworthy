@@ -2,14 +2,15 @@ import logging
 
 from django.db import models
 
+from djangoapps.erp.enums import IntegerChoices
 from djangoapps.erp.models import Product, ClientOrder
-from djangoapps.lms.models.content import Course
+from djangoapps.lms.models.lms_models import Course
 
 logger = logging.getLogger(__name__)
 
 
 class CourseProduct(Product):
-    class Level(models.IntegerChoices):
+    class Level(IntegerChoices):
         BEGINNER = 1
         EASY = 2
         MEDIUM = 3

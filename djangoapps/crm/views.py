@@ -1,10 +1,10 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse
 
-from djangoapps.crm.forms import ClientOrderForm
+from djangoapps.crm.forms import SingleCourseProductOrderForm
 from djangoapps.crm.logic import payments
 from djangoapps.crm.models import CourseProduct
-from djangoapps.erp.models import ClientOrder, Invoice, PaymentIn
+from djangoapps.erp.models import ClientOrder, Invoice, PaymentIn, Person
 
 
 def index(request):
@@ -17,29 +17,8 @@ def index(request):
 
 def course_product(request, code):
     product = CourseProduct.objects.get(code=code)
-    if request.method == "POST":
-        form = ClientOrderForm(request.POST)
-        if form.is_valid():
-            client_order: ClientOrder = form.save(commit=False)
-            client_order.product = product
-            client_order.save()
-
-            client_order.add_item(product, 1)
-
-            # after added child object we can state NEW
-            if client_order.amount.amount == 0:
-                fulfill_event = ClientOrder.FulfillOn.CREATED
-            else:
-                fulfill_event = ClientOrder.FulfillOn.ORDER_PAYED_FULL
-            client_order.fulfill_on = fulfill_event
-            client_order.state = ClientOrder.State.NEW
-            client_order.save()
-
-            invoice = client_order.create_invoice()
-            invoice.save()
-            return redirect(reverse('crm:invoice_payment', args=[invoice.uuid]))
-    else:
-        form = ClientOrderForm()
+    person = Person.objects.filter(user=request.user).first()
+    form = SingleCourseProductOrderForm(product=product, person=person)
     context = {
         'product': product,
         'course': product.items.all()[0],
@@ -48,8 +27,28 @@ def course_product(request, code):
     return render(request, 'crm/course_product.html', context)
 
 
-def enrollment_accepted(request):
-    return render(request, 'crm/enrollment_accepted.html', {})
+def order_single_product(request):
+    if request.method == "POST":
+        form = SingleCourseProductOrderForm(request.POST)
+        if form.is_valid():
+            client_order: ClientOrder = form.create_order()
+
+            if client_order.amount.amount:
+                invoice = client_order.create_invoice()
+                invoice.save()
+                return redirect(reverse('crm:invoice_payment', args=[invoice.uuid]))
+            else:
+                return redirect(reverse('crm:order_accepted'))
+    else:
+        form = SingleCourseProductOrderForm()
+    context = {
+        'form': form,
+    }
+    return render(request, 'crm/order_form.html', context)
+
+
+def order_accepted(request):
+    return render(request, 'crm/order_accepted.html', {})
 
 
 def invoice(request, uuid):

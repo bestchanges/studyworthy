@@ -4,8 +4,8 @@ from django.test import TestCase
 from django.utils import timezone
 from djmoney.money import Money
 
-from djangoapps.erp.models import Person, Product, ClientOrder, guess_first_and_last_names_from_string, Invoice, \
-    PaymentIn, Shipment
+from djangoapps.erp.models import Person, Product, ClientOrder, Invoice, \
+    PaymentIn
 
 
 class TestModels(TestCase):
@@ -35,7 +35,7 @@ class TestModels(TestCase):
         self.assertEquals("I-2", invoice_2.document_number)
 
         # create invoice one month later
-        self.assertTrue('{number_month}' in Invoice.document_number_template,
+        self.assertTrue('{number_month}' in Invoice.DOCUMENT_NUMBER_TEMPLATE,
                         "Invoices suppose to be month-dependant")
         invoice_3 = order.create_invoice()
         invoice_3.document_date = timezone.now().date() + datetime.timedelta(days=31)
@@ -91,12 +91,14 @@ class TestModels(TestCase):
         invoice.save()
         self.assertEqual(order.amount, invoice.amount)
         self.assertEqual(order, invoice.client_order)
-        self.assertEqual(invoice.state, invoice.State.NEW)
+        self.assertIsNone(invoice.state)
 
         payment_in = invoice.create_payment()
+        payment_in.state = PaymentIn.State.WAITING
         payment_in.save()
         self.assertEqual(invoice.amount, payment_in.amount)
         # after create paymentIn the signal should update invoice state
+        # invoice = Invoice.objects.get(pk=invoice.pk)
         self.assertEqual(invoice.state, invoice.State.WAITING)
         self.assertEqual(invoice, payment_in.invoice)
         self.assertFalse(payment_in.is_completed())
@@ -112,7 +114,7 @@ class TestModels(TestCase):
             amount=Money(25, 'RUB')
         )
         invoice.save()
-        self.assertEqual(invoice.state, invoice.State.NEW)
+        self.assertIsNone(invoice.state)
         self.assertFalse(invoice.is_payed)
 
         amount_1 = Money(18, 'RUB')
@@ -142,14 +144,14 @@ class TestModels(TestCase):
         self.assertEqual(invoice.state, invoice.State.PAYED_FULLY)
         self.assertTrue(invoice.is_payed)
 
-    def test_guess_first_and_last_names_from_string(self):
-        self.assertEqual(guess_first_and_last_names_from_string('John Deer'), ('John', 'Deer'))
-        self.assertEqual(guess_first_and_last_names_from_string('John'), ('John', ''))
-        self.assertEqual(guess_first_and_last_names_from_string('John '), ('John', ''))
-        self.assertEqual(guess_first_and_last_names_from_string(' John '), ('John', ''))
-        self.assertEqual(guess_first_and_last_names_from_string('John Somer Deer'), ('John', 'Somer Deer'))
-        self.assertEqual(guess_first_and_last_names_from_string('John   Somer '), ('John', 'Somer'))
-        self.assertEqual(guess_first_and_last_names_from_string(None), ('', ''))
+    def test__guess_first_and_last_name(self):
+        self.assertEqual(Person._guess_first_and_last_name('John Deer'), ('John', 'Deer'))
+        self.assertEqual(Person._guess_first_and_last_name('John'), ('John', ''))
+        self.assertEqual(Person._guess_first_and_last_name('John '), ('John', ''))
+        self.assertEqual(Person._guess_first_and_last_name(' John '), ('John', ''))
+        self.assertEqual(Person._guess_first_and_last_name('John Somer Deer'), ('John', 'Somer Deer'))
+        self.assertEqual(Person._guess_first_and_last_name('John   Somer '), ('John', 'Somer'))
+        self.assertEqual(Person._guess_first_and_last_name(None), ('', ''))
 
     def _create_products(self):
         Product(name='test product 1', price=Money(10, 'RUB'))
