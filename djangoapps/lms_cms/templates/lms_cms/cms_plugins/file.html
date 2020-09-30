@@ -1,0 +1,39 @@
+{% extends base_template %}
+{% comment %}
+    # https://github.com/divio/django-filer/blob/master/filer/models/filemodels.py
+    {{ instance.file_src }}
+    {{ instance.file_src.extension }}
+    # Available variables:
+    {{ instance.template }}
+    {{ instance.file_name }}
+    {{ instance.link_target }}
+    {{ instance.link_title }}
+    {{ instance.show_file_size }}
+    {{ instance.attributes_str }}
+{% endcomment %}
+{% block content %}
+    <div class="row px-2">
+        <div class="mx-2 alert alert-primary mx-auto text-center" style="width: 350px">
+            {% if is_audio %}
+                <audio src="{{ instance.file_src.url }}" controls  controlsList="nodownload"></audio>
+            {% else %}
+                <a href="{{ instance.file_src.url }}"
+                   class="btn btn-primary btn-lg active"
+                   role="button" aria-pressed="true"
+                        {% if instance.link_target %} target="{{ instance.link_target }}"{% endif %}
+                        {% if instance.link_title %} title="{{ instance.link_title }}"{% endif %}
+                >
+                    <i class="fas fa-file-download fa-lg mx-1"></i>
+                </a>
+                {% if instance.file_name %}
+                    {{ instance.file_name }}
+                {% else %}
+                    {{ instance.file_src.label }}
+                {% endif %}
+                {% if instance.show_file_size %}
+                    <span>({{ instance.file_src.size|filesizeformat }})</span>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

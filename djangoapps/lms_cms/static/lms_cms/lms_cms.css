@@ -1,0 +1,20 @@
+/* Not used TODO: remove */
+.lms_content_block {
+    padding-bottom: 50px;
+    padding-top: 50px;
+}
+
+.lms_youtube {
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-bottom: 56.25%;
+}
+
+.lms_youtube iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}

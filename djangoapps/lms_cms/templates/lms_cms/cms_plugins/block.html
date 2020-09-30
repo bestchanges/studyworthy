@@ -1,0 +1,11 @@
+{% extends base_template %}
+{% load cms_tags %}
+{% block content %}
+<div>
+    {% for plugin in instance.child_plugin_instances %}
+        <div class="col-lg px-2">
+            {% render_plugin plugin %}
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

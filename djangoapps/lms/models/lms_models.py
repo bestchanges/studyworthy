@@ -21,6 +21,11 @@ class Course(models.Model):
     code = models.CharField(max_length=250, unique=True, default=uuid.uuid4)
     state = models.CharField(max_length=8, choices=STATE_CHOICES, default=DRAFT)
 
+    def create_flow(self):
+        return Flow.objects.create(
+            course=self,
+        )
+
     def __str__(self):
         return f'{self.title}'
 

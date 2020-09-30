@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% load cms_tags %}
+
+{% block content %}
+    <h1>Lesson Content</h1>
+    {% render_placeholder lesson.content %}
+{% endblock %}

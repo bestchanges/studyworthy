@@ -1,0 +1,28 @@
+{% extends "lms_cms/cms_plugins/layout-block.html" %}
+{% block content %}
+    {% if attendance %}
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $("button#lesson-completed").click(function () {
+                    let value = $(this).attr('v')
+                    $.ajax({
+                        url: '{% url 'lms:attendance-completed' attendance_id=attendance.id %}',
+                        type: 'GET',
+                        data: {'value': value}
+                    }).done(function () {
+                        $("#lesson-completed-block").html('<span class="text-success" style="font-size: 24px;"><i class="fas fa-check-circle"></i> Материал изучен</span>')
+                    });
+                });
+            });
+        </script>
+    {% endif %}
+    <div class="text-center" id="lesson-completed-block">
+        {% if attendance.is_completed %}
+            <span class="text-success" style="font-size: 24px;"><i class="fas fa-check-circle"></i> Материал изучен</span>
+{#            <button id="lesson-completed" type="button" v='false' class="btn btn-primary">cancel</button>#}
+        {% else %}
+            <button id="lesson-completed" type="button" v='true' class="btn btn-primary btn-lg">Отметить как изученный</button>
+        {% endif %}
+    </div>
+
+{% endblock %}

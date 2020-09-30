@@ -1,10 +1,12 @@
 import logging
 
+from django.contrib.auth.models import User
 from django.db import models
 
 from djangoapps.erp.enums import IntegerChoices
 from djangoapps.erp.models import Product, ClientOrder
-from djangoapps.lms.models.lms_models import Course
+from djangoapps.lms.models.lms_models import Course, Student
+from djangoapps.lms_cms.logic.users import create_lms_user
 
 logger = logging.getLogger(__name__)
 
@@ -16,7 +18,7 @@ class CourseProduct(Product):
         MEDIUM = 3
         EXPERT = 4
 
-    items = models.ManyToManyField(Course)
+    courses = models.ManyToManyField(Course)
     short_description = models.CharField(max_length=250, null=True, blank=True)
     long_description = models.TextField(null=True, blank=True)
     level = models.IntegerField(choices=Level.choices, null=True, blank=True)
@@ -32,6 +34,33 @@ class CourseProduct(Product):
 
     def enroll_from_client_order(self, client_order: ClientOrder):
         logger.info(f'Enrolling from {client_order}')
+
         # create client
-        # optionally create user
-        # map order, invoice, payments to the person
+        person = client_order.client
+        if not person.user:
+            # try to match by email
+            user = User.objects.filter(username__iexact=person.email).first()
+            if not user:
+                logger.info(f'User {person.email} not found. Create new')
+                # optionally create user
+                user = create_lms_user(
+                    email=person.email,
+                    first_name=person.first_name,
+                    last_name=person.last_name,
+                    send_email=True,
+                )
+            assert user
+            person.user = user
+            person.save()
+
+        for course in self.courses.all():
+            # create flow for personal use. For group flows need to save flow in ProductOrderItem
+            flow = course.create_flow()
+            logger.info(f'Created flow {flow} for course {course}')
+            # assign Student to this flow
+            student = Student.objects.create(
+                user=person.user,
+                flow=flow,
+                role=Student.ROLE_STUDENT,
+            )
+            logger.info(f'Created student {student}')

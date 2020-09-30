@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load crispy_forms_filters %}
+{% load i18n %}
+
+{% block title %}{% trans "Comment reply" %}{% endblock %}
+
+{% block content %}
+    <div class="mb-4">
+        <h3 class="text-center">{% trans "Reply to comment" %}</h3>
+        <hr/>
+    </div>
+    {% include "lms_cms/comments/comment-single.html" with comment=source display_children=False %}
+    {% include "lms_cms/comments/form.html" with form=form %}
+{% endblock %}

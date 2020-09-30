@@ -1,0 +1,46 @@
+{% extends "lms_cms/cms_plugins/layout-block.html" %}
+{% load staticfiles %}
+{% comment %}
+    # https://github.com/divio/django-filer/blob/master/filer/models/filemodels.py
+    {{ instance.file_src }}
+    {{ instance.file_src.extension }}
+    # Available variables:
+    {{ instance.template }}
+    {{ instance.file_name }}
+    {{ instance.link_target }}
+    {{ instance.link_title }}
+    {{ instance.show_file_size }}
+    {{ instance.attributes_str }}
+    {{ token }} - token for lunaadio https://audioplayer.luna-universe.com/register
+{% endcomment %}
+{% block content %}
+    <div id="lunaaudio" style="width:100%;"></div>
+
+    <ul id="myplaylists" class="lunaaudioplaylist">
+        <li data-type="single" data-target="{{ instance.file_src.url }}" data-image="{% static 'audioplayer/vasilina-player-compressor.jpg' %}"></li>
+    </ul>
+
+    <script>
+        let la = $("#lunaaudio").lunaaudio({
+            token: "{{ token }}",
+            backgroundcolor: "#282828",
+            fontcolor: "#ffffff",
+            hightlightcolor: "#f86808",
+            fontname: "Oswald",
+            googlefont: "Oswald:400",
+            usevisualizer: "real",
+            visualizertype: "6",
+            useDeepLinking: "true",
+            playlists: "myplaylists"
+        });
+
+        la.ready(function() {
+            la.find("#lunaaudiobuttonshuffle").hide();
+            la.find("#lunaaudiobuttonrepeat").hide();
+            la.find("#lunaaudiobuttonsocial").hide();
+            la.find("#lunaaudiobuttondownload").hide();
+            la.find("#lunaaudiobuttoncart").hide();
+        });
+    </script>
+
+{% endblock %}

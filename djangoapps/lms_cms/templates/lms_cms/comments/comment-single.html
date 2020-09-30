@@ -1,0 +1,47 @@
+{% load static %}
+{% load i18n %}
+{% load l10n %}
+
+<div class="media">
+    <img class="rounded-circle" src="{% static "lms_cms/avatar.png" %}"/>
+    <div class="media-body">
+        <div class="d-flex flex-column bd-highlight mb-3">
+            <div id="c{{ comment.id }}" class="mx-1 mb-1 small d-flex flex-column">
+{#                <a class="permalink" title="{% trans 'comment permalink' %}" href="{{ page.get_absolute_url }}#c{{ comment.id }}">¶</a>#}
+                {% include "lms_cms/comments/participant-name.html" with participant=comment.participant %}
+                {#                <span>#}
+                {#                    {% if not comment.is_removed %}#}
+                {#                        {% if perms.comments.can_moderate %}#}
+                {#                            <a class="mutedlink" href="{% url 'comments-delete' comment.pk %}"><i class="fas fa-trash-alt" title="{% trans 'remove comment' %}"></i></a>#}
+                {#                        {% endif %}#}
+                {#                    {% endif %}#}
+                {#                </span>#}
+
+            </div>
+            <div class="mx-2 {% if not allow_feedback and not comment.allow_thread %} pb-3{% endif %}">
+                {{ comment.comment|linebreaks }}
+                {% if comment.file %}
+                    <div>
+                        <a target="_blank" href="{{ comment.file.url }}"><i class="fas fa-paperclip"></i> file</a>
+                    </div>
+                {% endif %}
+                <div class="mb-1 small">
+                    {% if comment.hide_from_others %}
+                    <i
+                            class="fas fa-user-secret fa-lg text-secondary"
+                            title="Комментарий скрыт от других"></i>
+                    {% endif %}
+                    {{ comment.updated_at|date:"SHORT_DATETIME_FORMAT" }}
+                </div>
+            </div>
+            <div class="comment pb-1">
+                {% if not comment.is_removed %}
+                    <a class="mutedlink" href="{% url 'lms:comment_reply' %}?parent={{ comment.id }}&flow_lesson={{ flow_lesson.pk }}">{% trans "Reply" %}</a>
+                {% endif %}
+            </div>
+        </div>
+        {% if display_children and comment.children %}
+            {% include "lms_cms/comments/comments-list.html" with comments=comment.children %}
+        {% endif %}
+    </div>
+</div>

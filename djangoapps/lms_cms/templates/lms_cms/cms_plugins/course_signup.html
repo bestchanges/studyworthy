@@ -1,0 +1,7 @@
+{% extends "lms_cms/cms_plugins/layout-block.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <div class="col-md-10 offset-md-1 col-xl-6 offset-xl-3">
+        {% crispy form %}
+    </div>
+{% endblock %}

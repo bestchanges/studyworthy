@@ -1,0 +1,11 @@
+{% load i18n %}
+<div class="mr-auto">
+    <strong>{{ participant }}</strong>&nbsp;
+    {% if participant.role == 'TEACHER' %}
+        <span class="badge badge-success">{% trans "teacher" %}</span>
+    {% elif participant.role == 'ADMIN' %}
+        <span class="badge badge-danger">{% trans "admin" %}</span>
+    {% elif participant.role == 'STUDENT' %}
+        <span class="badge badge-light border border-dark">{% trans "student" %}</span>
+    {% endif %}
+</div>

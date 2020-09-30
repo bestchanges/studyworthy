@@ -1,0 +1,442 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-09-22 23:58+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n"
+"%100>=11 && n%100<=14)? 2 : 3);\n"
+
+#: project/apps/lms_cms/admin.py:163
+msgid "Calculate Rave"
+msgstr "Рассчитать рейв"
+
+#: project/apps/lms_cms/cms_menus.py:9
+#, fuzzy
+#| msgid "Lesson settings"
+msgid "lesson menu"
+msgstr "Настройки урока"
+
+#: project/apps/lms_cms/cms_menus.py:13
+msgid "Log in"
+msgstr "Войти"
+
+#: project/apps/lms_cms/cms_menus.py:14
+msgid "Log out"
+msgstr "Выйти"
+
+#: project/apps/lms_cms/cms_plugins.py:26
+msgid "Course signup form"
+msgstr "Запись на курс"
+
+#: project/apps/lms_cms/cms_plugins.py:28
+#: project/apps/lms_cms/cms_plugins.py:44
+#: project/apps/lms_cms/cms_plugins.py:119
+#: project/apps/lms_cms/cms_plugins.py:242
+#: project/apps/lms_cms/cms_plugins.py:260
+msgid " LMS Control"
+msgstr " Управление обучением"
+
+#: project/apps/lms_cms/cms_plugins.py:42
+msgid "Comments"
+msgstr "Комментарии"
+
+#: project/apps/lms_cms/cms_plugins.py:117
+msgid "Course lessons"
+msgstr "Уроки курса"
+
+#: project/apps/lms_cms/cms_plugins.py:212
+msgid "Page Title"
+msgstr "Заглавие страницы"
+
+#: project/apps/lms_cms/cms_plugins.py:214
+#: project/apps/lms_cms/cms_plugins.py:228
+#: project/apps/lms_cms/cms_plugins.py:277
+#: project/apps/lms_cms/cms_plugins.py:291
+#: project/apps/lms_cms/cms_plugins.py:305
+#: project/apps/lms_cms/cms_plugins.py:315
+#: project/apps/lms_cms/cms_plugins.py:323
+#: project/apps/lms_cms/cms_plugins.py:336
+#: project/apps/lms_cms/cms_plugins.py:357
+#: project/apps/lms_cms/cms_plugins.py:377
+msgid " LMS Content"
+msgstr " Учебный контент"
+
+#: project/apps/lms_cms/cms_plugins.py:226
+msgid "Block"
+msgstr "Блок контента"
+
+#: project/apps/lms_cms/cms_plugins.py:240
+msgid "Lesson completed"
+msgstr "Урок выполнен"
+
+#: project/apps/lms_cms/cms_plugins.py:258
+msgid "Lesson navigation bar"
+msgstr "Навигация для урока"
+
+#: project/apps/lms_cms/cms_plugins.py:276
+msgid "Text"
+msgstr "Текст"
+
+#: project/apps/lms_cms/cms_plugins.py:290
+msgid "HTML code"
+msgstr "HTML код"
+
+#: project/apps/lms_cms/cms_plugins.py:304
+msgid "Columns"
+msgstr "Колонки"
+
+#: project/apps/lms_cms/cms_plugins.py:314
+msgid "Image"
+msgstr "Изображение"
+
+#: project/apps/lms_cms/cms_plugins.py:322
+msgid "Video Youtube"
+msgstr "Видео YouTube"
+
+#: project/apps/lms_cms/cms_plugins.py:335
+msgid "File (+audio)"
+msgstr "Файл (и аудио)"
+
+#: project/apps/lms_cms/cms_plugins.py:356
+msgid "Audio player"
+msgstr ""
+
+#: project/apps/lms_cms/cms_plugins.py:376
+msgid "Human Design conditional"
+msgstr "Условный блок Human Design"
+
+#: project/apps/lms_cms/cms_toolbars.py:39
+msgid "Course settings"
+msgstr "Настройки курса"
+
+#: project/apps/lms_cms/cms_toolbars.py:43
+msgid "Lesson settings"
+msgstr "Настройки урока"
+
+#: project/apps/lms_cms/cms_wizards.py:64
+msgid "New course"
+msgstr "Новый курс"
+
+#: project/apps/lms_cms/cms_wizards.py:65
+#, fuzzy
+#| msgid "Create new flow for the course"
+msgid "Create new course"
+msgstr "Создать новый курс"
+
+#: project/apps/lms_cms/cms_wizards.py:84
+msgid "Slug"
+msgstr ""
+
+#: project/apps/lms_cms/cms_wizards.py:85
+msgid "Leave empty for automatic slug, or override as required."
+msgstr "Оставьте пустым, что сгенерировать автоматически"
+
+#: project/apps/lms_cms/cms_wizards.py:86
+msgid "Add to all flows"
+msgstr "Добавить ко всем потокам"
+
+#: project/apps/lms_cms/cms_wizards.py:87
+msgid "Add to all existing flows except finished and cancelled"
+msgstr "Добавить ко всем потокам кроме завершенных и отмененных"
+
+#: project/apps/lms_cms/cms_wizards.py:97
+msgid "Leave empty for automatic value."
+msgstr "Оставьте пустым, что сгенерировать автоматически"
+
+#: project/apps/lms_cms/cms_wizards.py:119
+msgid "You don't have the permissions required to add a page."
+msgstr "У вас нет прав на просмотр этой страницы"
+
+#: project/apps/lms_cms/cms_wizards.py:215
+msgid "New lesson"
+msgstr "Новый урок"
+
+#: project/apps/lms_cms/cms_wizards.py:216
+msgid "Create new lesson inside course"
+msgstr "Создать новый урок для курса"
+
+#: project/apps/lms_cms/cms_wizards.py:229
+msgid "Teachers"
+msgstr "Кураторы"
+
+#: project/apps/lms_cms/cms_wizards.py:236
+msgid "Admin"
+msgstr "Админ"
+
+#: project/apps/lms_cms/cms_wizards.py:242
+msgid "Schedule template"
+msgstr "Расписание обучения"
+
+#: project/apps/lms_cms/cms_wizards.py:243
+msgid "Regular plan of learning"
+msgstr "Распиание обучения"
+
+#: project/apps/lms_cms/cms_wizards.py:283
+msgid "New flow"
+msgstr "Новый поток обучения"
+
+#: project/apps/lms_cms/cms_wizards.py:284
+msgid "Create new flow for the course"
+msgstr "Создать новый поток обучения для текущего курса"
+
+#: project/apps/lms_cms/email.py:34
+#, fuzzy
+#| msgid "Course lessons"
+msgid "New lesson available"
+msgstr "Новый урок доступен"
+
+#: project/apps/lms_cms/email.py:52
+msgid "Your account created"
+msgstr "Ваш аккаунт создан"
+
+#: project/apps/lms_cms/email.py:75
+msgid "You enrolled to course"
+msgstr "Вы записаны на курс"
+
+#: project/apps/lms_cms/forms.py:27
+msgid "Signup"
+msgstr "Отправить"
+
+#: project/apps/lms_cms/forms.py:59
+msgid "Submit"
+msgstr "Отправить"
+
+#: project/apps/lms_cms/models/lmscms_models.py:108
+msgid "Type"
+msgstr ""
+
+#: project/apps/lms_cms/models/lmscms_models.py:113
+msgid "Profile"
+msgstr ""
+
+#: project/apps/lms_cms/models/lmscms_models.py:118
+msgid "Authority"
+msgstr ""
+
+#: project/apps/lms_cms/models/lmscms_models.py:121
+msgid "Root Center"
+msgstr ""
+
+#: project/apps/lms_cms/models/lmscms_models.py:123
+msgid "Sacral Center"
+msgstr ""
+
+#: project/apps/lms_cms/models/lmscms_models.py:125
+msgid "Splenic Center"
+msgstr ""
+
+#: project/apps/lms_cms/models/lmscms_models.py:127
+msgid "Solar Plexus Center"
+msgstr ""
+
+#: project/apps/lms_cms/models/lmscms_models.py:129
+msgid "Heart Center"
+msgstr ""
+
+#: project/apps/lms_cms/models/lmscms_models.py:131
+msgid "G Center"
+msgstr ""
+
+#: project/apps/lms_cms/models/lmscms_models.py:133
+msgid "Throat Center"
+msgstr ""
+
+#: project/apps/lms_cms/models/lmscms_models.py:135
+msgid "Ajna Center"
+msgstr ""
+
+#: project/apps/lms_cms/models/lmscms_models.py:137
+msgid "Head Center"
+msgstr ""
+
+#: project/apps/lms_cms/models/lmscms_models.py:161
+msgid "Signup forms"
+msgstr "Регистрации"
+
+#: project/apps/lms_cms/models/lmscms_models.py:162
+msgid "Signup form"
+msgstr "Регистрация"
+
+#: project/apps/lms_cms/models/lmscms_models.py:172
+msgid "State"
+msgstr "Состояние"
+
+#: project/apps/lms_cms/models/lmscms_models.py:173
+msgid "Course"
+msgstr "Курс"
+
+#: project/apps/lms_cms/models/lmscms_models.py:174
+#: project/apps/lms_cms/templates/lms_cms/cms_plugins/course_lessons.html:25
+msgid "Flow"
+msgstr "Поток"
+
+#: project/apps/lms_cms/models/lmscms_models.py:175
+#, fuzzy
+#| msgid "student"
+msgid "Student"
+msgstr "Курсант"
+
+#: project/apps/lms_cms/models/lmscms_models.py:177
+msgid "First name"
+msgstr "Имя"
+
+#: project/apps/lms_cms/models/lmscms_models.py:178
+msgid "Last name"
+msgstr "Фамилия"
+
+#: project/apps/lms_cms/models/lmscms_models.py:179
+msgid "Email"
+msgstr "Е-мэйл"
+
+#: project/apps/lms_cms/models/lmscms_models.py:180
+msgid "Phone"
+msgstr "Телефон"
+
+#: project/apps/lms_cms/models/lmscms_models.py:181
+msgid "Message"
+msgstr "Сообщение"
+
+#: project/apps/lms_cms/models/lmscms_models.py:182
+msgid "Birthplace"
+msgstr "Место рождения"
+
+#: project/apps/lms_cms/models/lmscms_models.py:184
+msgid "Day of birth"
+msgstr "Дата рождения"
+
+#: project/apps/lms_cms/models/lmscms_models.py:184
+msgid "Format DD.MM.YYYY"
+msgstr "в виде ДД.ММ.ГГГГ"
+
+#: project/apps/lms_cms/models/lmscms_models.py:187
+msgid "Time of birth"
+msgstr "Время рождения"
+
+#: project/apps/lms_cms/models/lmscms_models.py:187
+msgid "Format HH:mm"
+msgstr "в виде ЧЧ:ММ"
+
+#: project/apps/lms_cms/models/lmscms_models.py:245
+msgid "Just comment"
+msgstr "Только комментарий"
+
+#: project/apps/lms_cms/models/lmscms_models.py:246
+msgid "Accepted"
+msgstr "Принято"
+
+#: project/apps/lms_cms/models/lmscms_models.py:247
+msgid "Failed"
+msgstr "Провален"
+
+#: project/apps/lms_cms/models/lmscms_models.py:248
+msgid "Rejected"
+msgstr "Требуется доработка"
+
+#: project/apps/lms_cms/models/lmscms_models.py:258
+msgid "Your answer"
+msgstr "Ваш ответ"
+
+#: project/apps/lms_cms/models/lmscms_models.py:260
+msgid "Hide from others"
+msgstr "Скрывать от других"
+
+#: project/apps/lms_cms/models/lmscms_models.py:264
+msgid "Check result"
+msgstr "Результат"
+
+#: project/apps/lms_cms/models/lmscms_models.py:266
+msgid "Score"
+msgstr "Оценка"
+
+#: project/apps/lms_cms/models/lmscms_models.py:266
+msgid "Score for student response"
+msgstr "Оценка ответа студента. Целое число."
+
+#: project/apps/lms_cms/models/lmscms_models.py:288
+msgid "Schedule"
+msgstr "Расписание"
+
+#: project/apps/lms_cms/models/lmscms_models.py:289
+msgid "Schedules"
+msgstr "Расписания"
+
+#: project/apps/lms_cms/models/lmscms_models.py:297
+msgid "Participants"
+msgstr "Участники"
+
+#: project/apps/lms_cms/models/lmscms_models.py:298
+#, fuzzy
+#| msgid "Participants"
+msgid "Participnts"
+msgstr "Участники"
+
+#: project/apps/lms_cms/templates/lms_cms/comments/comment-single.html:39
+msgid "Reply"
+msgstr "Ответить"
+
+#: project/apps/lms_cms/templates/lms_cms/comments/participant-name.html:5
+msgid "teacher"
+msgstr "Куратор"
+
+#: project/apps/lms_cms/templates/lms_cms/comments/participant-name.html:7
+msgid "admin"
+msgstr "Админ"
+
+#: project/apps/lms_cms/templates/lms_cms/comments/participant-name.html:9
+msgid "student"
+msgstr "Курсант"
+
+#: project/apps/lms_cms/templates/lms_cms/comments/reply.html:5
+msgid "Comment reply"
+msgstr "Ответ"
+
+#: project/apps/lms_cms/templates/lms_cms/comments/reply.html:9
+msgid "Reply to comment"
+msgstr "Ответить"
+
+#: project/apps/lms_cms/templates/registration/login.html:40
+#, python-format
+msgid "Welcome to %(site_name)s"
+msgstr "Вход на сайт %(site_name)s"
+
+#: project/apps/lms_cms/templates/registration/login.html:44
+msgid "Username"
+msgstr "Имя пользователя"
+
+#: project/apps/lms_cms/templates/registration/login.html:45
+msgid "username or email address"
+msgstr "Имя пользователя или е-мэйл"
+
+#: project/apps/lms_cms/templates/registration/login.html:49
+msgid "Password"
+msgstr "Пароль"
+
+#: project/apps/lms_cms/templates/registration/login.html:52
+msgid "Forgot?"
+msgstr "Забыли?"
+
+#: project/apps/lms_cms/templates/registration/login.html:57
+#| msgid "Signup"
+msgid "Sign in"
+msgstr "Войти"
+
+#: project/apps/lms_cms/views.py:24
+msgid "Form accepted. Thanks for being awesome!"
+msgstr "Форма принята, спасибо!"
+
+#~ msgid "The part of the title that is used in the URL"
+#~ msgstr "Часть заголовка которая будет входит в URL"

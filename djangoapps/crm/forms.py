@@ -63,20 +63,33 @@ class SingleCourseProductOrderForm(forms.Form):
                 email=email,
                 phone=self.cleaned_data.get('phone'),
             )
-            person.name = self.cleaned_data.get('name')
+            person.full_name = self.cleaned_data.get('name')
+            person.save()
         return person
 
     def create_order(self) -> ClientOrder:
+        """
+        Create client user from form data. Also creates person model.
+
+        :return: ClientOrder with state == None. Update to NEW to start order processing
+        """
         assert self.is_valid()
 
         product = Product.objects.get(code=self.cleaned_data['product_code'])
         # if it's free product then let's fulfill immediately
         person = self._get_or_create_person()
 
+        phone = self.cleaned_data["phone"]
+        name = self.cleaned_data["name"]
+        comment_items = [
+            f'Phone: {phone}' if phone and phone != person.phone else None,
+            f'Name: {name}' if name and name != person.full_name else None,
+            self.cleaned_data.get('comment'),
+        ]
         client_order = ClientOrder.objects.create(
             client=person,
             currency=product.price.currency,
-            comment=self.cleaned_data.get('comment')
+            comment='\n'.join([item for item in comment_items if item])
         )
         client_order.add_item(product, 1)
         client_order.save()
@@ -88,7 +101,6 @@ class SingleCourseProductOrderForm(forms.Form):
             # priced product fulfill after payment
             fulfill_on = ClientOrder.FulfillOn.ORDER_PAYED_FULL
         client_order.fulfill_on = fulfill_on
-        client_order.state = ClientOrder.State.NEW
         client_order.product = product
         client_order.save()
 

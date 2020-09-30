@@ -1,0 +1,9 @@
+<style type="text/css">
+{#  Let sticky nav be under toolbar https://stackoverflow.com/questions/46737221/django-cms-how-to-modify-style-of-show-menu #}
+.cms-toolbar-expanded body, .cms-toolbar-expanded .sticky-top {
+    top:46px;
+}
+</style>
+<nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-dark ">
+  <a class="navbar-brand" href="{{ course_page.get_absolute_url }}"><i class="mx-2 fas fa-arrow-left fa-lg"></i> Назад к списку уроков</a>
+</nav>

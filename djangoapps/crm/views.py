@@ -21,7 +21,7 @@ def course_product(request, code):
     form = SingleCourseProductOrderForm(product=product, person=person)
     context = {
         'product': product,
-        'course': product.items.all()[0],
+        'course': product.courses.all()[0],
         'form': form,
     }
     return render(request, 'crm/course_product.html', context)

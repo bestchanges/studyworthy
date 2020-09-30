@@ -1,0 +1,7 @@
+<div class="row justify-content-md-center">
+    <div class="col-lg-10">
+{% for comment in comments.all %}
+    {% include "lms_cms/comments/comment-single.html" with comment=comment display_children=True %}
+{% endfor %}
+    </div>
+</div>

@@ -134,7 +134,9 @@ class Person(NaturalKeyModel):
 
     @property
     def full_name(self):
-        return f'{self.first_name} {self.last_name}'
+        # filter out empty names
+        names = [name for name in (self.first_name, self.last_name) if name]
+        return ' '.join(names)
 
     @classmethod
     def _guess_first_and_last_name(cls, name: str):
@@ -218,14 +220,9 @@ class ClientOrder(Document):
         )
 
     def fulfill(self):
-        self.state = self.State.PROCESSING
-        self.save()
-        for item in self.items.all():
-            courseproduct = item.product.courseproduct
-            if courseproduct:
-                courseproduct.enroll_from_client_order(self)
-        self.state = self.State.COMPLETED
-        self.save()
+        states = ClientOrder.State
+        assert self.state in (states.NEW, states.CONFIRMED), f"Cannot fulfill from state {self.state}"
+        self.set_state(states.PROCESSING)
 
 
 class ClientOrderItem(models.Model):

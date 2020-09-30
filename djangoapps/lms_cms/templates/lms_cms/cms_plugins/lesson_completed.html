@@ -1,0 +1,25 @@
+{% extends "lms_cms/cms_plugins/layout-block.html" %}
+{% block content %}
+    {% if attendance %}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("input:checkbox#lesson-completed").change(function () {
+                let value = $(this).is(":checked")
+                $.ajax({
+                    url: '{% url 'lms:attendance-completed' attendance_id=attendance.id %}',
+                    type: 'GET',
+                    data: {'value': value}
+                });
+            });
+        });
+    </script>
+    {% endif %}
+    <div class="mx-auto bg-light border rounded p-4 m-4 text-black text-center" style="width: 400px;">
+        <div class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input" id="lesson-completed"
+                    {% if attendance.is_completed %}checked{% endif %}
+            >
+            <label class="custom-control-label" for="lesson-completed">Отметить урок как завершённый</label>
+        </div>
+    </div>
+{% endblock %}

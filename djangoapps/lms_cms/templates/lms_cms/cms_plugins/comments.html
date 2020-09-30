@@ -1,0 +1,28 @@
+{% load crispy_forms_filters %}
+<div class="row">
+    <div class="col-md-1"></div>
+    <div id="comments" class="col-md-10">
+        {% if not form and not my_comments and not other_comments %}
+            <div class="alert alert-notice m-3">
+            Блок ответов на задание и обсуждений
+            </div>
+        {% endif %}
+
+        {% if form %}
+            <div class="row justify-content-md-center py-4">
+                <h2>Форма для сдачи задания</h2>
+                <div class="col-lg-10">
+                    {% crispy form %}
+                </div>
+            </div>
+        {% endif %}
+
+        {% if my_comments %}
+            {% include "lms_cms/comments/comments-list.html" with comments=my_comments %}
+        {% endif %}
+
+        {% if others_comments %}
+            {% include "lms_cms/comments/comments-list.html" with comments=others_comments %}
+        {% endif %}
+    </div>
+</div>

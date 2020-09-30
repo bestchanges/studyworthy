@@ -1,0 +1,11 @@
+{% extends "lms_cms/cms_plugins/layout-block.html" %}
+{% load cms_tags %}
+{% block content %}
+<div class="row">
+    {% for plugin in instance.child_plugin_instances %}
+        <div class="col-lg px-2">
+            {% render_plugin plugin %}
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

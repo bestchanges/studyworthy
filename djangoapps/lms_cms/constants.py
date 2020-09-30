@@ -1,0 +1,3 @@
+STUDENTS_GROUP_NAME = 'Students'
+TEACHERS_GROUP_NAME = 'Teachers'
+ADMINS_GROUP_NAME = 'Curators'

@@ -1,0 +1,9 @@
+Здравствуйте {{ participant.user.first_name }},
+
+Вы записаны как {{ participant.role }} на курс "{{ course.title }}" ({{ participant.flow }})
+
+Перейти к курсу: https://{{ site.domain }}{{ course_page.get_absolute_url }}
+
+--
+С уважением,
+"{{ site.name }}"

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block header %}
+    {% include "menu/navbar.html" %}
+{% endblock header %}
+
+{% block title %}Ошибка 404{% endblock %}
+
+{% block content %}
+    <h1>Ошибка 404</h1>
+    <p>Возможные причины:</p>
+    <ul>
+    <li>Страница не опубликована</li>
+    <li>Урок еще не открыт</li>
+    <li>У вас нет доступа к этой странице</li>
+    <li>Вы используете неверную ссылку</li>
+    <li>Страница была удалена или переименована</li>
+    </ul>
+{% endblock %}

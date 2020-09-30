@@ -92,7 +92,7 @@ INSTALLED_APPS = [
     'djmoney',
     'djangoapps.erp',
     'djangoapps.lms',
-    # 'djangoapps.lms_cms',
+    'djangoapps.lms_cms',
     'djangoapps.crm',
     'djangoapps.campus',
     'djangoapps.siteroot',
