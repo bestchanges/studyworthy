@@ -1,35 +1,44 @@
+import random
+
 from django.apps import apps
-from django.contrib.auth.models import Group, User
 from django.test import TestCase
 
 from djangoapps.lms.apps import LmsConfig
-from djangoapps.lms.models.lms_models import Course, Flow, Lesson, Student, FlowLesson
+from djangoapps.lms.models.lms_models import Course, Lesson, Unit
 
 
 class ModelsTestCase(TestCase):
-    def setUp(self):
-        self.course = Course.objects.create(title='test course')
-        self.lessons = []
+
+    def test_course_unit_lessons(self):
+        course = Course.objects.create(title='test course')
+        unit_1 = Unit.objects.create(name='test unit', course=course)
+        unit_2 = Unit.objects.create(name='test unit 2', course=course)
+        unit_3 = Unit.objects.create(name='test unit 3', course=course)
+        self.assertEqual('test unit', course.units.first().name)
+        self.assertEqual('test unit 3', course.units.last().name)
         for number in range(10):
-            self.lessons.append(Lesson.objects.create(
-                course=self.course,
-                title=f'lesson {number}',
-            ))
-        self.user_student = User.objects.create(username='student', password='student')
-        self.user_teacher = User.objects.create(username='teacher', password='teacher')
+            lesson = Lesson.objects.create(title=f'lesson {number+1}', )
+            course.add_lesson(lesson, unit=random.choice(course.units.all()))
+        self.assertEqual(10, course.course_lessons.count())
+        course_lessons_first = course.course_lessons.first()
+        course_lessons_last = course.course_lessons.last()
+        self.assertEqual(1, course_lessons_first.ordering)
+        self.assertEqual('lesson 1', course_lessons_first.lesson.title)
+
+        self.assertEqual(10, course_lessons_last.ordering)
+        self.assertEqual('lesson 10', course_lessons_last.lesson.title)
 
     def test_apps(self):
         self.assertEqual(LmsConfig.name, 'djangoapps.lms')
         self.assertEqual(apps.get_app_config('lms').name, 'djangoapps.lms')
 
-    def test_flow_create(self):
-        flow = Flow.objects.create(course=self.course, name='flow 1', schedule_template='Mon 18:00, Fri 18:00')
-        self.assertTrue(flow.group.name, "Should have students_group")
-        self.assertEqual(FlowLesson.objects.filter(flow=flow).count(), 10, "Lessons must be copied from course")
-        self.assertEqual(flow.flow_lessons.count(), 10, "Lessons must be copied from course")
+    def test_flow(self):
+        course = Course.objects.create(title='test course')
+        for number in range(7):
+            lesson = Lesson.objects.create(title=f'lesson {number+1}', )
+            course.add_lesson(lesson)
 
-    def test_enroll_student_adds_to_students_group(self):
-        flow = Flow.objects.create(course=self.course, name='flow 1')
-        student = Student.objects.create(flow=flow, user=self.user_student)
-        self.assertTrue(self.user_student.groups.filter(name=flow.group.name).exists(),
-                        "Student must be included into Flows group")
+        flow = course.create_flow()
+        self.assertEqual(flow.flow_lessons.count(), 7, "Lessons must be copied from course")
+        self.assertEqual('lesson 1', flow.flow_lessons.first().lesson.title)
+        self.assertEqual('lesson 7', flow.flow_lessons.last().lesson.title)

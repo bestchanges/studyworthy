@@ -1,8 +1,5 @@
-import datetime
-
-from django.contrib import admin, messages
+from django.contrib import admin
 from django.contrib.auth.models import User
-from django.utils.translation import ugettext_lazy as _
 
 from djangoapps.lms.models.lms_models import Course, Lesson, Flow, Student, FlowLesson, Unit, \
     Teacher, Admin, Attendance
@@ -123,37 +120,16 @@ class StudentAdmin(admin.ModelAdmin):
     inlines = [AttendanceInline]
 
 
-class FlowLessonsForLessonInline(admin.TabularInline):
-    fields = ['flow', 'is_opened', 'opened_at', ]
-    readonly_fields = ['flow']
-    model = FlowLesson
-    extra = 0
-
-
 @admin.register(Lesson)
 class LessonAdmin(admin.ModelAdmin):
-    list_display = ['course', 'number', 'title', 'code', 'is_stop_lesson', ]
-    list_filter = ['is_stop_lesson', 'course', 'unit']
-    inlines = [FlowLessonsForLessonInline]
+    list_display = ['code', 'title']
 
 
 @admin.register(Unit)
 class UnitAdmin(admin.ModelAdmin):
-    list_display = ['name', 'course', ]
-    list_filter = ['course', ]
-
-
-class UnitInline(admin.TabularInline):
-    model = Unit
-    extra = 0
-
-
-class LessonsForCourseInline(admin.TabularInline):
-    model = Lesson
-    extra = 0
+    list_display = ['name', 'code']
 
 
 @admin.register(Course)
 class CourseAdmin(admin.ModelAdmin):
     list_display = ['title', 'code', 'state']
-    inlines = [UnitInline, LessonsForCourseInline]

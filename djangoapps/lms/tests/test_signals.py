@@ -9,10 +9,8 @@ from djangoapps.lms.signals import lesson_available, lesson_unavailable
 class ModelsTestCase(TestCase):
     def setUp(self):
         self.course = Course.objects.create(title='test course')
-        self.lessons = []
         for number in range(10):
-            self.lessons.append(Lesson.objects.create(
-                course=self.course,
+            self.course.add_lesson(Lesson.objects.create(
                 title=f'lesson {number}',
             ))
         self.lesson_available_caught = 0

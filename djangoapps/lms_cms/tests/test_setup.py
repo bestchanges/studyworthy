@@ -11,4 +11,3 @@ class MyTestCase(TestCase):
         assert Group.objects.filter(name=TEACHERS_GROUP_NAME).exists()
         assert Group.objects.filter(name=STUDENTS_GROUP_NAME).exists()
         assert Group.objects.filter(name=ADMINS_GROUP_NAME).exists()
-
