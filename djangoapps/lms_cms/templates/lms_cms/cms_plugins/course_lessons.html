@@ -96,9 +96,12 @@ is_missed: bool
                     {% if item.student_lesson.is_missed %}
                         <span class="badge badge-warning">пропущен</span>
                     {% endif %}
+{% comment %}
+Commented by https://github.com/bestchanges/lmshd/issues/79
                     {% if item.student_lesson.score %}
                         <span class="badge badge-info">оценка {{ item.student_lesson.score }}</span>
                     {% endif %}
+{% endcomment %}
                     {% if not item.flow_lesson.is_opened and not item.student_lesson.is_blocked %}
                         <span class="badge badge-light" style="color: #797979">{{ item.flow_lesson.open_planned_at|date:"SHORT_DATETIME_FORMAT" }} {{ item.flow_lesson.open_planned_at|date:"e" }}</span>
                     {% endif %}

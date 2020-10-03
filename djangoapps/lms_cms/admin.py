@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.models import User
 
 from djangoapps.lms.models.lms_models import Course, Lesson, Flow, Student, FlowLesson, Unit, \
-    Teacher, Admin, Attendance
+    Teacher, Admin, Attendance, CourseLesson
 from djangoapps.lms_cms import constants
 from djangoapps.lms_cms.models.lmscms_models import FlowSchedule, FlowParticipants
 
@@ -130,6 +130,15 @@ class UnitAdmin(admin.ModelAdmin):
     list_display = ['name', 'code']
 
 
+class CourseLessonInline(admin.TabularInline):
+    model = CourseLesson
+    extra = 0
+
+class CourseUnitInline(admin.TabularInline):
+    model = Unit
+    extra = 0
+
 @admin.register(Course)
 class CourseAdmin(admin.ModelAdmin):
     list_display = ['title', 'code', 'state']
+    inlines = [CourseUnitInline, CourseLessonInline]

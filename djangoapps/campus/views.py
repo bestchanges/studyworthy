@@ -23,7 +23,7 @@ def learning_view(request, learning_code):
 @login_required
 def lesson_view(request, learning_code, unit_slug):
     learning = Learning.objects.get_by_natural_key(learning_code)
-    unit = Unit.objects.get(course=learning.course, slug=unit_slug)
+    unit = Unit.objects.get(course=learning.course_product, slug=unit_slug)
     context = {
         'lesson': Lesson.objects.get(learning=learning, unit=unit),
         'learning': learning,

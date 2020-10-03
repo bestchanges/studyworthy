@@ -32,6 +32,9 @@ class CourseProduct(Product):
         help_text="Что студент будет уметь после прохождения курса"
     )
 
+    def __str__(self):
+        return f'{self.name} ({self.price})'
+
     def enroll_from_client_order(self, client_order: ClientOrder):
         logger.info(f'Enrolling from {client_order}')
 

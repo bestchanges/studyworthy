@@ -1,0 +1,14 @@
+<div class="card box-shadow">
+    <div class="card-header">
+        <h4 class="my-0 font-weight-normal">{{ course.name }}</h4>
+    </div>
+    <div class="card-body">
+        <h1 class="card-title pricing-card-title"><small class="text-muted">{{ course.price }}</small></h1>
+        <ul class="list-unstyled mt-3 mb-4">
+            <li><i class="far fa-list-alt"></i> {{ course.number_of_lessons }} уроков</li>
+            <li><i class="far fa-check-square"></i> {{ course.number_of_tasks }} практических заданий</li>
+            <li><i class="far fa-calendar-alt"></i> {{ course.duration }}</li>
+        </ul>
+        <a href="{{ page.get_absolute_url }}" type="button" class="btn btn-lg btn-block btn-success">Подробнее</a>
+    </div>
+</div>

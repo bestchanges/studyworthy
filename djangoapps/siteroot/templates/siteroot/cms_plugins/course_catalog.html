@@ -1,0 +1,11 @@
+{% extends "lms_cms/cms_plugins/layout-block.html" %}
+{% load i18n %}
+{% block content %}
+    <div class="row">
+        {% for item in catalog %}
+            <div class="col-sm-6 col-md-4">
+                {% include "siteroot/cms_plugins/course_card.html" with course=item.course page=item.page %}
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

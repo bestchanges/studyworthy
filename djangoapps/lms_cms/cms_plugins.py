@@ -18,22 +18,6 @@ from djangoapps.lms_cms.models.lmscms_models import VideoYoutubeConfigCMSPlugin,
     PageRowColumnConfigCMSPlugin, HtmlCMSPluginConfig, LessonNavigationCMSPluginConfig
 
 
-# @plugin_pool.register_plugin
-# class CourseSignupCMSPlugin(CMSPluginBase):
-#     model = CourseSignupConfigCMSPlugin
-#     name = _('Course signup form')
-#     render_template = "lms_cms/cms_plugins/course_signup.html"
-#     module = _(' LMS Control')
-#     cache = False
-#
-#
-#     def render(self, context, instance: CourseSignupConfigCMSPlugin, placeholder):
-#         context['course'] = instance.course
-#         SignupForm = create_signup_form()
-#         context['form'] = SignupForm(initial={'course': instance.course})
-#         return context
-
-
 @plugin_pool.register_plugin
 class CommentsCMSPlugin(CMSPluginBase):
     model = CommentsConfigCMSPlugin

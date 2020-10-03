@@ -1,0 +1,30 @@
+{% extends "lms_cms/cms_plugins/layout-block.html" %}
+{% load i18n %}
+{% block content %}
+    <h2>{{ course.title }}</h2>
+    {% for unit, lessons in course.lessons_by_unit.items %}
+        <div class="row border-bottom bg-light position-relative mt-4">
+            <div class="col rounded-top bg-secondary text-white">
+                <h4 class="text-white m-3">{{ unit.name }} &nbsp;</h4>
+            </div>
+        </div>
+
+        {% for course_lesson in lessons %}
+            <div class="row border-bottom bg-light position-relative">
+                <div class="col-2 my-auto text-center">
+                    <div class="h6 text-dark">
+                        Урок <br>
+                        {{ course_lesson.ordering }}
+                    </div>
+                </div>
+
+                <div class="col my-auto position-static py-2">
+                    <div class="h5 text-secondary">
+                        {{ lesson.title }}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+{% endblock %}

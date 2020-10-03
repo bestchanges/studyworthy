@@ -53,7 +53,7 @@ class CourseLesson(models.Model):
     Used in through for ManyToMany reference
     """
     course = models.ForeignKey('Course', on_delete=models.CASCADE, related_name='course_lessons')
-    unit = models.ForeignKey(Unit, null=True, on_delete=models.CASCADE, related_name='course_lessons')
+    unit = models.ForeignKey(Unit, blank=True, null=True, on_delete=models.CASCADE, related_name='course_lessons')
     lesson = models.ForeignKey(Lesson, on_delete=models.PROTECT, related_name='+')
     ordering = models.PositiveIntegerField(default=0)
 

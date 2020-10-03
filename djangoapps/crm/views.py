@@ -35,7 +35,7 @@ def order_single_product(request):
 
             if client_order.amount.amount:
                 invoice = client_order.create_invoice()
-                invoice.save()
+                invoice.set_state(Invoice.State.NEW)
                 return redirect(reverse('crm:invoice_payment', args=[invoice.uuid]))
             else:
                 return redirect(reverse('crm:order_accepted'))
@@ -62,6 +62,7 @@ def invoice(request, uuid):
 def invoice_payment(request, uuid):
     invoice = Invoice.objects.get(uuid=uuid)
     paymentin = invoice.create_payment()
+    paymentin.set_state(PaymentIn.State.NEW)
     payment_url = payments.pay_by_yandex_kassa(
         paymentin=paymentin,
         seccess_url=request.build_absolute_uri(reverse('crm:payment_status', args=[paymentin.uuid])),

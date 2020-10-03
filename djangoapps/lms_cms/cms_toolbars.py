@@ -29,12 +29,5 @@ class CourseToolbar(CMSToolbar):
         if not menu:
             return
         
-        current_page: Page = self.request.current_page
-        course = LmsPage.get_course_any(current_page)
-        if not course:
-            return
-        menu.add_modal_item(_('Course settings'), url=generate_admin_url(course))
-
-        lesson = LmsPage.get_lesson(self.request.current_page)
-        if lesson:
-            menu.add_modal_item(_('Lesson settings'), url=generate_admin_url(lesson))
+        # menu.add_modal_item(_('Course settings'), url=generate_admin_url(course))
+        # menu.add_modal_item(_('Lesson settings'), url=generate_admin_url(lesson))

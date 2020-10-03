@@ -8,8 +8,8 @@ from djangoapps.erp.models import ClientOrder, Person, Product
 
 
 class SingleCourseProductOrderForm(forms.Form):
-    product_code = forms.CharField(required=True) #, widget=forms.HiddenInput)
-    user_pk = forms.CharField(required=False) #, widget=forms.HiddenInput)
+    product_code = forms.CharField(required=True, widget=forms.HiddenInput)
+    user_pk = forms.CharField(required=False, widget=forms.HiddenInput)
     name = forms.CharField(max_length=200, required=False)
     email = forms.EmailField(required=False)
     phone = forms.CharField(max_length=30, required=False)
