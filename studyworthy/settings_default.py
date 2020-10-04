@@ -58,6 +58,7 @@ if HOSTNAME:
 
 INSTALLED_APPS = [
     'djangocms_admin_style',
+    'adminsortable2',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',

@@ -10,7 +10,6 @@ from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from djmoney.models.fields import MoneyField, CurrencyField
 from djmoney.money import Money
-from natural_keys import NaturalKeyModel
 
 from djangoapps.erp.enums import TextChoices
 from djangoapps.erp.signals import state_changed
@@ -111,7 +110,7 @@ class Document(StateMixin):
         abstract = True
 
 
-class Person(NaturalKeyModel):
+class Person(CodeNaturalKeyAbstractModel):
     code = models.SlugField(max_length=100, default=uuid.uuid4, unique=True)
     first_name = models.CharField(max_length=100, blank=True)
     last_name = models.CharField(max_length=150, blank=True)

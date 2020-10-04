@@ -1,3 +1,4 @@
+from adminsortable2.admin import SortableInlineAdminMixin
 from cms.admin.placeholderadmin import PlaceholderAdminMixin
 from django.contrib import admin
 from django.contrib.auth.models import User
@@ -57,6 +58,10 @@ class FlowParticipantsAdmin(admin.ModelAdmin):
     inlines = [AdminsInline, TeachersInline, StudentsInline]
 
 
+class FlowLessonInline(SortableInlineAdminMixin, admin.TabularInline):
+    model = FlowLesson
+    extra = 0
+
 @admin.register(Flow)
 class FlowAdmin(admin.ModelAdmin):
     list_display = ('name', 'course', 'state', 'start_planned_at')
@@ -64,6 +69,7 @@ class FlowAdmin(admin.ModelAdmin):
     exclude = ['group']
     readonly_fields = ['course', 'started_at', 'finished_at']
     search_fields = ('name', 'course')
+    inlines = [FlowLessonInline]
 
 
 class FlowLessonsForScheduleInline(admin.StackedInline):
@@ -131,7 +137,7 @@ class UnitAdmin(admin.ModelAdmin):
     list_display = ['name', 'code']
 
 
-class CourseLessonInline(admin.TabularInline):
+class CourseLessonInline(SortableInlineAdminMixin, admin.TabularInline):
     model = CourseLesson
     extra = 0
 
