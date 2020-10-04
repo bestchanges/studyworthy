@@ -55,13 +55,13 @@ django-admin-sortable2 = "*"
 #python-dotenv = "*"
 #social-auth-app-django = "*"
 #python-jose = "*"
-#requests = "*"
+requests = "*"
 dj_database_url = "*"
 #pyyaml = "*"
 #gunicorn = "*"
-#boto3 = '*'
+boto3 = '*'
 #whitenoise = '*'
-#markdown = '*'
+markdown = '*'
 
 django-money = '*'
 sentry-sdk = '*'
