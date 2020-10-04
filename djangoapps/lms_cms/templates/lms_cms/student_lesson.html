@@ -8,12 +8,10 @@
 {% endblock header %}
 
 {% block content %}
-    {% with flow_lesson=student_lesson.flow_lesson %}
-    <h1>Урок #{{ flow_lesson.ordering }} {{ flow_lesson.lesson.title }}</h1>
-    {% render_placeholder flow_lesson.lesson.lesson_content %}
-    {% render_placeholder flow_lesson.lesson.support_content %}
-    {% if flow_lesson.lesson.show_common_content %}
-        {% render_placeholder flow_lesson.flow.course.common_content %}
+    <h1>Урок #{{ flow_lesson.ordering }} {{ lesson.title }}</h1>
+    {% render_placeholder lesson.lesson_content %}
+    {% render_placeholder lesson.support_content %}
+    {% if lesson.show_common_content %}
+        {% render_placeholder course.common_content %}
     {% endif %}
-    {% endwith %}
 {% endblock %}

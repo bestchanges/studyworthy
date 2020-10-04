@@ -111,6 +111,12 @@ def student_flow(request, student_id):
 def student_lesson(request, student_lesson_id):
     student_lesson = StudentLesson.objects.get(id=student_lesson_id)
     context = {
-        "student_lesson": student_lesson
+        "student_lesson": student_lesson,
+        "flow_lesson": student_lesson.flow_lesson,
+        "lesson": student_lesson.flow_lesson.lesson,
+        "flow": student_lesson.flow_lesson.flow,
+        "course": student_lesson.flow_lesson.flow.course,
+        "student": student_lesson.student,
+        "participant": student_lesson.student,
     }
     return render(request, "lms_cms/student_lesson.html", context)

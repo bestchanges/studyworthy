@@ -15,18 +15,6 @@ def index(request):
     return render(request, 'index.html', context)
 
 
-def course_product(request, code):
-    product = CourseProduct.objects.get(code=code)
-    person = Person.objects.filter(user=request.user).first()
-    form = SingleCourseProductOrderForm(product=product, person=person)
-    context = {
-        'product': product,
-        'course': product.courses.all()[0],
-        'form': form,
-    }
-    return render(request, 'crm/course_product.html', context)
-
-
 def order_single_product(request):
     if request.method == "POST":
         form = SingleCourseProductOrderForm(request.POST)

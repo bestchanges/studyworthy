@@ -9,11 +9,12 @@ class CommentsConfigCMSPlugin(CMSPlugin):
     ATTACH_COURSE = 'Course'
     ATTACH_FLOW = 'Flow'
 
-    attach_to = models.CharField(
-        max_length=20,
-        choices=[(choice, _(choice)) for choice in (ATTACH_COURSE, ATTACH_FLOW)],
-        default=ATTACH_FLOW
-    )
+    CHOICES = [
+        (ATTACH_COURSE, _('Attach to course')),
+        (ATTACH_FLOW, _('Attach to flow')),
+    ]
+
+    attach_to = models.CharField(max_length=20, choices=CHOICES, default=ATTACH_FLOW)
 
 
 class VideoYoutubeConfigCMSPlugin(CMSPlugin):
@@ -53,9 +54,9 @@ class Comment(models.Model):
     )
 
     flow_lesson = models.ForeignKey(FlowLesson, null=True, on_delete=models.CASCADE, related_name='discussions',
-                                    help_text='Discussion attached to this object')
-    lesson = models.ForeignKey(Lesson, null=True, on_delete=models.CASCADE, related_name='discussions',
-                               help_text='Discussion attached to this object')
+                                    help_text='Discussion attached to Flow Lesson')
+    course_lesson = models.ForeignKey(Lesson, null=True, on_delete=models.CASCADE, related_name='discussions',
+                                      help_text='Discussion attached to the Course Lesson')
     participant = models.ForeignKey(Participant, null=True, on_delete=models.SET_NULL, related_name='+')
     parent = models.ForeignKey('self', blank=True, null=True, on_delete=models.CASCADE, related_name='children')
 

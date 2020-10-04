@@ -27,36 +27,37 @@ class CommentsCMSPlugin(CMSPluginBase):
     cache = False
 
     def render(self, context, instance: CommentsConfigCMSPlugin, placeholder):
-        request = context['request']
-        context = super(CommentsCMSPlugin, self).render(context, instance, placeholder)
-        page: Page = instance.page
-        lesson = LmsPage.get_lesson(page)
-        if not lesson:
-            return context
-
-        participant: Participant = request.lms_participant if hasattr(request, 'lms_participant') else None  # noqa
+        context = super().render(context, instance, placeholder)
+        participant: Participant = context.get('paricipant')
         if not participant:
             return context
 
         # Deal with the form
-        flow = participant.flow
-        flow_lesson = FlowLesson.objects.filter(lesson=lesson, flow=flow).first()
-        if not flow_lesson:
-            return context
+        if instance.attach_to == instance.ATTACH_FLOW:
+            flow_lesson = context.get('flow_lesson')
+            course_lesson = None
+            if not flow_lesson:
+                return context
+        else:
+            flow_lesson = None
+            course_lesson = context.get('course_lesson')
+            if not course_lesson:
+                return context
 
-        context['flow_lesson'] = flow_lesson
         Form = create_comment_form(participant=participant, parent=None)
         comment = Comment(
             flow_lesson=flow_lesson,
+            course_lesson=course_lesson,
         )
         form = Form(instance=comment)
         context['form'] = form
+
         # Now display comments tree
         q_attached_to = Q()
         if instance.attach_to == instance.ATTACH_FLOW:
             q_attached_to = Q(flow_lesson=flow_lesson)
         elif instance.attach_to == instance.ATTACH_COURSE:
-            q_attached_to = Q(lesson=lesson)
+            q_attached_to = Q(course_lesson=course_lesson)
 
         my_comments = Comment.objects.filter(
             q_attached_to,
@@ -70,15 +71,15 @@ class CommentsCMSPlugin(CMSPluginBase):
         ).order_by('-updated_at')
 
         if participant and participant.role == Participant.ROLE_STUDENT:
-            # hide from other students
-            others_comments = others_comments.filter(hide_from_others=False)
+            # exclude comments hidden from others (Teacher still can see)
+            others_comments = others_comments.exclude(hide_from_others=True)
 
         context['others_comments'] = others_comments
         context['my_comments'] = my_comments
-        context['page'] = page
 
         # save page_id for comments
-        request.session['comment_return_page'] = page.get_absolute_url()
+        request = context['request']
+        request.session['comment_return_page'] = request.get_full_path()
 
         if instance.attach_to == instance.ATTACH_FLOW:
             context['object'] = participant.flow
