@@ -1,7 +1,7 @@
 {% extends "lms_cms/base.html" %}
 {% load cms_tags %}
 
-{% block title %}Урок #{{ student_lesson.ordering }} {{ student_lesson.lesson.title }}{% endblock title %}
+{% block title %}Урок #{{ flow_lesson.ordering }} {{ lesson.title }}{% endblock title %}
 
 {% block header %}
     {% include "lms_cms/menu/navbar-lesson.html" %}
