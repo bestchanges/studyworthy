@@ -9,7 +9,7 @@ from djangoapps.lms.models.lms_models import Course
 # Page extensions:
 
 class CourseProductPageExtension(PageExtension):
-    course_product = models.ForeignKey(CourseProduct, on_delete=models.PROTECT, related_name='page_extension')
+    course_product = models.ForeignKey(CourseProduct, null=True, on_delete=models.SET_NULL, related_name='page_extension')
 
     def __str__(self):
         return f'{self.course_product.name} ({self.get_page().get_path()})'
@@ -17,13 +17,14 @@ class CourseProductPageExtension(PageExtension):
 # CMS Plugins:
 
 class CourseProductPageExtensionCMSPluginConfig(CMSPlugin):
-    course_page_extension = models.ForeignKey(CourseProductPageExtension, on_delete=models.PROTECT)
+    course_page_extension = models.ForeignKey(CourseProductPageExtension, null=True, on_delete=models.SET_NULL)
 
 
 class CourseProductCMSPluginConfig(CMSPlugin):
-    course_product = models.ForeignKey(CourseProduct, on_delete=models.PROTECT)
+    course_product = models.ForeignKey(CourseProduct, null=True, on_delete=models.SET_NULL)
 
 
+# TODO: fix class name typo
 class ManyCourseProductPageExtensionCMSPluginConfigg(CMSPlugin):
     course_page_extensions = models.ManyToManyField(CourseProductPageExtension, blank=True)
 

@@ -1,0 +1,117 @@
+{% extends "lms_cms/cms_plugins/layout-block.html" %}
+{% load i18n %}
+
+{% block content %}
+
+    {% url 'admin:lms_student_changelist' as students_url %}
+    {% if  is_admin %}
+        <div class="btn-group">
+            {% if current_flow %}
+                <a href="{% url 'admin:lms_cms_flowparticipants_change' current_flow.id %}" target="_blank"
+                   class="btn btn-primary active">Участники</a>
+                <a href="{% url 'admin:lms_cms_flowschedule_change' current_flow.id %}" target="_blank"
+                   class="btn btn-primary active">Расписание</a>
+                <a href="{{ students_url }}?flow__id__exact={{ current_flow.id }}" target="_blank"
+                   class="btn btn-primary active">Студенты</a>
+            {% endif %}
+        </div>
+        <a href="{{ signups_url }}?state__exact=new&course__id__exact={{ course.id }}" target="_blank"
+           class="btn btn-primary active">Заявки</a>
+    {% endif %}
+
+    {% with course=student.flow.course flow=student.flow %}
+
+        {% for unit, student_lessons in student.lessons_by_unit.items %}
+            <div class="row border-bottom bg-light position-relative mt-4">
+                <div class="col rounded-top bg-secondary text-white">
+                    <h4 class="text-white m-3">{{ unit.name }} &nbsp;</h4>
+                </div>
+            </div>
+
+            {% for student_lesson in student_lessons %}
+                {% with flow_lesson=student_lesson.flow_lesson %}
+                    <div class="row border-bottom bg-light position-relative">
+                        <div class="col-2 my-auto text-center">
+                            <div class="h6 text-dark">
+                                #{{ flow_lesson.ordering }}
+                            </div>
+                        </div>
+
+                        <div class="col my-auto position-static py-2">
+                            {% if flow_lesson.is_opened and not item.student_lesson.is_blocked or is_teacher or is_admin %}
+                                <a href="" class="stretched-link">
+                                    <div class="h5">
+                                        {{ flow_lesson.lesson.title }}
+                                    </div>
+                                </a>
+                            {% else %}
+                                <a href="{% url 'lms_cms:student_lesson' student_lesson.id %}" class="stretched-link">
+                                    <div class="h5">
+                                        {{ flow_lesson.lesson.title }}
+                                    </div>
+                                </a>
+                            {% endif %}
+                            <div class="text-right">
+                                {% if item.student_lesson.is_missed %}
+                                    <span class="badge badge-warning">пропущен</span>
+                                {% endif %}
+                                {% if item.student_lesson.score %}
+                                    <span class="badge badge-info">оценка {{ item.student_lesson.score }}</span>
+                                {% endif %}
+                                {% if not flow_lesson.is_opened and not item.student_lesson.is_blocked %}
+                                    <span class="badge badge-light"
+                                          style="color: #797979">{{ flow_lesson.open_planned_at|date:"SHORT_DATETIME_FORMAT" }} {{ flow_lesson.open_planned_at|date:"e" }}</span>
+                                {% endif %}
+                            </div>
+
+                            {#                    <div class="col-1 my-auto" style="margin: auto">#}
+                            {#                        {% if flow_lesson.is_opened %}#}
+                            {#                            {% if item.student_lesson.is_blocked %}#}
+                            {#                                <span style="color:gray">#}
+                            {#                            <i class="fas fa-lock fa-lg"></i>#}
+                            {#                        </span>#}
+                            {#                            {% else %}#}
+                            {#                                <a href="{{ item.page.get_absolute_url }}" class="stretched-link">#}
+                            {#                                    {% if item.student_lesson.is_completed %}#}
+                            {#                                        {% if item.student_lesson.is_checked %}#}
+                            {#                                            {% if item.student_lesson.is_task_accepted %}#}
+                            {#                                                <span style="color: green">#}
+                            {#                                        <i class="far fa-check-square fa-lg"></i>#}
+                            {#                                        </span>#}
+                            {#                                            {% elif item.student_lesson.is_task_rejected %}#}
+                            {#                                                <span style="color: darkorange">#}
+                            {#                                        <i class="far fa-check-square fa-lg"></i>#}
+                            {#                                        </span>#}
+                            {#                                            {% else %} {# filed #}
+                            {#                                                <span style="color: darkred">#}
+                            {#                                        <i class="far fa-times-circle"></i>#}
+                            {#                                        </span>#}
+                            {#                                            {% endif %}#}
+                            {#                                        {% else %}#}
+                            {#                                            <span style="color: green">#}
+                            {#                                    <i class="fas fa-hourglass-end fa-lg"></i>#}
+                            {#                                    </span>#}
+                            {#                                        {% endif %}#}
+                            {#                                    {% else %}#}
+                            {#                                        <span style="color: green">#}
+                            {#                                <i class="fas fa-hourglass-start fa-lg"></i>#}
+                            {#                                </span>#}
+                            {#                                    {% endif %}#}
+                            {#                                </a>#}
+                            {#                            {% endif %}#}
+                            {#                        {% else %}#}
+                            {#                            <span style="color:gray">#}
+                            {#                        <i class="fas fa-lock fa-lg"></i>#}
+                            {#                    </span>#}
+                            {#                        {% endif %}#}
+                            {#                    </div>#}
+
+                        </div>
+                    </div>
+
+                {% endwith %}
+            {% endfor %}
+        {% endfor %}
+
+    {% endwith %}
+{% endblock content %}

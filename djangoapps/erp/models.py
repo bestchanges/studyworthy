@@ -7,6 +7,7 @@ from django.conf.global_settings import LANGUAGES
 from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
+from django.utils.translation import ugettext_lazy as _
 from djmoney.models.fields import MoneyField, CurrencyField
 from djmoney.money import Money
 from natural_keys import NaturalKeyModel
@@ -125,6 +126,7 @@ class Person(NaturalKeyModel):
     city = models.CharField(max_length=100, default='', blank=True)
     timezone = models.CharField(max_length=100, choices=[(tz, tz) for tz in pytz.all_timezones],
                                 default=settings.TIME_ZONE)
+    birth_date = models.DateField(null=True, blank=True, verbose_name=_('Birth date'))
     user = models.OneToOneField(User, null=True, on_delete=models.SET_NULL)
     is_admin = models.BooleanField(default=False)
     can_teach = models.BooleanField(default=False)
@@ -183,9 +185,11 @@ class ClientOrder(Document):
         PROCESSING = 'PROCESSING', "Исполняется"
         CANCELLED = 'CANCELLED', "Отменён"
 
+    FINAL_STATES = (State.COMPLETED, State.CANCELLED)
+
     class FulfillOn(TextChoices):
-        CREATED = 'CREATED', "когда создан"
-        CONFIRMED = 'CONFIRMED', "когда подтверждён"
+        CREATED = 'CREATED', "когда заказ создан"
+        CONFIRMED = 'CONFIRMED', "когда заказ подтверждён"
         ORDER_PAYED_FULL = 'ORDER_PAYED_FULL', "когда счет оплачен полностью"
         ORDER_PAYED_PARTLY = 'ORDER_PAYED_PARTLY', "когда счет оплачен частично"
 
@@ -221,7 +225,7 @@ class ClientOrder(Document):
 
     def fulfill(self):
         states = ClientOrder.State
-        assert self.state in (states.NEW, states.CONFIRMED), f"Cannot fulfill from state {self.state}"
+        assert self.state in (None, states.NEW, states.CONFIRMED), f"Cannot fulfill from state {self.state}"
         self.set_state(states.PROCESSING)
 
 

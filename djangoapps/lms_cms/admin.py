@@ -1,8 +1,9 @@
+from cms.admin.placeholderadmin import PlaceholderAdminMixin
 from django.contrib import admin
 from django.contrib.auth.models import User
 
 from djangoapps.lms.models.lms_models import Course, Lesson, Flow, Student, FlowLesson, Unit, \
-    Teacher, Admin, Attendance, CourseLesson
+    Teacher, Admin, StudentLesson, CourseLesson
 from djangoapps.lms_cms import constants
 from djangoapps.lms_cms.models.lmscms_models import FlowSchedule, FlowParticipants
 
@@ -95,7 +96,7 @@ class FlowScheduleAdmin(admin.ModelAdmin):
 
 
 class AttendanceInline(admin.TabularInline):
-    model = Attendance
+    model = StudentLesson
     fields = ['flow_lesson', 'check_result', 'score', 'is_completed', 'is_checked', 'when_checked']
     readonly_fields = ['flow_lesson', 'when_checked', 'is_completed', 'is_checked', ]
     extra = 0
@@ -121,7 +122,7 @@ class StudentAdmin(admin.ModelAdmin):
 
 
 @admin.register(Lesson)
-class LessonAdmin(admin.ModelAdmin):
+class LessonAdmin(PlaceholderAdminMixin, admin.ModelAdmin):
     list_display = ['code', 'title']
 
 
@@ -139,6 +140,6 @@ class CourseUnitInline(admin.TabularInline):
     extra = 0
 
 @admin.register(Course)
-class CourseAdmin(admin.ModelAdmin):
+class CourseAdmin(PlaceholderAdminMixin, admin.ModelAdmin):
     list_display = ['title', 'code', 'state']
     inlines = [CourseUnitInline, CourseLessonInline]

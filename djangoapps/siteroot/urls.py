@@ -8,11 +8,11 @@ admin.autodiscover()
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # path('lms/', include('djangoapps.lms.urls')),
-    path('campus/', include('djangoapps.campus.urls')),
+    # path('lms/', include('djangoapps.lms_cms.urls')),
+    # path('campus/', include('djangoapps.campus.urls')),
     path('crm/', include('djangoapps.crm.urls', namespace='crm')),
-    path('', include('django.contrib.auth.urls')),
-    path('courses/', views.index, name='index'),
+    path('accounts/', include('django.contrib.auth.urls')),
+    # path('courses/', views.index, name='index'),
     url(r'^', include('cms.urls')),
 ]
 

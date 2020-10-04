@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from djangoapps.crm.models import CourseProduct
-from djangoapps.erp.models import ClientOrder, ClientOrderItem, Invoice, PaymentIn
+from djangoapps.erp.models import ClientOrder, ClientOrderItem, Invoice, PaymentIn, Person
 
 
 class ClientOrderItemAdmin(admin.TabularInline):
@@ -16,8 +16,14 @@ def fulfill(modeladmin, request, queryset):
 
 @admin.register(ClientOrder)
 class ClientOrderAdmin(admin.ModelAdmin):
+    list_display = ['document_number', 'document_date', 'client', 'state', 'amount', 'created_at']
     inlines = [ClientOrderItemAdmin]
     actions = [fulfill]
+
+
+@admin.register(Person)
+class PersonInvoiceAdmin(admin.ModelAdmin):
+    pass
 
 
 @admin.register(Invoice)

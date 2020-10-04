@@ -66,11 +66,12 @@ class CourseProductSignupCMSPlugin(CMSPluginBase):
 
     def render(self, context, instance: CourseProductCMSPluginConfig, placeholder):
 
-        context['course'] = instance.course_product
+        course_product = instance.course_product
+        context['course'] = course_product
 
         request = context['request']
         person = Person.objects.filter(user=request.user).first()
-        form = SingleCourseProductOrderForm(product=instance.course_product, person=person)
+        form = SingleCourseProductOrderForm(product=course_product, person=person)
         context['form'] = form
 
         return context

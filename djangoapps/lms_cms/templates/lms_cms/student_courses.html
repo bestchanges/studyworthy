@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Мои курсы{% endblock title %}
+
+{% block header %}
+    {% include "menu/navbar.html" %}
+{% endblock header %}
+
+{% block content %}
+    {% if client_orders %}
+        <h2>Активные заказы</h2>
+        {% for order in client_orders %}
+            {{ order.document_number }}
+        {% endfor %}
+    {% endif %}
+    {% if student_in %}
+        <h2>Мои курсы</h2>
+        <ul class="list-unstyled">
+            {% for student in student_in %}
+                {% with course=student.flow.course flow=student.flow %}
+                    <li class="media my-3">
+                        {% if course.icon %}
+                            <i class="{{ course.icon }} fa-3x text-success mr-3"></i>
+                        {% endif %}
+                        <div class="media-body">
+                            <a href="{% url 'lms_cms:student_flow' student.id %}"><h5 class="mt-0 mb-1">{{ course.title }}</h5></a>
+                            {% if flow.state == 'planned' %}
+                                Начнётся {{ flow.start_planned_at }}
+                            {% endif %}
+                        </div>
+                    </li>
+                {% endwith %}
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load cms_tags %}
+
+{% block title %}Урок #{{ student_lesson.ordering }} {{ student_lesson.lesson.title }}{% endblock title %}
+
+{% block header %}
+    {% include "menu/navbar.html" %}
+{% endblock header %}
+
+{% block content %}
+    <h1>Урок #{{ student_lesson.ordering }} {{ student_lesson.lesson.title }}</h1>
+    {% render_placeholder student_lesson.lesson.lesson_content %}
+    {% render_placeholder student_lesson.lesson.support_content %}
+    {% if student_lesson.lesson.show_common_content %}
+        {% render_placeholder student_lesson.student.flow.course.common_content %}
+    {% endif %}
+{% endblock %}

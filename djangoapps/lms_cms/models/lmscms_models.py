@@ -2,7 +2,7 @@ from cms.models.pluginmodel import CMSPlugin
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from djangoapps.lms.models.lms_models import Lesson, Flow, Participant, FlowLesson, Attendance
+from djangoapps.lms.models.lms_models import Lesson, Flow, Participant, FlowLesson, StudentLesson
 
 
 class CommentsConfigCMSPlugin(CMSPlugin):
@@ -41,9 +41,9 @@ def participant_directory(instance, filename):
 
 
 class Comment(models.Model):
-    RESULT_ACCEPTED = Attendance.RESULT_ACCEPTED
-    RESULT_FAILED = Attendance.RESULT_FAILED
-    RESULT_REJECTED = Attendance.RESULT_REJECTED
+    RESULT_ACCEPTED = StudentLesson.RESULT_ACCEPTED
+    RESULT_FAILED = StudentLesson.RESULT_FAILED
+    RESULT_REJECTED = StudentLesson.RESULT_REJECTED
 
     CHOICES_RESULT = (
         (None, _('Just comment')),

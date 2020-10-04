@@ -32,6 +32,7 @@ def order_single_product(request):
         form = SingleCourseProductOrderForm(request.POST)
         if form.is_valid():
             client_order: ClientOrder = form.create_order()
+            client_order.set_state(Invoice.State.NEW)
 
             if client_order.amount.amount:
                 invoice = client_order.create_invoice()

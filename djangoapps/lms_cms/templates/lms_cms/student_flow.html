@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load cms_tags %}
+
+{% block title %}Мои курсы{% endblock title %}
+
+{% block header %}
+    {% include "menu/navbar.html" %}
+{% endblock header %}
+
+{% block content %}
+    {% with course=student.flow.course %}
+        <h2>Курс {{ course.title }}</h2>
+        {% render_placeholder course.flow_content %}
+    {% endwith %}
+{% endblock %}

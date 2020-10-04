@@ -54,14 +54,15 @@ class SingleCourseProductOrderForm(forms.Form):
 
         email = self.cleaned_data['email'].lower()
         person = Person.lookup_by_email(email)
+        client_phone = self.cleaned_data.get('phone')
         if person:
-            if not person.phone and self.client_phone:
+            if not person.phone and client_phone:
                 person.phone = self.client_phone
                 person.save()
         else:
             person = Person.objects.create(
                 email=email,
-                phone=self.cleaned_data.get('phone'),
+                phone=client_phone,
             )
             person.full_name = self.cleaned_data.get('name')
             person.save()
@@ -76,7 +77,6 @@ class SingleCourseProductOrderForm(forms.Form):
         assert self.is_valid()
 
         product = Product.objects.get(code=self.cleaned_data['product_code'])
-        # if it's free product then let's fulfill immediately
         person = self._get_or_create_person()
 
         phone = self.cleaned_data["phone"]

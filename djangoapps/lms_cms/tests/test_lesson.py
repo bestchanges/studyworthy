@@ -4,7 +4,7 @@ from collections import OrderedDict
 from django.test import TestCase
 from django.utils.timezone import now
 
-from djangoapps.lms.models.lms_models import Course, Unit, Lesson, Student, Flow, FlowLesson, Attendance
+from djangoapps.lms.models.lms_models import Course, Unit, Lesson, Student, Flow, FlowLesson, StudentLesson
 from djangoapps.lms_cms.tests.utils import create_student_user
 
 
@@ -60,10 +60,10 @@ class UnitTestCase(TestCase):
         flow_lesson_2 = FlowLesson.objects.get(flow=flow, lesson=self.lesson_2)
         flow_lesson_3 = FlowLesson.objects.get(flow=flow, lesson=self.lesson_3)
         flow_lesson_4 = FlowLesson.objects.get(flow=flow, lesson=self.lesson_4)
-        student_lesson_1 = Attendance.objects.get(flow_lesson=flow_lesson_1, participant=student)
-        student_lesson_2 = Attendance.objects.get(flow_lesson=flow_lesson_2, participant=student)
-        student_lesson_3 = Attendance.objects.get(flow_lesson=flow_lesson_3, participant=student)
-        student_lesson_4 = Attendance.objects.get(flow_lesson=flow_lesson_4, participant=student)
+        student_lesson_1 = StudentLesson.objects.get(flow_lesson=flow_lesson_1, student=student)
+        student_lesson_2 = StudentLesson.objects.get(flow_lesson=flow_lesson_2, student=student)
+        student_lesson_3 = StudentLesson.objects.get(flow_lesson=flow_lesson_3, student=student)
+        student_lesson_4 = StudentLesson.objects.get(flow_lesson=flow_lesson_4, student=student)
         flow_lesson_1.is_opened = True; flow_lesson_1.save()
         flow_lesson_2.is_opened = True; flow_lesson_2.save()
         flow_lesson_3.is_opened = True; flow_lesson_3.save()

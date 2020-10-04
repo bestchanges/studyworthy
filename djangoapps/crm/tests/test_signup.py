@@ -99,7 +99,7 @@ class SignupFormModelTestCase(TestCase):
         self.assertEqual(len(mail.outbox), 2)
         notification_email = mail.outbox[0]
         self.assertEqual(notification_email.to, [email])
-        assert notification_email.body.find('example.com/login') > 0, "Should point to login page"
+        assert notification_email.body.find('example.com/accounts/login') > 0, "Should point to login page"
         # parse password from mail and try to login
         password = re.findall(r'пароль:\s*([^\s]+)', notification_email.body)[0]
         assert password

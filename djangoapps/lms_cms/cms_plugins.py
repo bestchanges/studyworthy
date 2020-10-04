@@ -11,7 +11,7 @@ from djangocms_bootstrap4.contrib.bootstrap4_picture.cms_plugins import Bootstra
 from djangocms_file.cms_plugins import FilePlugin
 from djangocms_text_ckeditor.cms_plugins import TextPlugin
 
-from djangoapps.lms.models.lms_models import Student, Participant, FlowLesson, Attendance, Flow, Course
+from djangoapps.lms.models.lms_models import Student, Participant, FlowLesson, StudentLesson, Flow, Course
 from djangoapps.lms_cms.forms import create_comment_form
 from djangoapps.lms_cms.models.lmscms_models import VideoYoutubeConfigCMSPlugin, \
     CommentsConfigCMSPlugin, CourseLessonsConfigCMSPlugin, Comment, \
@@ -92,88 +92,20 @@ class CommentsCMSPlugin(CMSPluginBase):
 class CourseLessonsCMSPlugin(CMSPluginBase):
     """
     List of lessons in the current course.
-    Can only be attached to the page with course
+    Can only be displayed if 'student' in context.
     """
     model = CourseLessonsConfigCMSPlugin
-    name = _('Course lessons')
-    render_template = "lms_cms/cms_plugins/course_lessons.html"
+    name = _('Flow lessons')
+    render_template = "lms_cms/cms_plugins/flow_lessons.html"
     module = _(' LMS Control')
     cache = False
 
     def render(self, context, instance, placeholder):
-        course: Course = LmsPage.get_course(instance.page)
-        context['course'] = course
-        participant: Participant = context['request'].lms_participant
-
-        if participant:
-            context['current_flow'] = participant.flow
-
-        current_user: User = context['request'].user
-
-        if not current_user.is_anonymous:
-            my_flows = Flow.objects.filter(
-                state__in=[Flow.STATE_ONGOING, Flow.STATE_PLANNED, Flow.STATE_DRAFT],
-                participants__user=current_user, course=course
-            )
-            context['my_flows'] = my_flows
-            user_admin = is_admin(current_user)
-            context['is_admin'] = user_admin
-            user_teacher = is_teacher(current_user)
-            context['is_teacher'] = user_teacher
-            user_student = is_student(current_user)
-            context['is_student'] = user_student
-
-            # display dropdown with flows only to teacher/admin
-            # and for all if there are more than 1 flow
-            if len(my_flows) > 1 or user_admin or user_teacher:
-                context['show_flows_selector'] = True
-
-        if participant and participant.role in [Participant.ROLE_ADMIN, Participant.ROLE_TEACHER, ]:
-            role = 'TEACHER'
-            flow = participant.flow
-            items = [
-                {
-                    "flow_lesson": fl,
-                    "lesson": fl.lesson,
-                }
-                for fl in flow.flow_lessons.all()
-            ]
-        else:
-            if participant and participant.role == Participant.ROLE_STUDENT:
-                role = 'STUDENT'
-                student: Student = participant.student
-                items = [
-                    {
-                        "flow_lesson": sl.flow_lesson,
-                        "student_lesson": sl,
-                        "lesson": sl.flow_lesson.lesson,
-                    }
-                    for sl in student.list_lessons_marked_blocked(student.list_lessons_marked_missed())
-                ]
-            else:
-                is_teacher_or_admin_on_course = User.objects.filter(
-                    groups__name__in=[ADMINS_GROUP_NAME, TEACHERS_GROUP_NAME]
-                )
-                role = 'TEACHER' if is_teacher_or_admin_on_course else 'NOBODY'
-                items = [
-                    {
-                        "lesson": l,
-                    }
-                    for l in course.lessons.all()
-                ]
-
-        last_unit = 1
-        for item in items:
-            lesson = item['lesson']
-            if lesson.unit != last_unit:
-                # unit change detected
-                lesson.new_unit = True
-                last_unit = lesson.unit
-            item['page'] = LmsPage.page_for_lesson(item['lesson'])
-
-        context['items'] = items
-        context['role'] = role
         context = super(CourseLessonsCMSPlugin, self).render(context, instance, placeholder)
+        student: Student = context['student']
+        assert student, 'no student in context'
+        # current_user: User = context['request'].user
+        context['role'] = 'STUDENT'
         return context
 
 
@@ -228,7 +160,7 @@ class LessonCompleteCMSPlugin(AddPageBlockIfRootPlugin):
         page: Page = instance.page
         lesson = LmsPage.get_lesson(page)
         assert lesson, "can be used only on lesson pages"
-        attendance = Attendance.objects.filter(participant=participant, flow_lesson__lesson=lesson).first()
+        attendance = StudentLesson.objects.filter(participant=participant, flow_lesson__lesson=lesson).first()
         context['attendance'] = attendance
         context = super(AddPageBlockIfRootPlugin, self).render(context, instance, placeholder)
         return context
@@ -260,9 +192,13 @@ class TextCMSPlugin(AddPageBlockIfRootPlugin, TextPlugin):
     cache = True
 
     def render(self, context, instance, placeholder):
-        context['title'] = instance.page.get_title()
-        context = super(AddPageBlockIfRootPlugin, self).render(context, instance, placeholder)
         context = super(TextCMSPlugin, self).render(context, instance, placeholder)
+        if not hasattr(instance, "page") or not instance.page:
+            title = "No title"
+        else:
+            title = instance.page.get_title()
+        context['title'] = title
+        context = super(AddPageBlockIfRootPlugin, self).render(context, instance, placeholder)
         return context
 
 

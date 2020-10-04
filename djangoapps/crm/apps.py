@@ -8,3 +8,4 @@ class MyAppConfig(AppConfig):
 
     def ready(self):
         yandex_kassa.init()
+        import djangoapps.crm.signal_handlers  # noqa
