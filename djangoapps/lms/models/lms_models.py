@@ -238,9 +238,6 @@ class FlowLesson(models.Model):
                 StudentLesson.objects.create(
                     student=participant.student,
                     flow_lesson=flow_lesson,
-                    lesson=flow_lesson.lesson,
-                    unit=flow_lesson.unit,
-                    ordering=flow_lesson.ordering,
                 )
 
     def open_lesson(self, by_user=None):
@@ -330,9 +327,6 @@ class Student(Participant):
                 StudentLesson.objects.create(
                     student=self,
                     flow_lesson=flow_lesson,
-                    lesson=flow_lesson.lesson,
-                    unit=flow_lesson.unit,
-                    ordering=flow_lesson.ordering,
                 )
 
     def lessons_by_unit(self):
@@ -343,7 +337,7 @@ class Student(Participant):
         """
         result = OrderedDict()
         for student_lesson in self.student_lessons.all():
-            unit = student_lesson.unit
+            unit = student_lesson.flow_lesson.unit
             if not unit in result:
                 result[unit] = []
             result[unit].append(student_lesson)
@@ -390,10 +384,6 @@ class StudentLesson(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='student_lessons')
     # this is just for reference. All significant fields are copied from the FlowLesson
     flow_lesson = models.ForeignKey(FlowLesson, null=True, blank=True, on_delete=models.CASCADE, related_name='+')
-
-    unit = models.ForeignKey(Unit, null=True, on_delete=models.CASCADE, related_name='+')
-    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, related_name='+')
-    ordering = models.PositiveIntegerField(default=0, help_text="Ordering number")
 
     is_opened = models.BooleanField(default=False)
 
