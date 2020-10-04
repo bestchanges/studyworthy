@@ -6,7 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 
 
 class LMSMenu(CMSAttachMenu):
-    name = _("lesson menu")
+    name = _("smaple menu for CMS")
 
     def get_nodes(self, request):
             return [
@@ -14,4 +14,4 @@ class LMSMenu(CMSAttachMenu):
                 NavigationNode(_("Log out"), reverse('logout'), 2, attr={'visible_for_anonymous': False}),
             ]
 
-menu_pool.register_menu(LMSMenu)
+# menu_pool.register_menu(LMSMenu)
