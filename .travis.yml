@@ -5,6 +5,7 @@ install:
 - pip install pipenv
 - pipenv install --dev
 script:
+- pipenv run pip freeze
 - make tests
 #- pipenv run python manage.py behave bdd_tests
 #deploy:
