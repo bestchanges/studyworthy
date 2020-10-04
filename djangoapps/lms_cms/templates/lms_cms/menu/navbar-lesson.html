@@ -1,0 +1,23 @@
+{% load menu_tags i18n %}
+<style type="text/css">
+    {#Let sticky nav be under toolbar https://stackoverflow.com/questions/46737221/django-cms-how-to-modify-style-of-show-menu #}
+    .cms-toolbar-expanded body, .cms-toolbar-expanded .sticky-top {
+        top: 46px;
+    }
+</style>
+<nav class="navbar sticky-top navbar-dark bg-dark navbar-expand-sm" role="navigation">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'lms_cms:student_flow' student_lesson.student.id %}">
+                    Вернуться к курсу {{ student_lesson.student.flow.course.title }}
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>

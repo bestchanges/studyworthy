@@ -20,7 +20,16 @@
 {% cms_toolbar %}
 
 {% block header %}{% endblock header %}
-{% block content %}{% endblock content %}
+
+<div class="container">
+    <div class="row">
+        <main class="c1 col-md-10 offset-md-1">
+            {% block content %}
+            {% endblock content %}
+        </main>
+    </div>
+</div>
+
 {% block footer %}{% endblock footer %}
 
 {% render_block "js" %}

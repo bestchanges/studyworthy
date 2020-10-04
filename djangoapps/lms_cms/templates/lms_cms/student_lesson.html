@@ -1,10 +1,10 @@
-{% extends "base.html" %}
+{% extends "lms_cms/base.html" %}
 {% load cms_tags %}
 
 {% block title %}Урок #{{ student_lesson.ordering }} {{ student_lesson.lesson.title }}{% endblock title %}
 
 {% block header %}
-    {% include "menu/navbar.html" %}
+    {% include "lms_cms/menu/navbar-lesson.html" %}
 {% endblock header %}
 
 {% block content %}

@@ -1,10 +1,6 @@
-{% extends "base.html" %}
+{% extends "lms_cms/base.html" %}
 
 {% block title %}Мои курсы{% endblock title %}
-
-{% block header %}
-    {% include "menu/navbar.html" %}
-{% endblock header %}
 
 {% block content %}
     {% if client_orders %}

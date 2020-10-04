@@ -3,7 +3,7 @@
 {% block content %}
     <div class="row">
         {% for item in catalog %}
-            <div class="col-sm-6 col-md-4">
+            <div class="col-sm-6 col-md-6 col-lg-4">
                 {% include "siteroot/cms_plugins/course_card.html" with course=item.course page=item.page %}
             </div>
         {% endfor %}
