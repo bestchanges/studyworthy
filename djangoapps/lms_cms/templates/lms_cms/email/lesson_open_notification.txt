@@ -2,6 +2,6 @@
 
 Вам открыт доступ к уроку №{{ flow_lesson.number }} "{{ flow_lesson.lesson.title }}".
 
-Перейти к уроку: https://{{ site.domain }}{% url 'lms_cms:lesson-view' participant_lesson.id %}
+Перейти к уроку: https://{{ site.domain }}{% url 'flow-lesson-view' participant_lesson.id %}
 
 Команда сайта {{ site.name }}

@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
@@ -84,7 +85,6 @@ def attendance_completed(request, participant_lesson_id):
 
 
 @login_required
-#@by_student_or_teacher
 def student_kabinet(request):
     user = request.user
 
@@ -101,9 +101,11 @@ def student_kabinet(request):
     return render(request, "lms_cms/student_courses.html", context)
 
 
-#@by_student_or_teacher
-def flow_view(request, participant_id):
-    participant = Participant.objects.get(id=participant_id)
+@login_required
+def flow_view(request, flow_id):
+    participant = Participant.objects.filter(flow_id=flow_id, user=request.user).first()
+    if not participant:
+        raise PermissionDenied(_('Not participant'))
     flow = participant.flow
     context = {
         "flow": flow,
@@ -115,8 +117,12 @@ def flow_view(request, participant_id):
 
 
 @login_required
-def lesson_view(request, participant_lesson_id):
-    participant_lesson = ParticipantLesson.objects.get(id=participant_lesson_id)
+def lesson_view(request, flow_lesson_id):
+    participant_lesson = ParticipantLesson.objects.filter(
+        flow_lesson_id=flow_lesson_id, participant__user=request.user
+    ).first()
+    if not participant_lesson:
+        raise PermissionDenied('User not participant or flow not exist')
     flow_lesson = participant_lesson.flow_lesson
     flow = flow_lesson.flow
     participant = participant_lesson.participant
@@ -129,4 +135,4 @@ def lesson_view(request, participant_lesson_id):
         "student": participant.student,
         "participant": participant,
     }
-    return render(request, "lms_cms/participant_lesson.html", context)
+    return render(request, "lms_cms/flow_lesson.html", context)

@@ -1,5 +1,6 @@
 from cms.plugin_base import CMSPluginBase
 from cms.plugin_pool import plugin_pool
+from django.contrib.auth.models import AbstractUser
 from django.utils.translation import ugettext_lazy as _
 
 from djangoapps.crm.forms import SingleCourseProductOrderForm
@@ -70,7 +71,8 @@ class CourseProductSignupCMSPlugin(CMSPluginBase):
         context['course'] = course_product
 
         request = context['request']
-        person = Person.objects.filter(user=request.user).first()
+        user: AbstractUser = request.user
+        person = Person.objects.filter(user=user).first() if not user.is_anonymous else None
         form = SingleCourseProductOrderForm(product=course_product, person=person)
         context['form'] = form
 
