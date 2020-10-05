@@ -2,8 +2,6 @@
 
 Вы записаны как {{ participant.role }} на курс "{{ course.title }}" ({{ participant.flow }})
 
-Перейти к курсу: https://{{ site.domain }}{{ course_page.get_absolute_url }}
+Перейти к курсу: https://{{ site.domain }}{% url 'lms_cms:flow-view' participant.id %}
 
---
-С уважением,
-"{{ site.name }}"
+Команда сайта {{ site.name }}

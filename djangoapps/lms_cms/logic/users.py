@@ -51,10 +51,8 @@ def create_lms_user(email, roles=(Student.ROLE,), password=None,
         user.groups.add(Group.objects.get(name=ROLE_TO_GROUPNAME_MAPPING[role]))
 
     if send_email:
-        # TODO: yeah thats sucks but there is circular reference regarding LmsPage and email
         send_registration_email(
             user=user,
-            site=Site.objects.get_current(),
             password=password
         )
 

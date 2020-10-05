@@ -1,9 +1,7 @@
-{{ participant.user.first_name }},
+Здравствуйте {{ participant.user.first_name }},
 
 Вам открыт доступ к уроку №{{ flow_lesson.number }} "{{ flow_lesson.lesson.title }}".
 
-Открыть урок: https://{{ site.domain }}{{ lesson_page.get_absolute_url }}
+Перейти к уроку: https://{{ site.domain }}{% url 'lms_cms:lesson-view' participant_lesson.id %}
 
---
-С уважением,
-"{{ site.name }}"
+Команда сайта {{ site.name }}

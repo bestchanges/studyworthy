@@ -10,18 +10,22 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 
-from djangoapps.lms.models.lms_models import FlowLesson, Participant
+from djangoapps.lms.models.lms_models import FlowLesson, Participant, ParticipantLesson
 
 logger = logging.getLogger(__name__)
 
 
 def send_notification_lesson_open(flow_lesson: FlowLesson):
-    for participant in flow_lesson.flow.participants.all():
+    to_notify_query = ParticipantLesson.objects.filter(flow_lesson=flow_lesson,
+                                                      participant__role=Participant.ROLE_STUDENT)
+    for participant_lesson in to_notify_query:
+        participant = participant_lesson.participant
         if not participant.user.email:
             logging.warning(f'No email for {participant}. Cannot sent new lesson notification.')
             continue
         lesson = flow_lesson.lesson
         context = {
+            'participant_lesson': participant_lesson,
             'participant': participant,
             'flow_lesson': flow_lesson,
             'site': get_current_site(),
@@ -36,8 +40,13 @@ def send_notification_lesson_open(flow_lesson: FlowLesson):
         )
 
 
-def send_registration_email(user: User, site: Site, password):
-    login_url = "https://%s" % urljoin(site.domain, reverse('login'))
+def send_registration_email(user: User, password):
+    site: Site = Site.objects.get_current()
+    protocol = 'http' if settings.ENVIRONMENT == 'dev' else 'https'
+    login_url = "{protocol}://{url}".format(
+        url=urljoin(site.domain, reverse('login')),
+        protocol=protocol,
+    )
     context = {
         'user': user,
         'password': password,
@@ -56,7 +65,6 @@ def send_registration_email(user: User, site: Site, password):
 
 def send_notification_enrolled_to_flow(participant: Participant):
     site: Site = get_current_site()
-    login_url = "http://%s" % urljoin(site.domain, reverse('login'))
     course = participant.flow.course
     user = participant.user
     context = {
