@@ -36,7 +36,7 @@
             </div>
             <div class="comment pb-1">
                 {% if not comment.is_removed %}
-                    <a class="mutedlink" href="{% url 'lms_cms:comment_reply' %}?parent={{ comment.id }}&flow_lesson={{ flow_lesson.pk }}">{% trans "Reply" %}</a>
+                    <a class="mutedlink" href="{% url 'lms_cms:comment_reply' %}?parent={{ comment.id }}&flow_lesson={{ flow_lesson.pk }}&participant={{ participant.id }}">{% trans "Reply" %}</a>
                 {% endif %}
             </div>
         </div>
