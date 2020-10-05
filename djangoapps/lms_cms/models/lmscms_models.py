@@ -2,7 +2,7 @@ from cms.models.pluginmodel import CMSPlugin
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from djangoapps.lms.models.lms_models import Lesson, Flow, Participant, FlowLesson, StudentLesson
+from djangoapps.lms.models.lms_models import Lesson, Flow, Participant, FlowLesson, ParticipantLesson, CourseLesson
 
 
 class CommentsConfigCMSPlugin(CMSPlugin):
@@ -42,9 +42,9 @@ def participant_directory(instance, filename):
 
 
 class Comment(models.Model):
-    RESULT_ACCEPTED = StudentLesson.RESULT_ACCEPTED
-    RESULT_FAILED = StudentLesson.RESULT_FAILED
-    RESULT_REJECTED = StudentLesson.RESULT_REJECTED
+    RESULT_ACCEPTED = ParticipantLesson.RESULT_ACCEPTED
+    RESULT_FAILED = ParticipantLesson.RESULT_FAILED
+    RESULT_REJECTED = ParticipantLesson.RESULT_REJECTED
 
     CHOICES_RESULT = (
         (None, _('Just comment')),
@@ -55,7 +55,7 @@ class Comment(models.Model):
 
     flow_lesson = models.ForeignKey(FlowLesson, null=True, on_delete=models.CASCADE, related_name='discussions',
                                     help_text='Discussion attached to Flow Lesson')
-    course_lesson = models.ForeignKey(Lesson, null=True, on_delete=models.CASCADE, related_name='discussions',
+    course_lesson = models.ForeignKey(CourseLesson, null=True, on_delete=models.CASCADE, related_name='discussions',
                                       help_text='Discussion attached to the Course Lesson')
     participant = models.ForeignKey(Participant, null=True, on_delete=models.SET_NULL, related_name='+')
     parent = models.ForeignKey('self', blank=True, null=True, on_delete=models.CASCADE, related_name='children')

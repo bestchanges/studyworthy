@@ -14,8 +14,8 @@
     <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item">
-                <a class="nav-link" href="{% url 'lms_cms:student_flow' student_lesson.student.id %}">
-                    Вернуться к курсу {{ student_lesson.student.flow.course.title }}
+                <a class="nav-link" href="{% url 'lms_cms:flow-view' participant_lesson.participant.id %}">
+                    Вернуться к курсу {{ participant_lesson.participant.flow.course.title }}
                 </a>
             </li>
         </ul>

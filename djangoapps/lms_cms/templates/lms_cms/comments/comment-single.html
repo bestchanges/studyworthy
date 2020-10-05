@@ -6,7 +6,7 @@
     <img class="rounded-circle" src="{% static "lms_cms/avatar.png" %}"/>
     <div class="media-body">
         <div class="d-flex flex-column bd-highlight mb-3">
-            <div id="c{{ comment.id }}" class="mx-1 mb-1 small d-flex flex-column">
+            <div id="comment{{ comment.id }}" class="mx-1 mb-1 small d-flex flex-column">
 {#                <a class="permalink" title="{% trans 'comment permalink' %}" href="{{ page.get_absolute_url }}#c{{ comment.id }}">¶</a>#}
                 {% include "lms_cms/comments/participant-name.html" with participant=comment.participant %}
                 {#                <span>#}
@@ -36,7 +36,7 @@
             </div>
             <div class="comment pb-1">
                 {% if not comment.is_removed %}
-                    <a class="mutedlink" href="{% url 'lms:comment_reply' %}?parent={{ comment.id }}&flow_lesson={{ flow_lesson.pk }}">{% trans "Reply" %}</a>
+                    <a class="mutedlink" href="{% url 'lms_cms:comment_reply' %}?parent={{ comment.id }}&flow_lesson={{ flow_lesson.pk }}">{% trans "Reply" %}</a>
                 {% endif %}
             </div>
         </div>

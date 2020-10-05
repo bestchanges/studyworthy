@@ -19,7 +19,7 @@
                             <i class="{{ course.icon }} fa-3x text-success mr-3"></i>
                         {% endif %}
                         <div class="media-body">
-                            <a href="{% url 'lms_cms:student_flow' student.id %}"><h5 class="mt-0 mb-1">{{ course.title }}</h5></a>
+                            <a href="{% url 'lms_cms:flow-view' student.id %}"><h5 class="mt-0 mb-1">{{ course.title }}</h5></a>
                             {% if flow.state == 'planned' %}
                                 Начнётся {{ flow.start_planned_at }}
                             {% endif %}

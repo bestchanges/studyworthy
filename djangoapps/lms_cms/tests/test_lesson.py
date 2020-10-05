@@ -4,7 +4,7 @@ from collections import OrderedDict
 from django.test import TestCase
 from django.utils.timezone import now
 
-from djangoapps.lms.models.lms_models import Course, Unit, Lesson, Student, Flow, FlowLesson, StudentLesson
+from djangoapps.lms.models.lms_models import Course, Unit, Lesson, Student, Flow, FlowLesson, ParticipantLesson
 from djangoapps.lms_cms.tests.utils import create_student_user
 
 
@@ -60,22 +60,22 @@ class UnitTestCase(TestCase):
         flow_lesson_2 = FlowLesson.objects.get(flow=flow, lesson=self.lesson_2)
         flow_lesson_3 = FlowLesson.objects.get(flow=flow, lesson=self.lesson_3)
         flow_lesson_4 = FlowLesson.objects.get(flow=flow, lesson=self.lesson_4)
-        student_lesson_1 = StudentLesson.objects.get(flow_lesson=flow_lesson_1, student=student)
-        student_lesson_2 = StudentLesson.objects.get(flow_lesson=flow_lesson_2, student=student)
-        student_lesson_3 = StudentLesson.objects.get(flow_lesson=flow_lesson_3, student=student)
-        student_lesson_4 = StudentLesson.objects.get(flow_lesson=flow_lesson_4, student=student)
+        participant_lesson_1 = ParticipantLesson.objects.get(flow_lesson=flow_lesson_1, participant=student)
+        participant_lesson_2 = ParticipantLesson.objects.get(flow_lesson=flow_lesson_2, participant=student)
+        participant_lesson_3 = ParticipantLesson.objects.get(flow_lesson=flow_lesson_3, participant=student)
+        participant_lesson_4 = ParticipantLesson.objects.get(flow_lesson=flow_lesson_4, participant=student)
         flow_lesson_1.is_opened = True; flow_lesson_1.save()
         flow_lesson_2.is_opened = True; flow_lesson_2.save()
         flow_lesson_3.is_opened = True; flow_lesson_3.save()
         flow_lesson_4.is_opened = False; flow_lesson_4.save()
-        student_lesson_1.when_completed = now(); student_lesson_1.save()
+        participant_lesson_1.when_completed = now(); participant_lesson_1.save()
         # lesson_2 must be marked as missed
-        student_lessons = student.list_lessons_marked_missed()
-        self.assertEqual(student_lessons[0], student_lesson_1)
-        self.assertEqual(student_lessons[1], student_lesson_2)
-        self.assertEqual(student_lessons[2], student_lesson_3)
-        self.assertEqual(student_lessons[3], student_lesson_4)
-        self.assertFalse(hasattr(student_lessons[0], "is_missed"))
-        self.assertTrue(hasattr(student_lessons[1], "is_missed"))
-        self.assertFalse(hasattr(student_lessons[2], "is_missed"))
-        self.assertFalse(hasattr(student_lessons[3], "is_missed"))
+        participant_lessons = student.list_lessons_marked_missed()
+        self.assertEqual(participant_lessons[0], participant_lesson_1)
+        self.assertEqual(participant_lessons[1], participant_lesson_2)
+        self.assertEqual(participant_lessons[2], participant_lesson_3)
+        self.assertEqual(participant_lessons[3], participant_lesson_4)
+        self.assertFalse(hasattr(participant_lessons[0], "is_missed"))
+        self.assertTrue(hasattr(participant_lessons[1], "is_missed"))
+        self.assertFalse(hasattr(participant_lessons[2], "is_missed"))
+        self.assertFalse(hasattr(participant_lessons[3], "is_missed"))

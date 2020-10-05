@@ -22,11 +22,12 @@ def create_comment_form(participant, parent: Optional[Comment]):
             fields = ['comment', 'file']
         else:
             fields = ['comment', 'file', 'hide_from_others']
-    fields += ['parent', 'flow_lesson']
+    fields += ['participant', 'parent', 'flow_lesson']
     form = forms.modelform_factory(
         model=Comment,
         fields=fields,
         widgets={
+            'participant': forms.HiddenInput(),
             'comment': forms.Textarea(attrs={'cols': 30, 'rows': 4}),
             'parent': forms.HiddenInput(),
             'flow_lesson': forms.HiddenInput(),

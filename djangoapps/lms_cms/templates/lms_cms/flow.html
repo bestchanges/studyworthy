@@ -1,0 +1,9 @@
+{% extends "lms_cms/base.html" %}
+{% load cms_tags %}
+
+{% block title %}Мои курсы{% endblock title %}
+
+{% block content %}
+    <h2>Курс {{ course.title }}</h2>
+    {% render_placeholder course.flow_content %}
+{% endblock %}

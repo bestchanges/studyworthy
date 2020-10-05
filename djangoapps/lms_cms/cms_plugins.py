@@ -11,7 +11,7 @@ from djangocms_bootstrap4.contrib.bootstrap4_picture.cms_plugins import Bootstra
 from djangocms_file.cms_plugins import FilePlugin
 from djangocms_text_ckeditor.cms_plugins import TextPlugin
 
-from djangoapps.lms.models.lms_models import Student, Participant, FlowLesson, StudentLesson, Flow, Course
+from djangoapps.lms.models.lms_models import Student, Participant, FlowLesson, ParticipantLesson, Flow, Course
 from djangoapps.lms_cms.forms import create_comment_form
 from djangoapps.lms_cms.models.lmscms_models import VideoYoutubeConfigCMSPlugin, \
     CommentsConfigCMSPlugin, CourseLessonsConfigCMSPlugin, Comment, \
@@ -28,24 +28,19 @@ class CommentsCMSPlugin(CMSPluginBase):
 
     def render(self, context, instance: CommentsConfigCMSPlugin, placeholder):
         context = super().render(context, instance, placeholder)
-        participant: Participant = context.get('paricipant')
+        participant: Participant = context.get('participant')
         if not participant:
             return context
 
-        # Deal with the form
-        if instance.attach_to == instance.ATTACH_FLOW:
-            flow_lesson = context.get('flow_lesson')
-            course_lesson = None
-            if not flow_lesson:
-                return context
-        else:
-            flow_lesson = None
-            course_lesson = context.get('course_lesson')
-            if not course_lesson:
-                return context
+        # Build the form
+        flow_lesson = context.get('flow_lesson')
+        if not flow_lesson:
+            return context
+        course_lesson = flow_lesson.course_lesson
 
         Form = create_comment_form(participant=participant, parent=None)
         comment = Comment(
+            participant=participant,
             flow_lesson=flow_lesson,
             course_lesson=course_lesson,
         )
@@ -129,8 +124,17 @@ class PageTitleCMSPlugin(AddPageBlockIfRootPlugin):
     cache = True
 
     def render(self, context, instance, placeholder):
-        context['title'] = instance.page.get_title()
-        context = super(PageTitleCMSPlugin, self).render(context, instance, placeholder)
+        if hasattr(instance, "page") and instance.page:
+            title = instance.page.get_title()
+        else:
+            title = 'NO TITLED OBJECT'
+            for context_data in ['lesson', 'course']:
+                if context_data in context:
+                    title = context[context_data]
+                    break
+
+        context['title'] = title
+        context = super().render(context, instance, placeholder)
         return context
 
 
@@ -161,7 +165,7 @@ class LessonCompleteCMSPlugin(AddPageBlockIfRootPlugin):
         page: Page = instance.page
         lesson = LmsPage.get_lesson(page)
         assert lesson, "can be used only on lesson pages"
-        attendance = StudentLesson.objects.filter(participant=participant, flow_lesson__lesson=lesson).first()
+        attendance = ParticipantLesson.objects.filter(participant=participant, flow_lesson__lesson=lesson).first()
         context['attendance'] = attendance
         context = super(AddPageBlockIfRootPlugin, self).render(context, instance, placeholder)
         return context
@@ -194,11 +198,6 @@ class TextCMSPlugin(AddPageBlockIfRootPlugin, TextPlugin):
 
     def render(self, context, instance, placeholder):
         context = super(TextCMSPlugin, self).render(context, instance, placeholder)
-        if not hasattr(instance, "page") or not instance.page:
-            title = "No title"
-        else:
-            title = instance.page.get_title()
-        context['title'] = title
         context = super(AddPageBlockIfRootPlugin, self).render(context, instance, placeholder)
         return context
 

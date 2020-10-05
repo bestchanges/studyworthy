@@ -4,7 +4,7 @@ from django.contrib import admin
 from django.contrib.auth.models import User
 
 from djangoapps.lms.models.lms_models import Course, Lesson, Flow, Student, FlowLesson, Unit, \
-    Teacher, Admin, StudentLesson, CourseLesson
+    Teacher, Admin, ParticipantLesson, CourseLesson
 from djangoapps.lms_cms import constants
 from djangoapps.lms_cms.models.lmscms_models import FlowSchedule, FlowParticipants
 
@@ -102,7 +102,7 @@ class FlowScheduleAdmin(admin.ModelAdmin):
 
 
 class AttendanceInline(admin.TabularInline):
-    model = StudentLesson
+    model = ParticipantLesson
     fields = ['flow_lesson', 'check_result', 'score', 'is_completed', 'is_checked', 'when_checked']
     readonly_fields = ['flow_lesson', 'when_checked', 'is_completed', 'is_checked', ]
     extra = 0

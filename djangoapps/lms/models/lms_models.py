@@ -235,8 +235,8 @@ class FlowLesson(models.Model):
         if is_create_new:
             for participant in self.flow.participants.filter(role=Student.ROLE):
                 flow_lesson = self
-                StudentLesson.objects.create(
-                    student=participant.student,
+                ParticipantLesson.objects.create(
+                    participant=participant,
                     flow_lesson=flow_lesson,
                 )
 
@@ -263,24 +263,37 @@ class Participant(models.Model):
 
     ROLE = None  # To be overridden in children
 
-    class Meta:
-        verbose_name = _('Participant')
-        verbose_name_plural = _('Participants')
-        unique_together = [['flow', 'user']]
-
     user = models.ForeignKey(
         User, on_delete=models.CASCADE,
         related_name='participants'
     )
+
     flow = models.ForeignKey(Flow, on_delete=models.CASCADE, related_name='participants')
     role = models.CharField(max_length=20,
                             choices=[(role, _(role)) for role in [ROLE_ADMIN, ROLE_TEACHER, ROLE_STUDENT]])
     notes = models.CharField(max_length=200, default='', blank=True,
                              verbose_name=_('Notes'), help_text=_('Visible for stuff only'))
 
+    class Meta:
+        verbose_name = _('Participant')
+        verbose_name_plural = _('Participants')
+        unique_together = [['flow', 'user']]
+
     def __init__(self, *args, **kwargs):
         self._meta.get_field('role').default = self.ROLE
         super(Participant, self).__init__(*args, **kwargs)
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        is_create_new = self.pk is None
+
+        super().save(force_insert, force_update, using, update_fields)
+
+        if is_create_new and self.flow:
+            for flow_lesson in self.flow.flow_lessons.all():
+                ParticipantLesson.objects.create(
+                    participant=self,
+                    flow_lesson=flow_lesson,
+                )
 
     @property
     def full_name(self):
@@ -317,60 +330,48 @@ class Student(Participant):
         verbose_name = _('Student')
         verbose_name_plural = _('Students')
 
-    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        is_create_new = self.pk is None
-
-        super().save(force_insert, force_update, using, update_fields)
-
-        if is_create_new and self.flow:
-            for flow_lesson in self.flow.flow_lessons.all():
-                StudentLesson.objects.create(
-                    student=self,
-                    flow_lesson=flow_lesson,
-                )
-
     def lessons_by_unit(self):
         """
-        Return ordered dict, where keys is units, values are list of student_lesson list
+        Return ordered dict, where keys is units, values are list of participant_lesson list
 
         Note: that the order of units is defined by course_lesson first unit appearance
         """
         result = OrderedDict()
-        for student_lesson in self.student_lessons.all():
-            unit = student_lesson.flow_lesson.unit
+        for participant_lesson in self.participant_lessons.all():
+            unit = participant_lesson.flow_lesson.unit
             if not unit in result:
                 result[unit] = []
-            result[unit].append(student_lesson)
+            result[unit].append(participant_lesson)
         return result
 
-    def list_lessons_marked_missed(self, student_lessons=None):
+    def list_lessons_marked_missed(self, participant_lessons=None):
         mark_as_missed = False
         result = []
-        iterable = student_lessons or self.student_lessons.reverse()
-        for student_lesson in iterable:
-            if mark_as_missed and student_lesson.flow_lesson.is_opened and \
-                    not student_lesson.is_completed:
-                student_lesson.is_missed = True
-            if student_lesson.flow_lesson.is_opened:
+        iterable = participant_lessons or self.participant_lessons.reverse()
+        for participant_lesson in iterable:
+            if mark_as_missed and participant_lesson.flow_lesson.is_opened and \
+                    not participant_lesson.is_completed:
+                participant_lesson.is_missed = True
+            if participant_lesson.flow_lesson.is_opened:
                 mark_as_missed = True
-            result.append(student_lesson)
+            result.append(participant_lesson)
         result.reverse()
         return result
 
-    def list_lessons_marked_blocked(self, student_lessons=None):
+    def list_lessons_marked_blocked(self, participant_lessons=None):
         mark_as_blocked = False
         result = []
-        iterable = student_lessons or self.student_lessons.all()
-        for student_lesson in iterable:
-            if student_lesson.flow_lesson.is_opened \
-                    and not student_lesson.is_completed \
+        iterable = participant_lessons or self.participant_lessons.all()
+        for participant_lesson in iterable:
+            if participant_lesson.flow_lesson.is_opened \
+                    and not participant_lesson.is_completed \
                     and mark_as_blocked:
-                student_lesson.is_blocked = True
-            result.append(student_lesson)
+                participant_lesson.is_blocked = True
+            result.append(participant_lesson)
         return result
 
 
-class StudentLesson(models.Model):
+class ParticipantLesson(models.Model):
     RESULT_ACCEPTED = 'accepted'
     RESULT_FAILED = 'failed'
     RESULT_REJECTED = 'rejected'
@@ -381,7 +382,7 @@ class StudentLesson(models.Model):
         (RESULT_REJECTED, _('Rejected')),
     )
 
-    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='student_lessons')
+    participant = models.ForeignKey(Participant, on_delete=models.CASCADE, related_name='participant_lessons')
     # this is just for reference. All significant fields are copied from the FlowLesson
     flow_lesson = models.ForeignKey(FlowLesson, null=True, blank=True, on_delete=models.CASCADE, related_name='+')
 
@@ -398,11 +399,11 @@ class StudentLesson(models.Model):
         default=None, null=True, blank=True, verbose_name=_('Score'), help_text=_('Score for student response'))
 
     class Meta:
-        unique_together = ['student', 'flow_lesson']
-        ordering = ['student', 'flow_lesson']
+        unique_together = ['participant', 'flow_lesson']
+        ordering = ['participant', 'flow_lesson']
 
     def __str__(self):
-        return f'{self.flow_lesson} {self.student}'
+        return f'{self.flow_lesson} {self.participant}'
 
     @property
     def is_completed(self):

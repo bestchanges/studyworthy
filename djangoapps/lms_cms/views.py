@@ -2,12 +2,13 @@ from django import forms
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 
 from djangoapps.erp.models import ClientOrder, Person
-from djangoapps.lms.models.lms_models import Participant, StudentLesson, Student
+from djangoapps.lms.models.lms_models import Participant, ParticipantLesson, Student
 from djangoapps.lms_cms.forms import create_comment_form
 from djangoapps.lms_cms.models.lmscms_models import Comment
 
@@ -15,7 +16,7 @@ from djangoapps.lms_cms.models.lmscms_models import Comment
 def comment_add(request):
     BaseCommentForm = forms.modelform_factory(
         model=Comment,
-        fields=['parent', 'flow_lesson'],
+        fields=['parent', 'flow_lesson', 'participant'],
     )
     if request.GET:
         form = BaseCommentForm(request.GET)
@@ -24,8 +25,9 @@ def comment_add(request):
     assert form.is_valid(), str(form.errors)
 
     flow_lesson = form.cleaned_data['flow_lesson']
-    participant: Participant = request.lms_participant
+    participant: Participant = form.cleaned_data['participant']
     assert participant.flow == flow_lesson.flow, "Participant cannot comment here"
+    # TODO: security: check current user
     requested_parent = form.cleaned_data['parent']
     parent = requested_parent
     if parent:
@@ -39,7 +41,7 @@ def comment_add(request):
     comment = Comment(
         participant=participant,
         flow_lesson=flow_lesson,
-        lesson=flow_lesson.lesson,
+        course_lesson=flow_lesson.course_lesson,
         parent=parent,
     )
     CommentForm = create_comment_form(participant=participant, parent=parent)
@@ -49,7 +51,7 @@ def comment_add(request):
 
         if comment.parent and participant.role in [Participant.ROLE_TEACHER, Participant.ROLE_ADMIN]:
             student_participant = comment.parent.participant
-            student_attendance = StudentLesson.objects.get(flow_lesson=flow_lesson, participant=student_participant)
+            student_attendance = ParticipantLesson.objects.get(flow_lesson=flow_lesson, participant=student_participant)
             if comment.check_result:
                 student_attendance.check_result = comment.check_result
                 student_attendance.when_checked = timezone.now()
@@ -57,9 +59,10 @@ def comment_add(request):
                 student_attendance.score = comment.score
             student_attendance.save()
 
-        lesson_page = LmsPage.page_for_lesson(comment_model.flow_lesson.lesson)
-        redirect_url = lesson_page.get_absolute_url()
-        return redirect(f"{redirect_url}#c{comment_model.id}")
+        redirect_url = request.session.get('comment_return_page')
+        if not redirect_url:
+            redirect_url = reverse('lesson-view', kwargs={"participant_id": participant.id})
+        return redirect(f"{redirect_url}#comment{comment_model.id}")
     context = {
         'source': requested_parent,
         'form': form,
@@ -68,10 +71,10 @@ def comment_add(request):
 
 
 # @by_student_only
-def attendance_completed(request, student_lesson_id):
+def attendance_completed(request, participant_lesson_id):
     """Mark attandance as completed. Called by AJAX request from cms_plogins.LessonCompleteCMSPlugin"""
     current_user = request.user
-    attendance = StudentLesson.objects.get(pk=student_lesson_id)
+    attendance = ParticipantLesson.objects.get(pk=participant_lesson_id)
     value = request.GET['value']
     assert attendance.participant.user == current_user, \
         f"Attendance participant {attendance.participant.pk} is not current user"
@@ -99,24 +102,31 @@ def student_kabinet(request):
 
 
 #@by_student_or_teacher
-def student_flow(request, student_id):
-    student = Student.objects.get(id=student_id)
+def flow_view(request, participant_id):
+    participant = Participant.objects.get(id=participant_id)
+    flow = participant.flow
     context = {
-        "student": student
+        "flow": flow,
+        "course": flow.course,
+        "student": participant.student,
+        "participant": participant,
     }
-    return render(request, "lms_cms/student_flow.html", context)
+    return render(request, "lms_cms/flow.html", context)
 
 
 @login_required
-def student_lesson(request, student_lesson_id):
-    student_lesson = StudentLesson.objects.get(id=student_lesson_id)
+def lesson_view(request, participant_lesson_id):
+    participant_lesson = ParticipantLesson.objects.get(id=participant_lesson_id)
+    flow_lesson = participant_lesson.flow_lesson
+    flow = flow_lesson.flow
+    participant = participant_lesson.participant
     context = {
-        "student_lesson": student_lesson,
-        "flow_lesson": student_lesson.flow_lesson,
-        "lesson": student_lesson.flow_lesson.lesson,
-        "flow": student_lesson.flow_lesson.flow,
-        "course": student_lesson.flow_lesson.flow.course,
-        "student": student_lesson.student,
-        "participant": student_lesson.student,
+        "participant_lesson": participant_lesson,
+        "flow_lesson": flow_lesson,
+        "lesson": flow_lesson.lesson,
+        "flow": flow,
+        "course": flow.course,
+        "student": participant.student,
+        "participant": participant,
     }
-    return render(request, "lms_cms/student_lesson.html", context)
+    return render(request, "lms_cms/participant_lesson.html", context)
