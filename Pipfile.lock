@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "a5156b0a25ef440ef9f516e41102e9ce62d5671321bc91be2451f11f0f5715e5"
+            "sha256": "38ab4d1a9d0854c982e9ae0a22495ac3458ce309b326963a9571adc603e6bedf"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -218,10 +218,11 @@
         },
         "djangocms-file": {
             "hashes": [
-                "sha256:dd5051465d44fa9a3728bac7943c2efc1b806edb316a741b9dbc171a361f27bf"
+                "sha256:61f8df1ee136c0202fa65b9fe87024f3ceece66262ddd0cccfffbe979170ffdd",
+                "sha256:6918717355488c764941d56813362e7ab497f3a4cd73e71e2d4c0f09bff79687"
             ],
             "index": "pypi",
-            "version": "==2.4.0"
+            "version": "==3.0.0"
         },
         "djangocms-googlemap": {
             "hashes": [
