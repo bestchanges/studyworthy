@@ -8,7 +8,7 @@ from django.utils import timezone
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 
-from djangoapps.erp.models import ClientOrder, Person
+from djangoapps.erp.models import Order, Person
 from djangoapps.lms.models.lms_models import Participant, ParticipantLesson, Student
 from djangoapps.lms_cms.forms import create_comment_form
 from djangoapps.lms_cms.models.lmscms_models import Comment
@@ -91,7 +91,7 @@ def student_kabinet(request):
     student_in = Student.objects.filter(user=user).all()
     person = Person.objects.filter(user=user).first()
     if person and False:
-        client_orders = ClientOrder.objects.filter(client=person).exclude(state__in=ClientOrder.FINAL_STATES)
+        client_orders = Order.objects.filter(client=person).exclude(state__in=Order.FINAL_STATES)
     else:
         client_orders = []
     context = {

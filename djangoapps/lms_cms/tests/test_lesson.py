@@ -5,11 +5,13 @@ from django.test import TestCase
 from django.utils.timezone import now
 
 from djangoapps.lms.models.lms_models import Course, Unit, Lesson, Student, Flow, FlowLesson, ParticipantLesson
+from djangoapps.lms_cms import app_init
 from djangoapps.lms_cms.tests.utils import create_student_user
 
 
 class UnitTestCase(TestCase):
     def setUp(self) -> None:
+        app_init.init()
         course = Course.objects.create(title='Test course')
         unit_1 = Unit.objects.create(name='First unit', course=course)
         unit_2 = Unit.objects.create(name='Second unit', course=course)

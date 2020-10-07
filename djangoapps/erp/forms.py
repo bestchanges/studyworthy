@@ -1,6 +1,6 @@
 from django.forms import ModelForm
 
-from djangoapps.erp.models import ClientOrder
+from djangoapps.erp.models import Order
 from djangoapps.erp.models.erp import Client
 
 
@@ -12,5 +12,5 @@ class ClientOrderForm(ModelForm):
             self.fields[key].required = True
 
     class Meta:
-        model = ClientOrder
+        model = Order
         fields = ['client_name', 'client_email', 'client_phone', 'comment']

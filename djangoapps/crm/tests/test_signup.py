@@ -3,21 +3,20 @@ import unittest
 
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
-from django.contrib.sites.models import Site
 from django.core import mail
+from django.core.management import call_command
 from django.test import TestCase
-from django.urls import reverse
 from djmoney.money import Money
 
 from djangoapps.crm.forms import SingleCourseProductOrderForm
 from djangoapps.crm.models import CourseProduct
-from djangoapps.erp.models import ClientOrder
-from djangoapps.lms.models.lms_models import Course, Flow, Student
-from djangoapps.lms_cms.tests.utils import create_student_user
+from djangoapps.erp.models import Order
+from djangoapps.lms.models.lms_models import Course
 
 
 class SignupFormModelTestCase(TestCase):
     def setUp(self):
+        call_command('init')
         self.course = Course.objects.create(title='test course')
 
     def test_order_form_required(self):
@@ -76,20 +75,21 @@ class SignupFormModelTestCase(TestCase):
 
         client_order = form.create_order()
         self.assertTrue(client_order.document_number)
-        # cleint shall be created
-        self.assertTrue(client_order.client)
-        self.assertEqual(email, client_order.client.email)
-        self.assertEqual(name, client_order.client.full_name)
-        self.assertEqual('Some', client_order.client.first_name)
-        self.assertEqual('Student', client_order.client.last_name)
+        # buyer shall be created
+        self.assertTrue(client_order.buyer.person)
+        person = client_order.buyer.person
+        self.assertEqual(email, person.email)
+        self.assertEqual(name, person.full_name)
+        self.assertEqual('Some', person.first_name)
+        self.assertEqual('Student', person.last_name)
 
         # setting the state trigger signals for processing
-        client_order.set_state(ClientOrder.State.NEW)
+        client_order.set_state(Order.State.NEW)
         # Free course shall be fulfilled on creation so let's check it
-        self.assertEqual(ClientOrder.State.COMPLETED, client_order.state)
+        self.assertEqual(Order.State.COMPLETED, client_order.state)
 
         # User shall be created. Signup email shall be sent.
-        user = client_order.client.user
+        user = person.user
         self.assertTrue(user, "User shall be created")
         self.assertEqual('Some', user.first_name)
         self.assertEqual('Student', user.last_name)

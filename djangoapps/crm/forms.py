@@ -1,10 +1,10 @@
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 from django import forms
-from django.contrib.auth.models import User
 from django.urls import reverse
 
-from djangoapps.erp.models import ClientOrder, Person, Product
+from djangoapps.crm.models import my_organization
+from djangoapps.erp.models import Order, Person, Product
 
 
 class SingleCourseProductOrderForm(forms.Form):
@@ -68,7 +68,7 @@ class SingleCourseProductOrderForm(forms.Form):
             person.save()
         return person
 
-    def create_order(self) -> ClientOrder:
+    def create_order(self) -> Order:
         """
         Create client user from form data. Also creates person model.
 
@@ -86,8 +86,9 @@ class SingleCourseProductOrderForm(forms.Form):
             f'Name: {name}' if name and name != person.full_name else None,
             self.cleaned_data.get('comment'),
         ]
-        client_order = ClientOrder.objects.create(
-            client=person,
+        client_order = Order.objects.create(
+            buyer=person,
+            seller=my_organization(),
             currency=product.price.currency,
             comment='\n'.join([item for item in comment_items if item])
         )
@@ -96,10 +97,10 @@ class SingleCourseProductOrderForm(forms.Form):
 
         if client_order.amount.amount == 0:
             # free product fulfill immediately
-            fulfill_on = ClientOrder.FulfillOn.CREATED
+            fulfill_on = Order.FulfillOn.CREATED
         else:
             # priced product fulfill after payment
-            fulfill_on = ClientOrder.FulfillOn.ORDER_PAYED_FULL
+            fulfill_on = Order.FulfillOn.ORDER_PAYED_FULL
         client_order.fulfill_on = fulfill_on
         client_order.product = product
         client_order.save()

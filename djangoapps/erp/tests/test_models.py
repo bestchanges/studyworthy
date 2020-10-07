@@ -4,8 +4,8 @@ from django.test import TestCase
 from django.utils import timezone
 from djmoney.money import Money
 
-from djangoapps.erp.models import Person, Product, ClientOrder, Invoice, \
-    PaymentIn
+from djangoapps.erp.models import Person, Product, Order, Invoice, \
+    Organization, Payment, Actor
 
 
 class TestModels(TestCase):
@@ -18,11 +18,11 @@ class TestModels(TestCase):
         self._delete_products()
 
     def test_document_number(self):
-        order = ClientOrder()
+        order = Order()
         order.save()
         self.assertEquals("CO-1", order.document_number)
 
-        order_2 = ClientOrder()
+        order_2 = Order()
         order_2.save()
         self.assertEquals("CO-2", order_2.document_number)
 
@@ -45,7 +45,7 @@ class TestModels(TestCase):
     def test_client_order(self):
         buyer = Person()
         buyer.save()
-        order = ClientOrder(client=buyer, currency='RUB')
+        order = Order(buyer=buyer, currency='RUB')
         order.save()
         order.add_item(self.product_1, 2)
         order.add_item(self.product_2, 1)
@@ -55,9 +55,9 @@ class TestModels(TestCase):
 
     def test_client_order_state_update(self):
         """Upon ivoice getting paid the order start processing """
-        buyer = Person()
-        buyer.save()
-        order = ClientOrder(client=buyer, currency='RUB')
+        buyer = Person.objects.create()
+        seller = Actor.objects.create()
+        order = Order(buyer=buyer, seller=seller, currency='RUB')
         order.save()
         order.add_item(self.product_1, 2)
         order.add_item(self.product_2, 1)
@@ -66,21 +66,23 @@ class TestModels(TestCase):
         self.assertEqual(order.amount, Money(35, 'RUB'))
 
     def test_payment_in(self):
-        buyer = Person()
-        buyer.save()
+        buyer = Person.objects.create()
+        seller = Actor.objects.create()
         amount = Money(10, 'RUB')
-        payment = PaymentIn(payer=buyer, amount=amount)
+        payment = Payment(sender=buyer, receiver=seller, amount=amount)
         payment.save()
 
         self.assertEqual(payment.amount, amount)
 
     def test_invoice_and_payment(self):
         """
-        1. Create ClientOrder -> Invoice -> PaymentIn
+        1. Create ClientOrder -> Invoice -> Payment
         2. When Payment is payed -> Invoice state shall be updated
         :return:
         """
-        order = ClientOrder()
+        buyer = Person.objects.create()
+        seller = Actor.objects.create()
+        order = Order(buyer=buyer, seller=seller, currency='RUB')
         order.save()
         order.add_item(self.product_1, 2)
         order.add_item(self.product_2, 1)
@@ -90,11 +92,11 @@ class TestModels(TestCase):
         invoice = order.create_invoice()
         invoice.save()
         self.assertEqual(order.amount, invoice.amount)
-        self.assertEqual(order, invoice.client_order)
+        self.assertEqual(order, invoice.order)
         self.assertIsNone(invoice.state)
 
         payment_in = invoice.create_payment()
-        payment_in.state = PaymentIn.State.WAITING
+        payment_in.state = Payment.State.WAITING
         payment_in.save()
         self.assertEqual(invoice.amount, payment_in.amount)
         # after create paymentIn the signal should update invoice state
@@ -110,7 +112,10 @@ class TestModels(TestCase):
         self.assertEqual(invoice.state, invoice.State.PAYED_FULLY)
 
     def test_invoice_partial_payment(self):
+        buyer = Person.objects.create()
+        seller = Actor.objects.create()
         invoice = Invoice(
+            seller=seller, buyer=buyer,
             amount=Money(25, 'RUB')
         )
         invoice.save()
@@ -120,7 +125,10 @@ class TestModels(TestCase):
         amount_1 = Money(18, 'RUB')
 
         amount_2 = Money(7, 'RUB')
-        payment_2 = PaymentIn(amount=amount_2, invoice=invoice)
+        payment_2 = Payment(
+            sender=buyer, receiver=seller,
+            amount=amount_2, invoice=invoice,
+        )
         payment_2.save()
 
         # waiting state doesn't change anything
@@ -129,18 +137,21 @@ class TestModels(TestCase):
         self.assertFalse(invoice.is_payed)
 
         # partly payed invoice
-        payment_2.set_state(PaymentIn.State.PROCESSED)
+        payment_2.set_state(Payment.State.PROCESSED)
         self.assertEqual(invoice.state, Invoice.State.PAYED_PARTLY)
         self.assertFalse(invoice.is_payed)
 
-        payment_1 = PaymentIn(amount=amount_1, invoice=invoice)
+        payment_1 = Payment(
+            sender=buyer, receiver=seller,
+            amount=amount_1, invoice=invoice
+        )
         payment_1.save()
         # newly created payment has not processed yet, so no state change
         self.assertEqual(invoice.state, invoice.State.PAYED_PARTLY)
         self.assertFalse(invoice.is_payed)
 
         # fully payed invoice
-        payment_1.set_state(PaymentIn.State.PROCESSED)
+        payment_1.set_state(Payment.State.PROCESSED)
         self.assertEqual(invoice.state, invoice.State.PAYED_FULLY)
         self.assertTrue(invoice.is_payed)
 

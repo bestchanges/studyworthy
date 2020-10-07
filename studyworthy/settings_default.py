@@ -269,3 +269,7 @@ else:
     EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS')
     EMAIL_USE_SSL = os.getenv('EMAIL_USE_SSL')
     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+
+MY_ORGANIZATION_CODE = 'itcat'
+MY_ORGANIZATION_NAME = 'Online Educational Platform "StudyWorthy"'

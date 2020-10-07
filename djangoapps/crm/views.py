@@ -4,7 +4,7 @@ from django.urls import reverse
 from djangoapps.crm.forms import SingleCourseProductOrderForm
 from djangoapps.crm.logic import payments
 from djangoapps.crm.models import CourseProduct
-from djangoapps.erp.models import ClientOrder, Invoice, PaymentIn, Person
+from djangoapps.erp.models import Order, Invoice, Payment
 
 
 def index(request):
@@ -19,7 +19,7 @@ def order_single_product(request):
     if request.method == "POST":
         form = SingleCourseProductOrderForm(request.POST)
         if form.is_valid():
-            client_order: ClientOrder = form.create_order()
+            client_order: Order = form.create_order()
             client_order.set_state(Invoice.State.NEW)
 
             if client_order.amount.amount:
@@ -50,11 +50,11 @@ def invoice(request, uuid):
 
 def invoice_payment(request, uuid):
     invoice = Invoice.objects.get(uuid=uuid)
-    paymentin = invoice.create_payment()
-    paymentin.set_state(PaymentIn.State.NEW)
+    payment = invoice.create_payment()
+    payment.set_state(Payment.State.NEW)
     payment_url = payments.pay_by_yandex_kassa(
-        paymentin=paymentin,
-        seccess_url=request.build_absolute_uri(reverse('crm:payment_status', args=[paymentin.uuid])),
+        payment=payment,
+        seccess_url=request.build_absolute_uri(reverse('crm:payment_status', args=[payment.uuid])),
     )
     return redirect(payment_url)
 
@@ -67,7 +67,7 @@ def payment_status(request, uuid):
     :param uuid:
     :return:
     """
-    paymentin = PaymentIn.objects.get(uuid=uuid)
+    paymentin = Payment.objects.get(uuid=uuid)
     payments.update_payment_status(paymentin)
     context = {
         "paymentin": paymentin,

@@ -1,17 +1,27 @@
 import logging
 
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
 
 from djangoapps.erp.enums import IntegerChoices
-from djangoapps.erp.models import Product, ClientOrder
+from djangoapps.erp.models import Product, Order, Person, VirtualProduct, Organization, Payment
 from djangoapps.lms.models.lms_models import Course, Student
 from djangoapps.lms_cms.logic.users import create_lms_user
 
 logger = logging.getLogger(__name__)
 
+_MY_ORG = None
 
-class CourseProduct(Product):
+def my_organization():
+    """Return my organization. Do not forget to initialize organization"""
+    global _MY_ORG
+    if not _MY_ORG:
+        _MY_ORG = Organization.objects.get(code=settings.MY_ORGANIZATION_CODE)
+    return _MY_ORG
+
+
+class CourseProduct(VirtualProduct):
     class Level(IntegerChoices):
         BEGINNER = 1
         EASY = 2
@@ -35,11 +45,10 @@ class CourseProduct(Product):
     def __str__(self):
         return f'{self.name} ({self.price})'
 
-    def enroll_from_client_order(self, client_order: ClientOrder):
-        logger.info(f'Enrolling from {client_order}')
+    def enroll_from_client_order(self, order: Order):
+        logger.info(f'Enrolling from {order}')
 
-        # create client
-        person = client_order.client
+        person = order.buyer.person
         if not person.user:
             # try to match by email
             user = User.objects.filter(username__iexact=person.email).first()
@@ -67,3 +76,47 @@ class CourseProduct(Product):
                 role=Student.ROLE_STUDENT,
             )
             logger.info(f'Created student {student}')
+
+
+# class ClientOrder(Order):
+#     @property
+#     def client(self) -> Person:
+#         if self.buyer:
+#             return self.buyer.person
+#
+#     @client.setter
+#     def client(self, value: Person):
+#         self.buyer = value
+#
+#     class Meta:
+#         proxy = True
+#
+#     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+#         if not self.seller:
+#             self.seller = my_organization()
+#         super().save(force_insert, force_update, using, update_fields)
+#
+#
+# class PaymentIn(Payment):
+#
+#     def __init__(self, *args, **kwargs):
+#         if 'payer' in kwargs:
+#             kwargs['sender'] = kwargs['payer']
+#             del kwargs['payer']
+#         # if not 'receiver' in kwargs or not kwargs['receiver']:
+#         #     kwargs['receiver'] = Organization.objects.get(code=settings.ERP_MY_ORGANIZATION_CODE)
+#         super().__init__(*args, **kwargs)
+#
+#     class Meta:
+#         proxy = True
+#
+#     @property
+#     def payer(self):
+#         return self.sender.person
+#
+#
+#     @payer.setter
+#     def payer(self, value):
+#         self.sender = value
+
+
