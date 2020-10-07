@@ -271,5 +271,5 @@ else:
     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 
-MY_ORGANIZATION_CODE = 'itcat'
+MY_ORGANIZATION_CODE = 'studyworthy'
 MY_ORGANIZATION_NAME = 'Online Educational Platform "StudyWorthy"'

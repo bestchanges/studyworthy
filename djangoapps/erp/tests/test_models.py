@@ -5,7 +5,7 @@ from django.utils import timezone
 from djmoney.money import Money
 
 from djangoapps.erp.models import Person, Product, Order, Invoice, \
-    Organization, Payment, Actor
+    Payment, Actor
 
 
 class TestModels(TestCase):
@@ -65,14 +65,26 @@ class TestModels(TestCase):
         self.assertEqual(order.items.count(), 2)
         self.assertEqual(order.amount, Money(35, 'RUB'))
 
-    def test_payment_in(self):
+    def test_account_payments(self):
         buyer = Person.objects.create()
         seller = Actor.objects.create()
-        amount = Money(10, 'RUB')
-        payment = Payment(sender=buyer, receiver=seller, amount=amount)
+        currency = 'RUB'
+        buyer_account = buyer.create_account(currency)
+        seller_account = seller.create_account(currency)
+
+        zero_amount = Money(0, currency)
+        self.assertEqual(zero_amount, buyer_account.balance())
+        self.assertEqual(zero_amount, seller_account.balance())
+
+        amount = Money(10, currency)
+        payment = Payment(sender_account=buyer_account, receiver_account=seller_account, amount=amount)
         payment.save()
 
         self.assertEqual(payment.amount, amount)
+
+        self.assertEqual(-amount, buyer_account.balance())
+        self.assertEqual(amount, seller_account.balance())
+
 
     def test_invoice_and_payment(self):
         """
@@ -80,9 +92,12 @@ class TestModels(TestCase):
         2. When Payment is payed -> Invoice state shall be updated
         :return:
         """
+        currency = 'RUB'
         buyer = Person.objects.create()
         seller = Actor.objects.create()
-        order = Order(buyer=buyer, seller=seller, currency='RUB')
+        buyer_account = buyer.create_account(currency)
+        seller_account = seller.create_account(currency)
+        order = Order(buyer=buyer, seller=seller, currency=currency)
         order.save()
         order.add_item(self.product_1, 2)
         order.add_item(self.product_2, 1)
@@ -112,21 +127,24 @@ class TestModels(TestCase):
         self.assertEqual(invoice.state, invoice.State.PAYED_FULLY)
 
     def test_invoice_partial_payment(self):
+        currency = 'RUB'
         buyer = Person.objects.create()
         seller = Actor.objects.create()
+        buyer_account = buyer.create_account(currency)
+        seller_account = seller.create_account(currency)
         invoice = Invoice(
             seller=seller, buyer=buyer,
-            amount=Money(25, 'RUB')
+            amount=Money(25, currency)
         )
         invoice.save()
         self.assertIsNone(invoice.state)
         self.assertFalse(invoice.is_payed)
 
-        amount_1 = Money(18, 'RUB')
+        amount_1 = Money(18, currency)
 
-        amount_2 = Money(7, 'RUB')
+        amount_2 = Money(7, currency)
         payment_2 = Payment(
-            sender=buyer, receiver=seller,
+            sender_account=buyer_account, receiver_account=seller_account,
             amount=amount_2, invoice=invoice,
         )
         payment_2.save()
@@ -142,7 +160,7 @@ class TestModels(TestCase):
         self.assertFalse(invoice.is_payed)
 
         payment_1 = Payment(
-            sender=buyer, receiver=seller,
+            sender_account=buyer_account, receiver_account=seller_account,
             amount=amount_1, invoice=invoice
         )
         payment_1.save()
@@ -175,4 +193,7 @@ class TestModels(TestCase):
     def _delete_products(self):
         Product.objects.filter(code__in=['product-1', 'product-2']).delete()
 
-
+    def test_actor(self):
+        name = 'Some actor'
+        actor = Actor.objects.create(name=name)
+        self.assertEqual(name, str(actor))

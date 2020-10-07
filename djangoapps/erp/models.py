@@ -20,7 +20,7 @@ class ByCodeManager(models.Manager):
 
 
 class CodeNaturalKeyAbstractModel(models.Model):
-    code = models.CharField(max_length=200, unique=True)
+    code = models.SlugField(max_length=100, default=uuid.uuid4, unique=True)
 
     objects = ByCodeManager()
 
@@ -116,11 +116,18 @@ class Document(CreatedUpdatedMixin, StatefulMixin):
 
 class Actor(CodeNaturalKeyAbstractModel):
     """An actor in economical relations."""
-    code = models.SlugField(max_length=100, default=uuid.uuid4, unique=True)
     name = models.CharField(max_length=200, blank=True)
 
     def __str__(self):
         return f'{self.name}'
+
+    def create_account(self, currency, account_name='default') -> 'Account':
+        assert currency
+        return Account.objects.create(
+            name=account_name,
+            owner=self,
+            currency=currency
+        )
 
 
 class Organization(Actor):
@@ -278,7 +285,9 @@ class Invoice(Document):
         CANCELLED = 'CANCELLED', 'Отменен'
 
     seller = models.ForeignKey(Actor, on_delete=models.CASCADE, null=True, blank=True, related_name='+')
+    seller_account = models.ForeignKey('Account', on_delete=models.CASCADE, null=True, blank=True, related_name='+')
     buyer = models.ForeignKey(Actor, on_delete=models.CASCADE, null=True, blank=True, related_name='+')
+    buyer_account = models.ForeignKey('Account', on_delete=models.CASCADE, null=True, blank=True, related_name='+')
     state = models.CharField(max_length=200, choices=State.choices, null=True, blank=True)
 
     order = models.ForeignKey(Order, on_delete=models.PROTECT, null=True, blank=True)
@@ -300,9 +309,23 @@ class Invoice(Document):
         return Payment(
             invoice=self,
             amount=self.amount,
-            sender=self.buyer,
-            receiver=self.seller,
+            sender_account=self.buyer_account,
+            receiver_account=self.seller_account,
         )
+
+
+class Account(CodeNaturalKeyAbstractModel):
+    name = models.CharField(max_length=100, null=True, blank=True)
+    owner = models.ForeignKey(Actor, on_delete=models.CASCADE)
+    currency = CurrencyField()
+
+    def __str__(self):
+        return f'{self.name} ({self.currency}) of {self.owner}'
+
+    def balance(self):
+        return reduce(lambda x, item: x + item.amount, self.payments_in.all(), Money(0, self.currency)) \
+               - reduce(lambda x, item: x + item.amount, self.payments_out.all(), Money(0, self.currency))
+
 
 
 class Payment(Document):
@@ -317,8 +340,10 @@ class Payment(Document):
 
     state = models.CharField(max_length=200, choices=State.choices, null=True, blank=True)
 
-    sender = models.ForeignKey(Actor, on_delete=models.PROTECT, related_name='+')
-    receiver = models.ForeignKey(Actor, on_delete=models.PROTECT, related_name='+')
+    # sender = models.ForeignKey(Actor, on_delete=models.PROTECT, related_name='+')
+    sender_account = models.ForeignKey(Account, null=True, on_delete=models.PROTECT, related_name='payments_out')
+    # receiver = models.ForeignKey(Actor, on_delete=models.PROTECT, related_name='+')
+    receiver_account = models.ForeignKey(Account, null=True, on_delete=models.PROTECT, related_name='payments_in')
     amount = MoneyField(max_digits=14, decimal_places=2)
     description = models.TextField(max_length=2000, null=True, blank=True)
 
@@ -333,6 +358,20 @@ class Payment(Document):
 
     def __str__(self):
         return f'#{self.id} {self.amount} ({self.state})'
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        currency = self.amount.currency.code
+        if self.sender_account:
+            account = self.sender_account
+            account_currency = account.currency
+            if account_currency != currency:
+                raise ValueError(f'Cannot move {currency} from {account_currency} account {account.code}')
+        if self.receiver_account:
+            account = self.receiver_account
+            account_currency = account.currency
+            if account_currency != currency:
+                raise ValueError(f'Cannot move {currency} to {account_currency} account {account.code}')
+        super().save(force_insert, force_update, using, update_fields)
 
     def is_completed(self):
         return self.state == self.State.PROCESSED
