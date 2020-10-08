@@ -7,8 +7,7 @@ class CommandsTestCase(TestCase):
     def test_init(self):
         out = StringIO()
         call_command('init', stdout=out)
-        self.assertIn('Init crm...', out.getvalue())
-        self.assertIn('Init lms_cms...', out.getvalue())
+        self.assertIn('Init djangoapps.yandex_kassa...', out.getvalue())
         self.assertIn('Init done', out.getvalue())
 
     # TODO: test periodic

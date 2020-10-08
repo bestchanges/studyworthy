@@ -121,13 +121,27 @@ class Actor(CodeNaturalKeyAbstractModel):
     def __str__(self):
         return f'{self.name}'
 
-    def create_account(self, currency, account_name='default') -> 'Account':
+    def create_account(self, currency, account_name='default', description=None) -> 'Account':
         assert currency
         return Account.objects.create(
             name=account_name,
             owner=self,
-            currency=currency
+            currency=currency,
+            description=description,
         )
+
+    def get_account(self, currency, account_name='default') -> 'Account':
+        return self.accounts.filter(
+            name=account_name,
+            currency=currency
+        ).first()
+
+    def get_or_create_account(self, currency, account_name='default', description=None) -> 'Account':
+        account = self.get_account(currency, account_name)
+        if account:
+            return account
+        else:
+            return self.create_account(currency, account_name, description)
 
 
 class Organization(Actor):
@@ -149,7 +163,7 @@ class Person(CreatedUpdatedMixin, Actor):
     timezone = models.CharField(max_length=100, choices=[(tz, tz) for tz in pytz.all_timezones],
                                 default=settings.TIME_ZONE)
     birth_date = models.DateField(null=True, blank=True, verbose_name=_('Birth date'))
-    user = models.OneToOneField(User, null=True, blank=True, on_delete=models.SET_NULL)
+    user = models.OneToOneField(User, null=True, blank=True, on_delete=models.SET_NULL, related_name='person')
     is_admin = models.BooleanField(default=False)
     can_teach = models.BooleanField(default=False)
 
@@ -316,8 +330,9 @@ class Invoice(Document):
 
 class Account(CodeNaturalKeyAbstractModel):
     name = models.CharField(max_length=100, null=True, blank=True)
-    owner = models.ForeignKey(Actor, on_delete=models.CASCADE)
+    owner = models.ForeignKey(Actor, on_delete=models.CASCADE, related_name='accounts')
     currency = CurrencyField()
+    description = models.CharField(max_length=200, null=True, blank=True)
 
     def __str__(self):
         return f'{self.name} ({self.currency}) of {self.owner}'
@@ -340,10 +355,8 @@ class Payment(Document):
 
     state = models.CharField(max_length=200, choices=State.choices, null=True, blank=True)
 
-    # sender = models.ForeignKey(Actor, on_delete=models.PROTECT, related_name='+')
-    sender_account = models.ForeignKey(Account, null=True, on_delete=models.PROTECT, related_name='payments_out')
-    # receiver = models.ForeignKey(Actor, on_delete=models.PROTECT, related_name='+')
-    receiver_account = models.ForeignKey(Account, null=True, on_delete=models.PROTECT, related_name='payments_in')
+    sender_account = models.ForeignKey(Account, on_delete=models.PROTECT, related_name='payments_out')
+    receiver_account = models.ForeignKey(Account, on_delete=models.PROTECT, related_name='payments_in')
     amount = MoneyField(max_digits=14, decimal_places=2)
     description = models.TextField(max_length=2000, null=True, blank=True)
 

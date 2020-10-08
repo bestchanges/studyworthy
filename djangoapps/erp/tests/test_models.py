@@ -95,8 +95,6 @@ class TestModels(TestCase):
         currency = 'RUB'
         buyer = Person.objects.create()
         seller = Actor.objects.create()
-        buyer_account = buyer.create_account(currency)
-        seller_account = seller.create_account(currency)
         order = Order(buyer=buyer, seller=seller, currency=currency)
         order.save()
         order.add_item(self.product_1, 2)
@@ -105,6 +103,9 @@ class TestModels(TestCase):
         self.assertEqual(order.amount, amount)
 
         invoice = order.create_invoice()
+
+        invoice.buyer_account = buyer.create_account(currency)
+        invoice.seller_account = seller.create_account(currency)
         invoice.save()
         self.assertEqual(order.amount, invoice.amount)
         self.assertEqual(order, invoice.order)

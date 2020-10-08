@@ -25,10 +25,10 @@ class CourseProductCMSPluginConfig(CMSPlugin):
 
 
 # TODO: fix class name typo
-class ManyCourseProductPageExtensionCMSPluginConfigg(CMSPlugin):
+class ManyCourseProductPageExtensionCMSPluginConfig(CMSPlugin):
     course_page_extensions = models.ManyToManyField(CourseProductPageExtension, blank=True)
 
-    def copy_relations(self, old_instance: 'ManyCourseProductPageExtensionCMSPluginConfigg'):
+    def copy_relations(self, old_instance: 'ManyCourseProductPageExtensionCMSPluginConfig'):
         for course_page_extension in old_instance.course_page_extensions.all():
             self.course_page_extensions.add(course_page_extension)
         super().copy_relations(old_instance)

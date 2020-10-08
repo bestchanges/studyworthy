@@ -95,7 +95,7 @@ INSTALLED_APPS = [
     'djangoapps.lms',
     'djangoapps.lms_cms',
     'djangoapps.crm',
-    'djangoapps.campus',
+    'djangoapps.yandex_kassa',
     'djangoapps.siteroot',
 ]
 

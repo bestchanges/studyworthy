@@ -1,0 +1,1 @@
+default_app_config = 'djangoapps.yandex_kassa.apps.MyAppConfig'

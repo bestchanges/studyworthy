@@ -1,6 +1,5 @@
 import logging
 
-import cms
 from cms.api import add_plugin, create_page
 from cms.cms_wizards import CMSPageWizard
 from cms.models import Page

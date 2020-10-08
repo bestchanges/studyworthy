@@ -23,7 +23,7 @@ def create_payment(amount, currency, description, return_url, auto_capture: bool
     assert currency
     assert description
     assert return_url
-    idempotence_key = str(uuid.uuid4())
+    idempotence_key = _gen_idempotence_key()
     yandex_payment = yandex_checkout.Payment.create({
         "amount": {
             "value": amount,
@@ -41,6 +41,10 @@ def create_payment(amount, currency, description, return_url, auto_capture: bool
     }, idempotence_key)
 
     return yandex_payment
+
+
+def _gen_idempotence_key():
+    return str(uuid.uuid4())
 
 
 def list_recent_payments(duration: datetime.timedelta = None):

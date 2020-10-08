@@ -6,7 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 from djangoapps.crm.forms import SingleCourseProductOrderForm
 from djangoapps.erp.models import Person
 from djangoapps.siteroot.models import CourseProductCMSPluginConfig, CourseCMSPluginConfig, \
-    CourseProductPageExtensionCMSPluginConfig, ManyCourseProductPageExtensionCMSPluginConfigg, \
+    CourseProductPageExtensionCMSPluginConfig, ManyCourseProductPageExtensionCMSPluginConfig, \
     CourseProductPageExtension
 
 
@@ -30,13 +30,13 @@ class CourseCard(CMSPluginBase):
 @plugin_pool.register_plugin
 class CoursesCatalogCard(CMSPluginBase):
 
-    model = ManyCourseProductPageExtensionCMSPluginConfigg
+    model = ManyCourseProductPageExtensionCMSPluginConfig
     name = _('Course Catalog')
     render_template = "siteroot/cms_plugins/course_catalog.html"
     module = _(' LMS Control')
     cache = False
 
-    def render(self, context, instance: ManyCourseProductPageExtensionCMSPluginConfigg, placeholder):
+    def render(self, context, instance: ManyCourseProductPageExtensionCMSPluginConfig, placeholder):
         context = super().render(context, instance, placeholder)
 
         course_page_extensions = instance.course_page_extensions

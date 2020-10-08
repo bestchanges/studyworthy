@@ -1,6 +1,7 @@
 from cms.api import publish_page
 from cms.models import Page
 from django.conf import settings
+from django.core.management import call_command
 from django.test import TestCase
 
 from djangoapps.lms_cms.utils import create_home_page
@@ -9,6 +10,9 @@ from djangoapps.lms_cms.tests.utils import create_admin_user
 
 class PageTestCase(TestCase):
     def setUp(self):
+        # call_command('init')
+        import djangoapps.lms_cms.app_init
+        djangoapps.lms_cms.app_init.init()
         self.user_admin = create_admin_user()
 
     def test_create_home_page(self):

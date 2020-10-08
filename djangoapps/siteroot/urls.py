@@ -9,10 +9,9 @@ admin.autodiscover()
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('lms/', include('djangoapps.lms_cms.urls')),
-    # path('campus/', include('djangoapps.campus.urls')),
     path('crm/', include('djangoapps.crm.urls', namespace='crm')),
     path('accounts/', include('django.contrib.auth.urls')),
-    # path('courses/', views.index, name='index'),
+    path('payments/yk/', include('djangoapps.yandex_kassa.urls', namespace='yandex_kassa')),
     url(r'^', include('cms.urls')),
 ]
 

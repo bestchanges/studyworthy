@@ -1,6 +1,7 @@
 import re
 import unittest
 
+from django.apps import apps
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.core import mail
@@ -16,7 +17,8 @@ from djangoapps.lms.models.lms_models import Course
 
 class SignupFormModelTestCase(TestCase):
     def setUp(self):
-        call_command('init')
+        import djangoapps.lms_cms.app_init
+        djangoapps.lms_cms.app_init.init()
         self.course = Course.objects.create(title='test course')
 
     def test_order_form_required(self):
@@ -55,6 +57,7 @@ class SignupFormModelTestCase(TestCase):
         Email + password should authenticate this user.
         Enrollment to course email notification should also be sent.
         """
+        apps_configs = apps.get_app_configs()
         product = CourseProduct.objects.create(
             code='test-prod',
             price=Money(0),

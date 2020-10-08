@@ -7,3 +7,7 @@ class LmsCmsConfig(AppConfig):
 
     def ready(self):
         import djangoapps.lms_cms.signal_handlers  # noqa
+
+    def app_init(self):
+        from . import app_init
+        app_init.init()
