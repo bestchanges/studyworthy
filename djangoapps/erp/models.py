@@ -14,13 +14,21 @@ from djangoapps.erp.enums import TextChoices
 from djangoapps.erp.signals import state_changed
 
 
+class OrderingMixin(models.Model):
+    ordering = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ['ordering']
+        abstract = True
+
+
 class ByCodeManager(models.Manager):
     def get_by_natural_key(self, code):
         return self.get(code=code)
 
 
 class CodeNaturalKeyAbstractModel(models.Model):
-    code = models.SlugField(max_length=100, default=uuid.uuid4, unique=True)
+    code = models.SlugField(max_length=200, default=uuid.uuid4, unique=True, verbose_name=_('Code'))
 
     objects = ByCodeManager()
 
@@ -277,15 +285,20 @@ class Order(Document):
         self.set_state(states.PROCESSING)
 
 
-class OrderItem(models.Model):
+class OrderItem(OrderingMixin, models.Model):
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
     price = MoneyField(max_digits=14, decimal_places=2)
-    quantity = models.DecimalField(default=1, max_digits=14, decimal_places=2)
+    quantity = models.DecimalField(default=1, max_digits=14, decimal_places=0)
 
     @property
     def sum(self):
         return self.price * self.quantity
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        if not self.ordering:
+            self.ordering = self.__class__.objects.filter(order=self.order).count() + 1
+        super().save(force_insert, force_update, using, update_fields)
 
 
 class Invoice(Document):

@@ -1,17 +1,8 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse
 
-from djangoapps.crm.forms import SingleCourseProductOrderForm
-from djangoapps.crm.models import CourseProduct
+from djangoapps.crm.forms import SingleCourseProductOrderForm, OrderConfirmationForm
 from djangoapps.erp.models import Order, Invoice, Payment
-
-
-def index(request):
-    courses = CourseProduct.objects.filter(state=CourseProduct.State.ACTIVE)
-    context = {
-        'courses': courses,
-    }
-    return render(request, 'index.html', context)
 
 
 def order_single_product(request):
@@ -22,11 +13,10 @@ def order_single_product(request):
             client_order.set_state(Invoice.State.NEW)
 
             if client_order.amount.amount:
-                invoice = client_order.create_invoice()
-                invoice.set_state(Invoice.State.NEW)
-                return redirect(reverse('crm:invoice_payment', args=[invoice.uuid]))
+                return redirect(reverse('crm:order-overview', args=[client_order.uuid]))
             else:
-                return redirect(reverse('crm:order_accepted'))
+                # TODO: write form success_message from CourseProductCMSPluginConfig
+                return redirect(reverse('order-accepted', args=[client_order.uuid]))
     else:
         form = SingleCourseProductOrderForm()
     context = {
@@ -35,7 +25,44 @@ def order_single_product(request):
     return render(request, 'crm/order_form.html', context)
 
 
-def order_accepted(request):
+def order_accepted(request, order_uuid):
+    return render(request, 'crm/order_accepted.html', {})
+
+
+def order_overview(request, order_uuid):
+    order = Order.objects.get(uuid=order_uuid)
+    if request.method == "POST":
+        form = OrderConfirmationForm(order=order, data=request.POST)
+        if form.is_valid():
+            gateway = form.get_gateway()
+
+            invoice = form.create_invoice()
+            invoice.set_state(Invoice.State.NEW)
+            invoice.save()
+
+            redirect_url = gateway.pay_invoice(invoice)
+            return redirect(redirect_url)
+    else:
+        form = OrderConfirmationForm(order=order)
+    context = {
+        'order': order,
+        'form': form,
+    }
+    return render(request, 'crm/order_overview.html', context)
+
+
+def order_pay(request, order_uuid):
+    order = Order.objects.get(uuid=order_uuid)
+    invoice = order.create_invoice()
+    invoice.set_state(Invoice.State.NEW)
+    context = {
+        'order': order,
+        'invoice': invoice,
+    }
+    return render(request, 'crm/order_overview.html', context)
+
+
+def order_payment_view(request):
     return render(request, 'crm/order_accepted.html', {})
 
 
@@ -45,24 +72,3 @@ def invoice(request, uuid):
         'invoice': invoice,
     }
     return render(request, 'crm/invoice_payment.html', context)
-
-
-def invoice_payment(request, uuid):
-    raise NotImplemented()
-
-
-def payment_status(request, uuid):
-    """
-    Check payment status and display it to user.
-
-    :param request:
-    :param uuid:
-    :return:
-    """
-    raise NotImplemented()
-    paymentin = Payment.objects.get(uuid=uuid)
-    payments.update_payment_status(paymentin)
-    context = {
-        "paymentin": paymentin,
-    }
-    return render(request, 'crm/payment_status.html', context)

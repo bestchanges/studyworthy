@@ -11,8 +11,10 @@ from djangoapps.lms_cms.utils import get_placeholder
 def create_home_page():
     page = create_page(
         title='Home',
+        slug='',
         template=settings.CMS_TEMPLATES[0][0],
         language=settings.LANGUAGE_CODE,
+        published = True,
     )
     placeholder = get_placeholder(page)
     plugin_data = {
@@ -20,7 +22,6 @@ def create_home_page():
     }
     add_plugin(placeholder=placeholder, plugin_type='TextPlugin', language=settings.LANGUAGE_CODE, **plugin_data)
     add_plugin(placeholder=placeholder, plugin_type='CoursesCatalogCard', language=settings.LANGUAGE_CODE)
-    publish_page(page)
 
 
 def publish_page(page: Page, by='admin'):
@@ -31,4 +32,6 @@ def publish_page(page: Page, by='admin'):
 
 
 def init():
-    create_home_page()
+    #
+    # create_home_page()
+    pass

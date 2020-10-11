@@ -4,6 +4,7 @@ from django.test import TestCase
 
 
 class CommandsTestCase(TestCase):
+
     def test_init(self):
         out = StringIO()
         call_command('init', stdout=out)
@@ -11,3 +12,8 @@ class CommandsTestCase(TestCase):
         self.assertIn('Init done', out.getvalue())
 
     # TODO: test periodic
+
+    def test_sampledata(self):
+        out = StringIO()
+        call_command('sampledata', stdout=out)
+        self.assertIn('Sample data created', out.getvalue())

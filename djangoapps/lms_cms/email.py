@@ -1,7 +1,6 @@
 import logging
 
 from cms.utils import get_current_site
-from cms.utils.urlutils import urljoin
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
@@ -11,6 +10,7 @@ from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 
 from djangoapps.lms.models.lms_models import FlowLesson, Participant, ParticipantLesson
+from djangoapps.utils import build_full_url
 
 logger = logging.getLogger(__name__)
 
@@ -42,11 +42,7 @@ def send_notification_lesson_open(flow_lesson: FlowLesson):
 
 def send_registration_email(user: User, password):
     site: Site = Site.objects.get_current()
-    protocol = 'http' if settings.ENVIRONMENT == 'dev' else 'https'
-    login_url = "{protocol}://{url}".format(
-        url=urljoin(site.domain, reverse('login')),
-        protocol=protocol,
-    )
+    login_url = build_full_url(site=site, path=reverse('login'))
     context = {
         'user': user,
         'password': password,

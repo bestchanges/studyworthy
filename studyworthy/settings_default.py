@@ -40,6 +40,7 @@ if 'SENTRY_DSN' in os.environ:
     ignore_logger('django.security.DisallowedHost')
 
 ENVIRONMENT = os.getenv('ENVIRONMENT', 'dev')
+HTTP_PROTOCOL = 'http' if ENVIRONMENT == 'dev' else 'https'
 
 if ENVIRONMENT == 'dev':
     SECRET_KEY = os.getenv('SECRET_KEY', '(ok6j_&er=^gsxy8$zia4eqk+%0ucj8n4=s&6k$#jyrmgv(f3s')

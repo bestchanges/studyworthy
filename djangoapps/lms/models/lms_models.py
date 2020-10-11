@@ -1,7 +1,6 @@
 import uuid
 from collections import OrderedDict
 
-import cms.api
 from cms.models import PlaceholderField
 from django.contrib.auth.models import User
 from django.db import models
@@ -9,15 +8,13 @@ from django.utils import timezone
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 
-from djangoapps.erp.models import CodeNaturalKeyAbstractModel
+from djangoapps.erp.models import CodeNaturalKeyAbstractModel, OrderingMixin
 from djangoapps.lms.schedule import events_generator
 from djangoapps.lms.signals import lesson_available, lesson_unavailable, flow_started
 
 
 class Lesson(CodeNaturalKeyAbstractModel):
     title = models.CharField(max_length=250, default=_('Lesson name'), verbose_name=_('Title'))
-    code = models.CharField(
-        max_length=250, unique=True, default=uuid.uuid4, verbose_name=_('Code'))
     lesson_content = PlaceholderField('lesson_content', related_name='lesson_content')
     support_content = PlaceholderField('support_content', related_name='support_content')
     show_common_content = models.BooleanField(
@@ -61,7 +58,7 @@ class Unit(CodeNaturalKeyAbstractModel):
         return self.name
 
 
-class CourseLesson(models.Model):
+class CourseLesson(OrderingMixin, models.Model):
     """
     One element in Unit. Need for proper ordering.
 
@@ -70,15 +67,11 @@ class CourseLesson(models.Model):
     course = models.ForeignKey('Course', on_delete=models.CASCADE, related_name='course_lessons')
     unit = models.ForeignKey(Unit, blank=True, null=True, on_delete=models.CASCADE, related_name='course_lessons')
     lesson = models.ForeignKey(Lesson, on_delete=models.PROTECT, related_name='+')
-    ordering = models.PositiveIntegerField(default=0)
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         if not self.ordering:
             self.ordering = self.__class__.objects.filter(course=self.course).count() + 1
         super().save(force_insert, force_update, using, update_fields)
-
-    class Meta:
-        ordering = ['ordering']
 
 
 class Course(CodeNaturalKeyAbstractModel):
@@ -211,20 +204,16 @@ class Flow(models.Model):
         flow_started.send(sender=Flow, flow=self)
 
 
-class FlowLesson(models.Model):
+class FlowLesson(OrderingMixin, models.Model):
     flow = models.ForeignKey(Flow, on_delete=models.CASCADE, related_name='flow_lessons')
     # this is just for reference. All significant fields are copied from the CourseLesson
     course_lesson = models.ForeignKey(CourseLesson, null=True, on_delete=models.SET_NULL, related_name='+')
     unit = models.ForeignKey(Unit, null=True, on_delete=models.CASCADE, related_name='+')
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, related_name='flow_lessons')
-    ordering = models.PositiveIntegerField(default=0, help_text="Ordering number")
 
     is_opened = models.BooleanField(default=False)
     open_planned_at = models.DateTimeField(null=True, blank=True)
     opened_at = models.DateTimeField(null=True, blank=True)
-
-    class Meta:
-        ordering = ['ordering']
 
     def __str__(self):
         return f'{self.flow} {self.lesson}'

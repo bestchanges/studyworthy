@@ -22,9 +22,9 @@ class CourseProductPageExtensionCMSPluginConfig(CMSPlugin):
 
 class CourseProductCMSPluginConfig(CMSPlugin):
     course_product = models.ForeignKey(CourseProduct, null=True, on_delete=models.SET_NULL)
+    success_message = models.TextField(default='', blank=True)
 
 
-# TODO: fix class name typo
 class ManyCourseProductPageExtensionCMSPluginConfig(CMSPlugin):
     course_page_extensions = models.ManyToManyField(CourseProductPageExtension, blank=True)
 

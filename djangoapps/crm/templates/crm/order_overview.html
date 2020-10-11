@@ -1,0 +1,22 @@
+{% extends 'crm/base.html' %}
+{% load lms_custom_tags %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <h2>Ваш заказ</h2>
+    {% for item in order.items.all %}
+    <div class="row">
+        <div class="col-md-1">{{ item.ordering }}</div>
+        <div class="col-md-8">{{ item.product.name }}</div>
+        <div class="col-md-1">x{{ item.quantity }}</div>
+        <div class="col-md-2">{{ item.price }}</div>
+    </div>
+    {% endfor %}
+    <div class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-8 text-right">Итого:</div>
+        <div class="col-md-1"></div>
+        <div class="col-md-2">{{ order.amount }}</div>
+    </div>
+    {% crispy form %}
+{% endblock content %}

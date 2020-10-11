@@ -6,5 +6,5 @@ app_name = 'yandex_kassa'
 
 urlpatterns = [
     path('invoice/<uuid:invoice_uuid>/pay', views.invoice_payment, name='invoice_payment'),
-    path('invoice/<uuid:invoice_uuid>/update', views.update_payment_status, name='invoice_status'),
+    path('payment/<uuid:payment_uuid>/status', views.update_payment_status, name='payment_status'),
 ]

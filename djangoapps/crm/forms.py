@@ -3,8 +3,9 @@ from crispy_forms.layout import Submit
 from django import forms
 from django.urls import reverse
 
+from djangoapps.crm.logic.payments import list_gateways, get_gateway
 from djangoapps.crm.models import my_organization
-from djangoapps.erp.models import Order, Person, Product
+from djangoapps.erp.models import Order, Person, Product, Invoice
 
 
 class SingleCourseProductOrderForm(forms.Form):
@@ -106,3 +107,48 @@ class SingleCourseProductOrderForm(forms.Form):
         client_order.save()
 
         return client_order
+
+
+class OrderConfirmationForm(forms.Form):
+    # order_uuid = forms.UUIDField(required=True, widget=forms.HiddenInput)
+    gateway_code = forms.ChoiceField(required=True)
+
+    def __init__(
+            self,
+            order: Order,
+            *args,
+            **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # self.fields['order_uuid'].value = order.uuid
+        self.order = order
+        self.fields['gateway_code'].choices = [(gw.code, gw.name) for gw in list_gateways()]
+
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.form_style = 'inline'
+        self.helper.form_action = reverse('crm:order-overview', args=[order.uuid])
+        self.helper.add_input(Submit('submit', "Перейти к оплате"))
+        self.helper.help_text_inline = True
+        self.helper.html5_required = True
+
+    def get_gateway(self):
+        assert self.is_valid()
+        return get_gateway(self.cleaned_data['gateway_code'])
+
+    def get_order(self):
+        return self.order
+
+    def create_invoice(self) -> Invoice:
+        """
+        Create invoice from order
+
+        :return: Invoice which is NOT saved. state = None
+        """
+        assert self.is_valid()
+
+        order = self.get_order()
+        # TODO: security checks
+        invoice = order.create_invoice()
+        return invoice
+

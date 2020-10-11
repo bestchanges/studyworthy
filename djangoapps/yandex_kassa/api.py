@@ -18,12 +18,13 @@ def init():
         logger.warning('Yandex kassa not configured. Set YANDEX_KASSA_API_KEY and YANDEX_KASSA_SHOP_ID in env.')
 
 
-def create_payment(amount, currency, description, return_url, auto_capture: bool = True):
+def create_payment(amount, currency, description, return_url, idempotence_key, auto_capture: bool = True):
     assert amount
     assert currency
     assert description
     assert return_url
-    idempotence_key = _gen_idempotence_key()
+    if not idempotence_key:
+        idempotence_key = _gen_idempotence_key()
     yandex_payment = yandex_checkout.Payment.create({
         "amount": {
             "value": amount,

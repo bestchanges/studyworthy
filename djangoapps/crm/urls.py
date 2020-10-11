@@ -5,9 +5,9 @@ from . import views
 app_name = 'crm'
 
 urlpatterns = [
-    path('order/product', views.order_single_product, name='order_single_product'),
-    path('order/accepted', views.order_accepted, name='order_accepted'),
+    path('product/order', views.order_single_product, name='order_single_product'),
+    path('order/<uuid:order_uuid>/accepted', views.order_accepted, name='order-accepted'),
+    path('order/<uuid:order_uuid>/overview', views.order_overview, name='order-overview'),
+    path('order/<uuid:order_uuid>/pay', views.order_pay, name='order-pay'),
     path('invoice/<uuid:uuid>', views.invoice, name='invoice'),
-    path('invoice/<uuid:uuid>/pay', views.invoice_payment, name='invoice_payment'),
-    path('payment/<uuid:uuid>', views.payment_status, name='payment_status'),
 ]

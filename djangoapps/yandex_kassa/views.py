@@ -1,27 +1,18 @@
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.urls import reverse
 
 from djangoapps.erp.models import Invoice, Payment
 from djangoapps.yandex_kassa import logic
-from djangoapps.yandex_kassa.logic import create_payment
+from djangoapps.yandex_kassa.logic import YandexKassa
 
 
 def invoice_payment(request, invoice_uuid):
     invoice = Invoice.objects.get(uuid=invoice_uuid)
-
-    payment = create_payment(invoice)
-    payment.save()
-    payment.set_state(Payment.State.NEW)
-
-    next = reverse('crm:payment_status', args=[invoice.uuid])
-    payment_url = logic.pay_by_yandex_kassa(
-        payment=payment,
-        seccess_url=next,
-    )
+    payment_url = YandexKassa.pay_invoice(invoice)
     return redirect(payment_url)
 
 
-def update_payment_status(request, invoice_uuid):
+def update_payment_status(request, payment_uuid):
     """
     Update payments status and redirect to payment status view
 
@@ -29,8 +20,9 @@ def update_payment_status(request, invoice_uuid):
     :param uuid:
     :return: 302 redirect
     """
-    invoice = Invoice.objects.get(uuid=invoice_uuid)
-    next = request.GET.get('next', reverse('crm:payment_status', args=[invoice.uuid]))
-    for payment in invoice.payments.all():
-        logic.update_payment_status(payment)
-    return redirect(next)
+    payment = Payment.objects.get(uuid=payment_uuid)
+    logic.update_payment_status(payment)
+    context = {
+        'payment': payment,
+    }
+    return render(request, 'yandex_kassa/payment_status.html', context)

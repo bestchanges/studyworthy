@@ -1,6 +1,7 @@
 import logging
 
 from django.dispatch import receiver
+from django.utils import timezone
 
 from djangoapps.erp.models import Order, Invoice, Payment
 from djangoapps.erp.signals import state_changed
@@ -15,6 +16,12 @@ def log_state_change(sender, instance, old_state, **kwargs):
 
 @receiver(state_changed, sender=Payment)
 def on_paymentin_state_change(sender, instance: Payment, old_state, **kwargs):
+
+    if instance.state == Payment.State.PROCESSED:
+        instance.completed_at = timezone.now()
+        instance.save()
+
+    # update invoice state
     if not instance.invoice:
         return
     invoice = instance.invoice

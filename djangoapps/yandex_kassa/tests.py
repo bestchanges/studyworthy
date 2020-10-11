@@ -1,15 +1,13 @@
-import json
-from unittest import mock
-from unittest.mock import patch
+import logging
 
 import responses
 from django.test import TestCase
 from django.urls import reverse
 from djmoney.money import Money
 
+from djangoapps.crm.logic import payments
 from djangoapps.erp.models import Person, Invoice, Organization
-
-import logging
+from . import config
 
 logging.basicConfig(level=logging.DEBUG)
 logging.getLogger("urllib3").setLevel(logging.DEBUG)
@@ -33,6 +31,12 @@ def httpclient_logging_patch(level=logging.DEBUG):
 
 
 http.client.HTTPConnection.debuglevel = 1
+
+
+def test_register_as_payment_gateway_in_crm(self):
+    gateway = payments.get_gateway(config.GATEWAY_CODE)
+
+    self.assertEqual(gateway.name, config.GATEWAY_NAME)
 
 
 class MyTestCase(TestCase):
@@ -77,8 +81,13 @@ class MyTestCase(TestCase):
         # TODO: check created and updated models
 
 
-    @responses.activate
     def test_invoice_update(self):
+        # before update we need to register the payment
+        assert self.invoice.payments.count() == 0
+        self.test_invoice_payment()
+        assert self.invoice.payments.count() == 1
+        payment = self.invoice.payments.first()
+
         response_body = {
             'id': '27104eed-000f-5000-a000-147e8c46cebe',
             'status': 'pending',
@@ -97,10 +106,8 @@ class MyTestCase(TestCase):
         responses.add(responses.POST, 'https://payment.yandex.net/api/v3/payments',
                       json=response_body, status=200)
 
-        path = reverse('yandex_kassa:invoice_status', args=[str(self.invoice.uuid)])
+        path = reverse('yandex_kassa:payment_status', args=[str(payment.uuid)])
         response = self.client.get(path)
 
-        self.assertEqual(302, response.status_code)
+        self.assertEqual(200, response.status_code)
         # TODO: check models
-        expected_redirect = reverse('crm:payment_status', args=[str(self.invoice.uuid)])
-        self.assertRedirects(response, expected_redirect, fetch_redirect_response=False)
