@@ -17,16 +17,15 @@ from djangoapps.lms.models.lms_models import Course
 
 class SignupFormModelTestCase(TestCase):
     def setUp(self):
-        import djangoapps.lms_cms.app_init
-        djangoapps.lms_cms.app_init.init()
+        call_command('init')
         self.course = Course.objects.create(title='test course')
 
     def test_order_form_required(self):
         product = CourseProduct.objects.create(
             code='test-prod',
+            course=self.course,
             price=Money(0),
         )
-        product.courses.add(self.course)
 
         form_data = {
             'product_code': product.code,
@@ -60,9 +59,9 @@ class SignupFormModelTestCase(TestCase):
         apps_configs = apps.get_app_configs()
         product = CourseProduct.objects.create(
             code='test-prod',
+            course=self.course,
             price=Money(0),
         )
-        product.courses.add(self.course)
 
         email = 'some@student.nea'
         name = 'Some Student'

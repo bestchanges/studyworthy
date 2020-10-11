@@ -15,11 +15,7 @@ from djangoapps.lms.signals import lesson_available, lesson_unavailable, flow_st
 
 class Lesson(CodeNaturalKeyAbstractModel):
     title = models.CharField(max_length=250, default=_('Lesson name'), verbose_name=_('Title'))
-    lesson_content = PlaceholderField('lesson_content', related_name='lesson_content')
-    support_content = PlaceholderField('support_content', related_name='support_content')
-    show_common_content = models.BooleanField(
-        default=True,
-        help_text=_('Display content common for all lessons across course at the bottom of lesson content'))
+    brief = models.TextField(max_length=5000, default='', help_text='Описание содержимого урока')
 
     class Meta:
         verbose_name = _('Lesson')
@@ -27,16 +23,6 @@ class Lesson(CodeNaturalKeyAbstractModel):
 
     def __str__(self):
         return f'{self.title}'
-
-    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        super().save(force_insert, force_update, using, update_fields)
-        # TODO: fill from last created lesson
-        # cms.api.add_plugin(
-        #     plugin_type='TextCMSPlugin',
-        #     placeholder=self.lesson_content,
-        #     language='ru',
-        #     body="Sample text"
-        # )
 
 
 class Unit(CodeNaturalKeyAbstractModel):
@@ -65,8 +51,13 @@ class CourseLesson(OrderingMixin, models.Model):
     Used in through for ManyToMany reference
     """
     course = models.ForeignKey('Course', on_delete=models.CASCADE, related_name='course_lessons')
-    unit = models.ForeignKey(Unit, blank=True, null=True, on_delete=models.CASCADE, related_name='course_lessons')
+    unit = models.ForeignKey(
+        Unit, blank=True, null=True, on_delete=models.CASCADE, related_name='course_lessons',
+    )
     lesson = models.ForeignKey(Lesson, on_delete=models.PROTECT, related_name='+')
+
+    def __str__(self):
+        return str(self.lesson)
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         if not self.ordering:
@@ -83,11 +74,13 @@ class Course(CodeNaturalKeyAbstractModel):
     code = models.CharField(max_length=250, unique=True, default=uuid.uuid4)
     title = models.CharField(max_length=250, default=_('Course name'))
     state = models.CharField(max_length=8, choices=STATE_CHOICES, default=DRAFT)
-    icon = models.CharField(max_length=100, default='fas fa-graduation-cap')
-    flow_content = PlaceholderField('flow_content', related_name='flow_content',
-                                    help_text=_('Content shown on the flow index page'))
-    common_content = PlaceholderField('lesson_common_content', related_name='lesson_common_content',
-                                      help_text=_('Content shown in each course lesson'))
+
+    class Meta:
+        verbose_name = _('Course')
+        verbose_name_plural = _('Courses')
+
+    def __str__(self):
+        return f'{self.title}'
 
     def add_lesson(self, lesson: Lesson, unit: Unit = None) -> CourseLesson:
         return CourseLesson.objects.create(
@@ -119,15 +112,7 @@ class Course(CodeNaturalKeyAbstractModel):
             result[course_lesson.unit].append(course_lesson)
         return result
 
-    class Meta:
-        verbose_name = _('Course')
-        verbose_name_plural = _('Courses')
 
-    def __str__(self):
-        return f'{self.title}'
-
-
-# TODO: make flow - Document
 class Flow(models.Model):
     class Meta:
         verbose_name = _('Flow')

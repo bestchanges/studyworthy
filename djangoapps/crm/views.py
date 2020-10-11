@@ -16,7 +16,7 @@ def order_single_product(request):
                 return redirect(reverse('crm:order-overview', args=[client_order.uuid]))
             else:
                 # TODO: write form success_message from CourseProductCMSPluginConfig
-                return redirect(reverse('order-accepted', args=[client_order.uuid]))
+                return redirect(reverse('crm:order-accepted', args=[client_order.uuid]))
     else:
         form = SingleCourseProductOrderForm()
     context = {

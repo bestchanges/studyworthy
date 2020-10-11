@@ -152,7 +152,7 @@ class Actor(CodeNaturalKeyAbstractModel):
             return self.create_account(currency, account_name, description)
 
 
-class Organization(Actor):
+class Organization(CreatedUpdatedMixin, Actor):
     website = models.URLField(null=True, blank=True)
 
 
@@ -223,9 +223,9 @@ class PhysicalProduct(Product):
     pass
 
 
-class VirtualProduct(Product):
-    """non-physical product. It can be digital product of service."""
-    pass
+class DigitalProduct(Product):
+    license_duration = models.DurationField(
+        null=True, blank=True, help_text="Срок выдачи лицензии. Если пусто, то бессрочная. Формат: DDD HH:MM:SS")
 
 
 class Order(Document):
@@ -305,11 +305,11 @@ class Invoice(Document):
     DOCUMENT_NUMBER_TEMPLATE = 'I-{number_month}'
 
     class State(TextChoices):
-        NEW = 'NEW', 'Новый'
-        WAITING = 'WAITING', 'Ожидает'
-        PAYED_PARTLY = 'PAYED_PARTLY', 'Частично оплачен'
-        PAYED_FULLY = 'PAYED_FULLY', 'Полностью оплачен'
-        CANCELLED = 'CANCELLED', 'Отменен'
+        NEW = 'NEW', 'новый'
+        WAITING = 'WAITING', 'ожидает'
+        PAYED_PARTLY = 'PAYED_PARTLY', 'частично оплачен'
+        PAYED_FULLY = 'PAYED_FULLY', 'полностью оплачен'
+        CANCELLED = 'CANCELLED', 'отменен'
 
     seller = models.ForeignKey(Actor, on_delete=models.CASCADE, null=True, blank=True, related_name='+')
     seller_account = models.ForeignKey('Account', on_delete=models.CASCADE, null=True, blank=True, related_name='+')
@@ -355,8 +355,15 @@ class Account(CodeNaturalKeyAbstractModel):
                - reduce(lambda x, item: x + item.amount, self.payments_out.all(), Money(0, self.currency))
 
 
-
 class Payment(Document):
+    """
+    Денежный перевод отправляемый со счета отправителя на счёт получателя.
+
+    (вообще-то модель должна называться MoneyTransfer, посколько платёж это только
+    частный случай перевода денег, но поскольку он и самый частый, и привычный, мы оставляем
+    такое название. Подразумевая при этом, что это всё-таки универсальная передача денег.
+
+    """
     DOCUMENT_NUMBER_TEMPLATE = 'MT-{number_year}'
 
     class State(TextChoices):
@@ -403,18 +410,80 @@ class Payment(Document):
         return self.state == self.State.PROCESSED
 
 
-class ShipmentItem(models.Model):
+class ProductItemsTransfer(models.Model):
+    """Перемещение прав на определённое количество продукта."""
+    sender = models.ForeignKey(Actor, on_delete=models.PROTECT, related_name='products_out')
+    receiver = models.ForeignKey(Actor, on_delete=models.PROTECT, related_name='products_in')
+    quantity = models.DecimalField(default=1, max_digits=14, decimal_places=0)
+    product = models.ForeignKey(Product, on_delete=models.PROTECT)
+    price = MoneyField(max_digits=14, decimal_places=2)
+
+    @property
+    def sum(self):
+        return self.price * self.quantity
+
+
+class ShipmentItem(OrderingMixin, ProductItemsTransfer):
     shipment = models.ForeignKey('Shipment', on_delete=models.CASCADE)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    quantity = models.DecimalField(default=1, max_digits=14, decimal_places=2)
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        if not self.ordering:
+            self.ordering = self.__class__.objects.filter(order=self.shipment).count() + 1
+        super().save(force_insert, force_update, using, update_fields)
+
+
+class License(Document, ProductItemsTransfer):
+    """Лицензия на цифровой продукт.
+
+    Выдается от Лицензиара. Выдается к Лицензиату.
+    Объект лицензии – это совокупность прав интеллектуальной собственности, отчуждаемых лицензиату.
+
+    (Вообще то лицензия это частный вид перемещения товаров, в данном случае товаром являются права
+    этой лицензии)
+
+    https://en.wikipedia.org/wiki/License
+    https://ru.wikipedia.org/wiki/%D0%9B%D0%B8%D1%86%D0%B5%D0%BD%D0%B7%D0%B8%D1%8F
+    """
+
+    DOCUMENT_NUMBER_TEMPLATE = 'DPL-{number_total}'
+
+    class State(TextChoices):
+        DRAFT = 'DRAFT', "черновик"
+        ACTIVE = 'ACTIVE', "действующая"
+        REVOKED = 'REVOKED', "отозванная"
+        EXPIRED = 'EXPIRED', "истёкшая"
+
+    state = models.CharField(max_length=200, choices=State.choices, null=True, blank=True)
+
+    # Unfortunatelly ORM doesn't allo to specify SUB class for the field
+    # product = models.ForeignKey(DigitalProduct , on_delete=models.CASCADE, help_text='Лицензируемый продукт')
+    object_url = models.URLField(help_text='Ссылка на объект лицензии.')
+    object_text = models.URLField(help_text='Текст объекта лицензии')
+
+    valid_until = models.DateTimeField(null=True, blank=True, help_text="Момент до которого действует лицензия")
+
+    def licensor(self):
+        return self.sender
+    licensor.short_description = 'Лицензиар - выдаёт лицензию'
+
+    def license(self):
+        return self.receiver
+    license.short_description = 'Лицензиат - получает лицензию'
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        if not isinstance(self.product, DigitalProduct):
+            raise ValueError(f'Cannot create license for not digital product {self.product}')
+        super().save(force_insert, force_update, using, update_fields)
 
 
 class Shipment(Document):
+    """Отгрузка товаров и услуг. По сути соответствует товарной накладной."""
     DOCUMENT_NUMBER_TEMPLATE = 'S-{number_year}'
 
     sender = models.ForeignKey(Actor, on_delete=models.PROTECT, related_name='+')
     receiver = models.ForeignKey(Actor, on_delete=models.PROTECT, related_name='+')
-    order = models.ForeignKey(Order, on_delete=models.CASCADE, null=True, blank=True)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, null=True, blank=True,
+                              help_text='Заказ на основании которого сделана отгрузка')
     items = models.ManyToManyField(Product, through=ShipmentItem)
     description = models.CharField(max_length=255, null=True, blank=True)
 

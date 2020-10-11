@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.db import models
 
 from djangoapps.erp.enums import IntegerChoices
-from djangoapps.erp.models import Product, Order, Person, VirtualProduct, Organization, Payment
+from djangoapps.erp.models import Product, Order, Person, DigitalProduct , Organization, Payment
 from djangoapps.lms.models.lms_models import Course, Student
 from djangoapps.lms_cms.logic.users import create_lms_user
 
@@ -21,25 +21,25 @@ def my_organization():
     return _MY_ORG
 
 
-class CourseProduct(VirtualProduct):
+class CourseProduct(DigitalProduct):
     class Level(IntegerChoices):
         BEGINNER = 1
         EASY = 2
         MEDIUM = 3
         EXPERT = 4
 
-    courses = models.ManyToManyField(Course)
-    short_description = models.CharField(max_length=250, null=True, blank=True)
-    long_description = models.TextField(null=True, blank=True)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    short_description = models.CharField(max_length=250, default='', blank=True)
+    long_description = models.TextField(default='', blank=True)
     level = models.IntegerField(choices=Level.choices, null=True, blank=True)
     # TODO: extract as @properties
     number_of_lessons = models.IntegerField(null=True, blank=True)
     number_of_tasks = models.IntegerField(null=True, blank=True)
     number_of_video_materials = models.IntegerField(null=True, blank=True)
-    duration = models.CharField(max_length=100, null=True, blank=True, help_text="Например \"3 мес 2 недели\"")
+    duration = models.DurationField(null=True, blank=True, help_text="Продолжительность обучения. Формат: DDD HH:MM:SS")
     goals = models.TextField(
         null=True, blank=True,
-        help_text="Что студент будет уметь после прохождения курса"
+        help_text="Что студент будет уметь после окончании курса"
     )
 
     def __str__(self):
@@ -65,14 +65,13 @@ class CourseProduct(VirtualProduct):
             person.user = user
             person.save()
 
-        for course in self.courses.all():
-            # create flow for personal use. For group flows need to save flow in ProductOrderItem
-            flow = course.create_flow()
-            logger.info(f'Created flow {flow} for course {course}')
-            # assign Student to this flow
-            student = Student.objects.create(
-                user=person.user,
-                flow=flow,
-                role=Student.ROLE_STUDENT,
-            )
-            logger.info(f'Created student {student}')
+        # create flow for personal use. For group flows need to save flow in ProductOrderItem
+        flow = self.course.create_flow()
+        logger.info(f'Created flow {flow} for course {self.course}')
+        # assign Student to this flow
+        student = Student.objects.create(
+            user=person.user,
+            flow=flow,
+            role=Student.ROLE_STUDENT,
+        )
+        logger.info(f'Created student {student}')

@@ -11,7 +11,7 @@ from django.utils.translation import ugettext_lazy as _
 from djangoapps.erp.models import Order, Person
 from djangoapps.lms.models.lms_models import Participant, ParticipantLesson, Student
 from djangoapps.lms_cms.forms import create_comment_form
-from djangoapps.lms_cms.models.lmscms_models import Comment
+from djangoapps.lms_cms.models import Comment
 
 
 def comment_add(request):
@@ -109,7 +109,7 @@ def flow_view(request, flow_id):
     flow = participant.flow
     context = {
         "flow": flow,
-        "course": flow.course,
+        "course": flow.course.cmscourse,
         "student": participant.student,
         "participant": participant,
     }
@@ -129,9 +129,9 @@ def lesson_view(request, flow_lesson_id):
     context = {
         "participant_lesson": participant_lesson,
         "flow_lesson": flow_lesson,
-        "lesson": flow_lesson.lesson,
+        "lesson": flow_lesson.lesson.cmslesson,
         "flow": flow,
-        "course": flow.course,
+        "course": flow.course.cmscourse,
         "student": participant.student,
         "participant": participant,
     }

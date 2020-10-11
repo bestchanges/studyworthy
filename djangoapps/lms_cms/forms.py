@@ -8,7 +8,7 @@ from django.utils.translation import (
     ugettext as _,
 )
 
-from djangoapps.lms_cms.models.lmscms_models import Comment
+from djangoapps.lms_cms.models import Comment
 
 
 def create_comment_form(participant, parent: Optional[Comment]):

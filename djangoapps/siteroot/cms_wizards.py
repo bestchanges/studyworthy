@@ -34,20 +34,15 @@ class NewCourseForm(forms.Form):
         # Let's create some default content
         content_placeholder = get_placeholder(page, slot='content')
         add_plugin(
-            plugin_type='PageTitleCMSPlugin',
-            placeholder=content_placeholder, language=self.language_code,
-        )
-        add_plugin(
             plugin_type='TextCMSPlugin',
             placeholder=content_placeholder, language=self.language_code,
-            body=course_product.long_description
+            body=f'<h1>Курс: {course_product.name}</h1><p>{course_product.long_description}</p>'
         )
-        for course in course_product.courses.all():
-            add_plugin(
-                plugin_type='CourseProgramCMSPlugin',
-                placeholder=content_placeholder, language=self.language_code,
-                course=course,
-            )
+        add_plugin(
+            plugin_type='CourseProgramCMSPlugin',
+            placeholder=content_placeholder, language=self.language_code,
+            course=course_product.course,
+        )
         add_plugin(
             plugin_type='CourseProductSignupCMSPlugin',
             placeholder=content_placeholder, language=self.language_code,

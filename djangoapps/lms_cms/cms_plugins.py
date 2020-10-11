@@ -3,17 +3,15 @@ import mimetypes
 from cms.models import Page
 from cms.plugin_base import CMSPluginBase
 from cms.plugin_pool import plugin_pool
-from django.conf import settings
-from django.contrib.auth.models import User
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 from djangocms_bootstrap4.contrib.bootstrap4_picture.cms_plugins import Bootstrap4PicturePlugin
 from djangocms_file.cms_plugins import FilePlugin
 from djangocms_text_ckeditor.cms_plugins import TextPlugin
 
-from djangoapps.lms.models.lms_models import Student, Participant, FlowLesson, ParticipantLesson, Flow, Course
+from djangoapps.lms.models.lms_models import Student, Participant, ParticipantLesson
 from djangoapps.lms_cms.forms import create_comment_form
-from djangoapps.lms_cms.models.lmscms_models import VideoYoutubeConfigCMSPlugin, \
+from djangoapps.lms_cms.models import VideoYoutubeConfigCMSPlugin, \
     CommentsConfigCMSPlugin, CourseLessonsConfigCMSPlugin, Comment, \
     PageRowColumnConfigCMSPlugin, HtmlCMSPluginConfig, LessonNavigationCMSPluginConfig
 

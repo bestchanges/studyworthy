@@ -1,8 +1,72 @@
+import cms.api
+from cms.models import PlaceholderField
 from cms.models.pluginmodel import CMSPlugin
+from django.conf import settings
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from djangoapps.lms.models.lms_models import Lesson, Flow, Participant, FlowLesson, ParticipantLesson, CourseLesson
+from djangoapps.lms.models.lms_models import Lesson, Flow, Participant, FlowLesson, ParticipantLesson, CourseLesson, \
+    Course
+
+
+class CmsCourse(Course):
+    icon = models.CharField(max_length=100, default='fas fa-graduation-cap')
+    flow_content = PlaceholderField('flow_content', related_name='flow_content',
+                                    help_text=_('Content shown on the flow index page'))
+    common_content = PlaceholderField('lesson_common_content', related_name='lesson_common_content',
+                                      help_text=_('Content shown in each course lesson'))
+
+    class Meta:
+        verbose_name = _('Course')
+        verbose_name_plural = _('Courses')
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        is_create = self.pk is None
+        super().save(force_insert, force_update, using, update_fields)
+        if is_create:
+            cms.api.add_plugin(
+                placeholder=self.flow_content,
+                plugin_type='CourseLessonsCMSPlugin',
+                language='ru',
+            )
+            cms.api.add_plugin(
+                placeholder=self.common_content,
+                plugin_type='CommentsCMSPlugin',
+                language='ru',
+            )
+
+
+class CmsLesson(Lesson):
+    lesson_content = PlaceholderField('lesson_content', related_name='lesson_content')
+    support_content = PlaceholderField('support_content', related_name='support_content')
+    show_common_content = models.BooleanField(
+        default=True,
+        help_text=_('Display content common for all lessons across course at the bottom of lesson content'))
+
+    class Meta:
+        verbose_name = _('Lesson')
+        verbose_name_plural = _('Lessons')
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        is_create = self.pk is None
+        super().save(force_insert, force_update, using, update_fields)
+        if is_create:
+            cms.api.add_plugin(
+                placeholder=self.lesson_content,
+                plugin_type='PageTitleCMSPlugin',
+                language='ru',
+            )
+            cms.api.add_plugin(
+                placeholder=self.lesson_content,
+                plugin_type='TextCMSPlugin',
+                language='ru',
+                body=f'<h2>В этом уроке:</h2>{self.brief}',
+            )
+            cms.api.add_plugin(
+                placeholder=self.lesson_content,
+                plugin_type='VideoYoutubeCMSPlugin',
+                language='ru',
+            )
 
 
 class CommentsConfigCMSPlugin(CMSPlugin):

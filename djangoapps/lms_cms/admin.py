@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from djangoapps.lms.models.lms_models import Course, Lesson, Flow, Student, FlowLesson, Unit, \
     Teacher, Admin, ParticipantLesson, CourseLesson
 from djangoapps.lms_cms import constants
-from djangoapps.lms_cms.models.lmscms_models import FlowSchedule, FlowParticipants
+from djangoapps.lms_cms.models import FlowSchedule, FlowParticipants, CmsCourse, CmsLesson
 
 
 class StudentsInline(admin.TabularInline):
@@ -61,6 +61,14 @@ class FlowParticipantsAdmin(admin.ModelAdmin):
 class FlowLessonInline(SortableInlineAdminMixin, admin.TabularInline):
     model = FlowLesson
     extra = 0
+
+    def get_formset(self, request, obj: Flow=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        if obj and obj.course:
+            formset.form.base_fields['unit'].queryset = Unit.objects.filter(course=obj.course)
+            formset.form.base_fields['course_lesson'].queryset = CourseLesson.objects.filter(course=obj.course)
+        return formset
+
 
 @admin.register(Flow)
 class FlowAdmin(admin.ModelAdmin):
@@ -127,7 +135,7 @@ class StudentAdmin(admin.ModelAdmin):
     inlines = [AttendanceInline]
 
 
-@admin.register(Lesson)
+@admin.register(CmsLesson)
 class LessonAdmin(PlaceholderAdminMixin, admin.ModelAdmin):
     list_display = ['code', 'title']
 
@@ -141,11 +149,19 @@ class CourseLessonInline(SortableInlineAdminMixin, admin.TabularInline):
     model = CourseLesson
     extra = 0
 
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        if obj:
+            formset.form.base_fields['unit'].queryset = Unit.objects.filter(course=obj)
+        return formset
+
+
 class CourseUnitInline(admin.TabularInline):
     model = Unit
     extra = 0
 
-@admin.register(Course)
+
+@admin.register(CmsCourse)
 class CourseAdmin(PlaceholderAdminMixin, admin.ModelAdmin):
     list_display = ['title', 'code', 'state']
     inlines = [CourseUnitInline, CourseLessonInline]
