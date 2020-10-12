@@ -9,7 +9,7 @@ from djangocms_bootstrap4.contrib.bootstrap4_picture.cms_plugins import Bootstra
 from djangocms_file.cms_plugins import FilePlugin
 from djangocms_text_ckeditor.cms_plugins import TextPlugin
 
-from djangoapps.lms.models.lms_models import Student, Participant, ParticipantLesson
+from djangoapps.lms.models import Student, Participant, ParticipantLesson
 from djangoapps.lms_cms.forms import create_comment_form
 from djangoapps.lms_cms.models import VideoYoutubeConfigCMSPlugin, \
     CommentsConfigCMSPlugin, CourseLessonsConfigCMSPlugin, Comment, \

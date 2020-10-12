@@ -6,7 +6,7 @@ from django.db import models
 
 from djangoapps.erp.enums import IntegerChoices
 from djangoapps.erp.models import Product, Order, Person, DigitalProduct , Organization, Payment
-from djangoapps.lms.models.lms_models import Course, Student
+from djangoapps.lms.models import Course, Student
 from djangoapps.lms_cms.logic.users import create_lms_user
 
 logger = logging.getLogger(__name__)

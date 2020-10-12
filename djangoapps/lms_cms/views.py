@@ -9,7 +9,7 @@ from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 
 from djangoapps.erp.models import Order, Person
-from djangoapps.lms.models.lms_models import Participant, ParticipantLesson, Student
+from djangoapps.lms.models import Participant, ParticipantLesson, Student
 from djangoapps.lms_cms.forms import create_comment_form
 from djangoapps.lms_cms.models import Comment
 

@@ -3,7 +3,7 @@ from cms.models import CMSPlugin, Page
 from django.db import models
 
 from djangoapps.crm.models import CourseProduct
-from djangoapps.lms.models.lms_models import Course
+from djangoapps.lms.models import Course
 
 
 # Page extensions:

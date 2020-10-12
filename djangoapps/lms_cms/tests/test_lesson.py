@@ -1,10 +1,7 @@
-import itertools
-from collections import OrderedDict
-
 from django.test import TestCase
 from django.utils.timezone import now
 
-from djangoapps.lms.models.lms_models import Course, Unit, Lesson, Student, Flow, FlowLesson, ParticipantLesson
+from djangoapps.lms.models import Course, Unit, Lesson, Student, Flow, FlowLesson, ParticipantLesson
 from djangoapps.lms_cms import app_init
 from djangoapps.lms_cms.tests.utils import create_student_user
 

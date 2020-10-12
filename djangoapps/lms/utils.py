@@ -3,7 +3,7 @@ from datetime import timedelta
 
 from django.utils.timezone import now
 
-from djangoapps.lms.models.lms_models import FlowLesson, Flow
+from djangoapps.lms.models import FlowLesson, Flow
 
 
 def flows_start_ready():

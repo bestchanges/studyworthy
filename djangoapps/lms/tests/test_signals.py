@@ -1,8 +1,6 @@
 from django.test import TestCase
 
-from django.test import TestCase
-
-from djangoapps.lms.models.lms_models import Course, Flow, Lesson, FlowLesson
+from djangoapps.lms.models import Course, Flow, Lesson, FlowLesson
 from djangoapps.lms.signals import lesson_available, lesson_unavailable
 
 

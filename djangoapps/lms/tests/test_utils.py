@@ -1,10 +1,9 @@
 from datetime import timedelta
 from unittest import TestCase
 
-from django.contrib.auth.models import User, Group
 from django.utils.timezone import now
 
-from djangoapps.lms.models.lms_models import Course, Lesson, Flow, Student, Teacher, FlowLesson
+from djangoapps.lms.models import Course, Lesson, Flow, FlowLesson
 from djangoapps.lms.utils import lessons_open_ready
 
 

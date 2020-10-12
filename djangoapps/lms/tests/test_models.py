@@ -4,7 +4,7 @@ from django.apps import apps
 from django.test import TestCase
 
 from djangoapps.lms.apps import LmsConfig
-from djangoapps.lms.models.lms_models import Course, Lesson, Unit
+from djangoapps.lms.models import Course, Lesson, Unit
 
 
 class ModelsTestCase(TestCase):

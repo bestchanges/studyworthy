@@ -1,11 +1,10 @@
 import cms.api
 from cms.models import PlaceholderField
 from cms.models.pluginmodel import CMSPlugin
-from django.conf import settings
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from djangoapps.lms.models.lms_models import Lesson, Flow, Participant, FlowLesson, ParticipantLesson, CourseLesson, \
+from djangoapps.lms.models import Lesson, Flow, Participant, FlowLesson, ParticipantLesson, CourseLesson, \
     Course
 
 

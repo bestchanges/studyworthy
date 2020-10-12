@@ -12,7 +12,7 @@ from djmoney.money import Money
 from djangoapps.crm.forms import SingleCourseProductOrderForm
 from djangoapps.crm.models import CourseProduct
 from djangoapps.erp.models import Order
-from djangoapps.lms.models.lms_models import Course
+from djangoapps.lms.models import Course
 
 
 class SignupFormModelTestCase(TestCase):

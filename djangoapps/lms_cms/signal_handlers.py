@@ -1,7 +1,7 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from djangoapps.lms.models.lms_models import FlowLesson, Participant
+from djangoapps.lms.models import FlowLesson, Participant
 from djangoapps.lms.signals import lesson_available, lesson_unavailable
 from djangoapps.lms_cms import email
 

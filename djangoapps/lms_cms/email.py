@@ -9,7 +9,7 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 
-from djangoapps.lms.models.lms_models import FlowLesson, Participant, ParticipantLesson
+from djangoapps.lms.models import FlowLesson, Participant, ParticipantLesson
 from djangoapps.utils import build_full_url
 
 logger = logging.getLogger(__name__)

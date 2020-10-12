@@ -6,7 +6,7 @@ from djmoney.money import Money
 
 from djangoapps.crm.models import CourseProduct
 from djangoapps.erp.models import Product
-from djangoapps.lms.models.lms_models import Participant, Lesson, Course, Unit, CourseLesson
+from djangoapps.lms.models import Participant, Unit, CourseLesson
 from djangoapps.lms_cms.logic.users import create_lms_user
 from djangoapps.lms_cms.models import CmsCourse, CmsLesson
 from studyworthy import settings

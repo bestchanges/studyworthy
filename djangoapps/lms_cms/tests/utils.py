@@ -3,7 +3,7 @@ import string
 
 from django.forms import BaseForm
 
-from djangoapps.lms.models.lms_models import Student, Admin
+from djangoapps.lms.models import Student, Admin
 from djangoapps.lms_cms.logic.users import create_lms_user
 
 

@@ -3,7 +3,7 @@ from cms.admin.placeholderadmin import PlaceholderAdminMixin
 from django.contrib import admin
 from django.contrib.auth.models import User
 
-from djangoapps.lms.models.lms_models import Course, Lesson, Flow, Student, FlowLesson, Unit, \
+from djangoapps.lms.models import Flow, Student, FlowLesson, Unit, \
     Teacher, Admin, ParticipantLesson, CourseLesson
 from djangoapps.lms_cms import constants
 from djangoapps.lms_cms.models import FlowSchedule, FlowParticipants, CmsCourse, CmsLesson

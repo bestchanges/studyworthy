@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.test import TestCase, Client
 from django.urls import reverse
 
-from djangoapps.lms.models.lms_models import Course
+from djangoapps.lms.models import Course
 
 
 class TestViews(TestCase):

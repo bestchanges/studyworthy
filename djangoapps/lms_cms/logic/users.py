@@ -1,7 +1,6 @@
 from django.contrib.auth.models import User, Group
-from django.contrib.sites.models import Site
 
-from djangoapps.lms.models.lms_models import Student, Teacher, Admin
+from djangoapps.lms.models import Student, Teacher, Admin
 from djangoapps.lms_cms.constants import ADMINS_GROUP_NAME, TEACHERS_GROUP_NAME, STUDENTS_GROUP_NAME
 from djangoapps.lms_cms.email import send_registration_email
 
