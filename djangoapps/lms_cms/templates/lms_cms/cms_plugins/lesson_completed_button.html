@@ -6,7 +6,7 @@
                 $("button#lesson-completed").click(function () {
                     let value = $(this).attr('v')
                     $.ajax({
-                        url: '{% url 'lms:attendance-completed' attendance_id=attendance.id %}',
+                        url: '{% url 'lms_cms:attendance-completed' participant_lesson_id=participant_lesson.id %}',
                         type: 'GET',
                         data: {'value': value}
                     }).done(function () {
@@ -17,9 +17,9 @@
         </script>
     {% endif %}
     <div class="text-center" id="lesson-completed-block">
-        {% if attendance.is_completed %}
+        {% if participant_lesson.is_completed %}
             <span class="text-success" style="font-size: 24px;"><i class="fas fa-check-circle"></i> Материал изучен</span>
-{#            <button id="lesson-completed" type="button" v='false' class="btn btn-primary">cancel</button>#}
+            <button id="lesson-completed" type="button" v='false' class="btn btn-primary">cancel</button>
         {% else %}
             <button id="lesson-completed" type="button" v='true' class="btn btn-primary btn-lg">Отметить как изученный</button>
         {% endif %}

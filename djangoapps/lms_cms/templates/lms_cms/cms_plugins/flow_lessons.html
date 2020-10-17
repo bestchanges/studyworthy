@@ -60,7 +60,7 @@
                                 {% endif %}
                                 {% if not flow_lesson.is_opened and not item.participant_lesson.is_blocked %}
                                     <span class="badge badge-light"
-                                          style="color: #797979">{{ flow_lesson.open_planned_at|date:"SHORT_DATETIME_FORMAT" }} {{ flow_lesson.open_planned_at|date:"e" }}</span>
+                                          style="color: #797979">Откроется {{ flow_lesson.open_planned_at|date:"SHORT_DATETIME_FORMAT" }} {{ flow_lesson.open_planned_at|date:"e" }}</span>
                                 {% endif %}
                             </div>
 

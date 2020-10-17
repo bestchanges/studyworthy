@@ -13,7 +13,7 @@
         <h2>Мои курсы</h2>
         <ul class="list-unstyled">
             {% for student in student_in %}
-                {% with course=student.flow.course flow=student.flow %}
+                {% with course=student.flow.course.cmscourse flow=student.flow %}
                     <li class="media my-3">
                         {% if course.icon %}
                             <i class="{{ course.icon }} fa-3x text-success mr-3"></i>

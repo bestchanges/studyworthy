@@ -9,7 +9,7 @@ from djangocms_bootstrap4.contrib.bootstrap4_picture.cms_plugins import Bootstra
 from djangocms_file.cms_plugins import FilePlugin
 from djangocms_text_ckeditor.cms_plugins import TextPlugin
 
-from djangoapps.lms.models import Student, Participant, ParticipantLesson
+from djangoapps.lms.models import Student, Participant, ParticipantLesson, Lesson
 from djangoapps.lms_cms.forms import create_comment_form
 from djangoapps.lms_cms.models import VideoYoutubeConfigCMSPlugin, \
     CommentsConfigCMSPlugin, CourseLessonsConfigCMSPlugin, Comment, \
@@ -83,9 +83,9 @@ class CommentsCMSPlugin(CMSPluginBase):
 
 
 @plugin_pool.register_plugin
-class CourseLessonsCMSPlugin(CMSPluginBase):
+class FlowLessonsCMSPlugin(CMSPluginBase):
     """
-    List of lessons in the current course.
+    List of lessons in the current flow.
     Can only be displayed if 'student' in context.
     """
     model = CourseLessonsConfigCMSPlugin
@@ -95,13 +95,18 @@ class CourseLessonsCMSPlugin(CMSPluginBase):
     cache = False
 
     def render(self, context, instance, placeholder):
-        context = super(CourseLessonsCMSPlugin, self).render(context, instance, placeholder)
+        context = super(FlowLessonsCMSPlugin, self).render(context, instance, placeholder)
         student: Student = context['student']
         assert student, 'no student in context'
         # current_user: User = context['request'].user
         context['role'] = 'STUDENT'
+
+
         return context
 
+@plugin_pool.register_plugin
+class CourseLessonsCMSPlugin(FlowLessonsCMSPlugin):
+    pass
 
 class AddPageBlockIfRootPlugin(CMSPluginBase):
     def render(self, context, instance, placeholder):
@@ -159,12 +164,12 @@ class LessonCompleteCMSPlugin(AddPageBlockIfRootPlugin):
     cache = False
 
     def render(self, context, instance, placeholder):
-        participant: Participant = context['request'].lms_participant
-        page: Page = instance.page
-        lesson = LmsPage.get_lesson(page)
-        assert lesson, "can be used only on lesson pages"
-        attendance = ParticipantLesson.objects.filter(participant=participant, flow_lesson__lesson=lesson).first()
-        context['attendance'] = attendance
+        participant: Participant = context.get('participant')
+        lesson: Lesson = context.get('lesson')
+        if not (participant and lesson):
+            return context
+        participant_lesson = ParticipantLesson.objects.filter(participant=participant, flow_lesson__lesson=lesson).first()
+        context['participant_lesson'] = participant_lesson
         context = super(AddPageBlockIfRootPlugin, self).render(context, instance, placeholder)
         return context
 

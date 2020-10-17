@@ -22,7 +22,8 @@ def get_placeholder(page, slot=None):
 
 def create_home_page() -> Page:
     page = create_page(
-        title='Home page',
+        title='Home',
+        slug='home',
         template=settings.CMS_TEMPLATES[0][0],
         language=settings.LANGUAGE_CODE,
     )

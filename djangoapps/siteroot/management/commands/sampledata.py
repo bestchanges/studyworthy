@@ -74,5 +74,6 @@ class Command(BaseCommand):
         site.domain = 'localhost:8000'
         site.save()
 
+        # create_home_page()
         self.stdout.write("Sample data created")
         self.stdout.write(f"Admin user creds: {ADMIN_EMAIL} / {ADMIN_PASSWORD}")

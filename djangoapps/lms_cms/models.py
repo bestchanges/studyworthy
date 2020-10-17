@@ -25,7 +25,7 @@ class CmsCourse(Course):
         if is_create:
             cms.api.add_plugin(
                 placeholder=self.flow_content,
-                plugin_type='CourseLessonsCMSPlugin',
+                plugin_type='FlowLessonsCMSPlugin',
                 language='ru',
             )
             cms.api.add_plugin(
