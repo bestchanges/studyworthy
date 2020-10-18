@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django import forms
 
 from djangoapps.lms.models import Flow, Student, FlowLesson, Unit, \
-    Teacher, Admin, ParticipantLesson, CourseLesson, Question
+    Teacher, Admin, ParticipantLesson, CourseLesson, Question, LessonResponse
 from djangoapps.lms_cms import constants
 from djangoapps.lms_cms.models import FlowSchedule, FlowParticipants, CmsCourse, CmsLesson
 
@@ -194,3 +194,8 @@ class CourseUnitInline(admin.TabularInline):
 class CourseAdmin(PlaceholderAdminMixin, admin.ModelAdmin):
     list_display = ['title', 'code', 'state']
     inlines = [CourseUnitInline, CourseLessonInline]
+
+
+@admin.register(LessonResponse)
+class LessonResponseAdmin(admin.ModelAdmin):
+    pass

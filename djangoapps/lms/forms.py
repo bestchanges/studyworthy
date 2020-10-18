@@ -1,17 +1,34 @@
+import json
+
 from django import forms
 
-from .models import Lesson, Question
+from . import questions
+from .models import Lesson, Question, LessonResponse
 
+import logging
 
-class LessonQuestionsForm(forms.BaseForm):
-    base_fields = {}
+logger = logging.getLogger(__name__)
+
+class StudentResponseForm(forms.ModelForm):
+    """Form with response on Lesson Questions"""
+
+    prefix = 'lms-q'
 
     def __init__(self, *args, lesson: Lesson = None, **kwargs):
-        super().__init__(*args, **kwargs)
+        super(StudentResponseForm, self).__init__(*args, **kwargs)
         for question in lesson.questions.all():  # type: Question
-            self.fields[question.code] = self.question_field(question)
+            question_type = questions.ALL_TYPES.get(question.type)
+            if not question_type:
+                logger.error(f'Unknown question type "{question.type}". '
+                             f'Available types {questions.ALL_TYPES.keys()}')
+                continue
+            question_type.fill_form(question, self)
 
-    def question_field(self, question: Question):
-        """Build form field for the question type defined in question."""
-        type_class = question.Types.all[question.type]
-        return type_class.form_field(question)
+    class Meta:
+        model = LessonResponse
+        fields = ['id']
+
+    def save(self, commit=True):
+        instance: LessonResponse = self.instance
+        instance.answers_json = json.dumps(self.cleaned_data, indent=4)
+        return super().save(commit)

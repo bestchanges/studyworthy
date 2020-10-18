@@ -1,7 +1,6 @@
 import json
 import uuid
 from collections import OrderedDict
-from typing import NamedTuple
 
 from cms.utils.helpers import classproperty
 from django.contrib.auth.models import User
@@ -13,6 +12,7 @@ from django.utils.translation import ugettext_lazy as _
 import djangoapps.lms.questions
 from djangoapps.common.enums import TextChoices
 from djangoapps.common.models import OrderingMixin, CodeNaturalKeyAbstractModel, StatefulMixin, CreatedUpdatedMixin
+from djangoapps.lms import questions
 from djangoapps.lms.schedule import events_generator
 from djangoapps.lms.signals import lesson_available, lesson_unavailable, flow_started
 
@@ -418,33 +418,7 @@ class ParticipantLesson(models.Model):
 class Question(OrderingMixin, models.Model):
     """Вопрос для проверочного задания к уроку"""
 
-    class Types:
-        _types = {
-            'string': djangoapps.lms.questions.StringType,
-            'integer': djangoapps.lms.questions.IntegerType,
-        }
-
-        @classproperty
-        def choices(cls):
-            choices = []
-            for name, type_class in cls._types.items():
-                choices.append([name, type_class.label])
-            return choices
-
-        @classproperty
-        def all(cls):
-            return cls._types
-
-        # CHAR_FIELD = 'CHAR_FIELD', _('Строка')
-        # TEXT_FIELD = 'TEXT_FIELD', _('Текст')
-        # INTEGER_FIELD = 'INTEGER_FIELD', _('Целое число')
-        # SELECT_FIELD = 'SELECT_FIELD', _('Выбор одного из списка')
-        # MULTISELECT_FIELD = 'MULTISELECT_FIELD', _('Выбор нескольких из списка')
-        # RADIO_FIELD = 'RADIO_FIELD', _('Радио кнопки')
-        # CHECKBOXES_FIELD = 'CHECKBOXES_FIELD', _('Чекбоксы')
-        # URL_FIELD = 'URL_FIELD', _('Ссылка')
-        # EMAIL_FIELD = 'EMAIL_FIELD', _('Email')
-        # FILE_FIELD = 'FILE_FIELD', _('Файл')
+    TYPES_CHOICES = [(name, type.label) for name, type in questions.ALL_TYPES.items()]
 
     lesson = models.ForeignKey(
         Lesson, on_delete=models.CASCADE, related_name='questions',
@@ -462,7 +436,7 @@ class Question(OrderingMixin, models.Model):
         verbose_name=_('Текст вопроса'),
     )
     type = models.CharField(
-        max_length=100, choices=Types.choices, blank=True, null=True,
+        max_length=100, choices=TYPES_CHOICES, blank=True, null=True,
         verbose_name=_("Тип ответа"),
     )
     choices = models.TextField(
@@ -505,14 +479,14 @@ class Question(OrderingMixin, models.Model):
         return score
 
 
-class Response(StatefulMixin, CreatedUpdatedMixin, models.Model):
-    """Ответ студента на вопросы урока"""
+class LessonResponse(StatefulMixin, CreatedUpdatedMixin, models.Model):
+    """Student response to he lesson and check."""
 
     class State(TextChoices):
         FILLED = 'FILLED', _('Filled')
         CHECKED = 'CHECKED', _('Checked')
 
-    # student's flow_lesson. (Using more generic ParticipantLesson)
+    # student's flow_lesson. (Using more generic ParticipantLesson but it's mostly for Students)
     participant_lesson = models.ForeignKey(ParticipantLesson, on_delete=models.CASCADE, related_name='answer')
 
     # student's part
@@ -526,10 +500,12 @@ class Response(StatefulMixin, CreatedUpdatedMixin, models.Model):
     # teacher's part
     assigned_to = models.ForeignKey(
         Participant, on_delete=models.CASCADE, related_name='+',
+        null=True, blank=True,
         help_text=_('The teacher who is to check this response'))
     when_checked_by_teacher = models.DateTimeField(
         null=True, blank=True,
         help_text=_('When the teacher check this response'))
+
     # this fields to be filled during assessment
     comments_json = models.TextField(
         max_length=10000,

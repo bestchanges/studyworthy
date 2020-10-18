@@ -11,8 +11,8 @@ from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 
 from djangoapps.erp.models import Order, Person
-from djangoapps.lms.forms import LessonQuestionsForm
-from djangoapps.lms.models import Participant, ParticipantLesson, Student
+from djangoapps.lms.forms import StudentResponseForm
+from djangoapps.lms.models import Participant, ParticipantLesson, Student, LessonResponse
 from djangoapps.lms_cms.forms import create_comment_form
 from djangoapps.lms_cms.models import Comment
 
@@ -130,7 +130,11 @@ def lesson_view(request, flow_lesson_id):
     flow = flow_lesson.flow
     participant = participant_lesson.participant
 
-    form = LessonQuestionsForm(request.POST or None, lesson=flow_lesson.lesson)
+    form = StudentResponseForm(request.POST or None, lesson=flow_lesson.lesson)
+    if form.is_bound:
+        lesson_response: LessonResponse = form.save(commit=False)
+        lesson_response.participant_lesson = participant_lesson
+        lesson_response.save()
     helper = FormHelper()
     helper.form_method = 'post'
     # helper.form_style = 'inline'
