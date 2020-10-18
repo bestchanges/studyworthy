@@ -1,3 +1,7 @@
+"""Ported from Django 3.0.
+
+Have some limits (like doesn't support default values for migrations)
+"""
 import enum
 
 from django.utils.functional import Promise

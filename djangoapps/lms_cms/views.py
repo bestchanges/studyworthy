@@ -1,3 +1,5 @@
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Submit
 from django import forms
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
@@ -9,6 +11,7 @@ from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 
 from djangoapps.erp.models import Order, Person
+from djangoapps.lms.forms import LessonQuestionsForm
 from djangoapps.lms.models import Participant, ParticipantLesson, Student
 from djangoapps.lms_cms.forms import create_comment_form
 from djangoapps.lms_cms.models import Comment
@@ -126,6 +129,17 @@ def lesson_view(request, flow_lesson_id):
     flow_lesson = participant_lesson.flow_lesson
     flow = flow_lesson.flow
     participant = participant_lesson.participant
+
+    form = LessonQuestionsForm(request.POST or None, lesson=flow_lesson.lesson)
+    helper = FormHelper()
+    helper.form_method = 'post'
+    # helper.form_style = 'inline'
+    # helper.form_action = reverse('lms_cms:comment_reply')
+    helper.add_input(Submit('submit', _('Submit')))
+    # helper.help_text_inline = True
+    # helper.html5_required = True
+    form.helper = helper
+
     context = {
         "participant_lesson": participant_lesson,
         "flow_lesson": flow_lesson,
@@ -134,5 +148,6 @@ def lesson_view(request, flow_lesson_id):
         "course": flow.course.cmscourse,
         "student": participant.student,
         "participant": participant,
+        "questions_form": form,
     }
     return render(request, "lms_cms/flow_lesson.html", context)

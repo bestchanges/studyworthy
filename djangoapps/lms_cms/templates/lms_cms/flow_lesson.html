@@ -1,4 +1,5 @@
 {% extends "lms_cms/base.html" %}
+{% load crispy_forms_tags %}
 {% load cms_tags %}
 
 {% block title %}Урок {{ flow_lesson.ordering }} {{ lesson.title }}{% endblock title %}
@@ -8,6 +9,8 @@
 {% endblock header %}
 
 {% block content %}
+    <h1>Q:</h1>
+    {% crispy questions_form %}
     {% render_placeholder lesson.lesson_content %}
     {% render_placeholder lesson.support_content %}
     {% if lesson.show_common_content %}

@@ -1,21 +1,25 @@
+import json
 import uuid
 from collections import OrderedDict
+from typing import NamedTuple
 
-from cms.models import PlaceholderField
+from cms.utils.helpers import classproperty
 from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 
-from djangoapps.erp.models import CodeNaturalKeyAbstractModel, OrderingMixin
+import djangoapps.lms.questions
+from djangoapps.common.enums import TextChoices
+from djangoapps.common.models import OrderingMixin, CodeNaturalKeyAbstractModel, StatefulMixin, CreatedUpdatedMixin
 from djangoapps.lms.schedule import events_generator
 from djangoapps.lms.signals import lesson_available, lesson_unavailable, flow_started
 
 
 class Lesson(CodeNaturalKeyAbstractModel):
     title = models.CharField(max_length=250, default=_('Lesson name'), verbose_name=_('Title'))
-    brief = models.TextField(max_length=5000, default='', help_text='Описание содержимого урока')
+    brief = models.TextField(max_length=5000, blank=True, null=True, help_text='Описание содержимого урока')
 
     class Meta:
         verbose_name = _('Lesson')
@@ -72,12 +76,18 @@ class Course(CodeNaturalKeyAbstractModel):
     STATE_CHOICES = [(state, state) for state in (DRAFT, ACTIVE, ARCHIVED)]
 
     code = models.CharField(max_length=250, unique=True, default=uuid.uuid4)
-    title = models.CharField(max_length=250, default=_('Course name'))
+    title = models.CharField(
+        max_length=250, default='',
+        verbose_name=_("Название"))
     state = models.CharField(max_length=8, choices=STATE_CHOICES, default=DRAFT)
+    learning_objective = models.TextField(
+        max_length=4000, default='', blank=True,
+        verbose_name=_('Цель обучения'),
+        help_text=_('Что студент научится делать в результате прохождения курса'))
 
     class Meta:
-        verbose_name = _('Course')
-        verbose_name_plural = _('Courses')
+        verbose_name = _('Курс')
+        verbose_name_plural = _('Курсы')
 
     def __str__(self):
         return f'{self.title}'
@@ -115,8 +125,8 @@ class Course(CodeNaturalKeyAbstractModel):
 
 class Flow(models.Model):
     class Meta:
-        verbose_name = _('Flow')
-        verbose_name_plural = _('Flows')
+        verbose_name = _('Поток')
+        verbose_name_plural = _('Потоки')
 
     STATE_DRAFT = 'draft'
     STATE_PLANNED = 'planned'
@@ -366,11 +376,16 @@ class ParticipantLesson(models.Model):
                                        help_text=_('When the lesson becomes accessible for sudent'))
     when_completed = models.DateTimeField(null=True, blank=True,
                                           help_text=_('When the student has marked lesson as completed'))
-    when_checked = models.DateTimeField(null=True, blank=True, help_text=_('When the teacher has checked the task'))
+    # TODO: maybe remove this field. As soon it duplicates in the Response
+    when_checked = models.DateTimeField(
+        null=True, blank=True,
+        help_text=_('When the teacher has checked the task'))
     check_result = models.CharField(
-        default=None, null=True, blank=True, choices=CHOICES_RESULT, max_length=30, verbose_name=_('Check result'))
+        default=None, null=True, blank=True, choices=CHOICES_RESULT, max_length=30,
+        help_text=_('Check result for last response'))
     score = models.IntegerField(
-        default=None, null=True, blank=True, verbose_name=_('Score'), help_text=_('Score for student response'))
+        default=None, null=True, blank=True, verbose_name=_('Score'),
+        help_text=_('Score for last teacher response'))
 
     class Meta:
         unique_together = ['participant', 'flow_lesson']
@@ -398,3 +413,153 @@ class ParticipantLesson(models.Model):
     @property
     def is_checked(self):
         return self.when_checked is not None
+
+
+class Question(OrderingMixin, models.Model):
+    """Вопрос для проверочного задания к уроку"""
+
+    class Types:
+        _types = {
+            'string': djangoapps.lms.questions.StringType,
+            'integer': djangoapps.lms.questions.IntegerType,
+        }
+
+        @classproperty
+        def choices(cls):
+            choices = []
+            for name, type_class in cls._types.items():
+                choices.append([name, type_class.label])
+            return choices
+
+        @classproperty
+        def all(cls):
+            return cls._types
+
+        # CHAR_FIELD = 'CHAR_FIELD', _('Строка')
+        # TEXT_FIELD = 'TEXT_FIELD', _('Текст')
+        # INTEGER_FIELD = 'INTEGER_FIELD', _('Целое число')
+        # SELECT_FIELD = 'SELECT_FIELD', _('Выбор одного из списка')
+        # MULTISELECT_FIELD = 'MULTISELECT_FIELD', _('Выбор нескольких из списка')
+        # RADIO_FIELD = 'RADIO_FIELD', _('Радио кнопки')
+        # CHECKBOXES_FIELD = 'CHECKBOXES_FIELD', _('Чекбоксы')
+        # URL_FIELD = 'URL_FIELD', _('Ссылка')
+        # EMAIL_FIELD = 'EMAIL_FIELD', _('Email')
+        # FILE_FIELD = 'FILE_FIELD', _('Файл')
+
+    lesson = models.ForeignKey(
+        Lesson, on_delete=models.CASCADE, related_name='questions',
+        help_text=_('Урок к которому относится'))
+    code = models.SlugField(
+        max_length=100,
+        verbose_name=_('Код'),
+        help_text=_('Уникален среди вопросов этого урока'))
+    name = models.CharField(
+        max_length=200,
+        verbose_name=_('Вопрос'),
+    )
+    text = models.TextField(
+        max_length=3000, null=True, blank=True,
+        verbose_name=_('Текст вопроса'),
+    )
+    type = models.CharField(
+        max_length=100, choices=Types.choices, blank=True, null=True,
+        verbose_name=_("Тип ответа"),
+    )
+    choices = models.TextField(
+        max_length=1000, blank=True, null=True,
+        verbose_name=_('Варианты ответа'),
+        help_text=_('Возможные значения (если применимо)'),
+    )
+    required = models.BooleanField(default=False)
+    score = models.IntegerField(
+        null=True, blank=True,
+        verbose_name=_('Оценка'),
+        help_text=_('Оценка за правильный ответ на вопрос'),
+    )
+
+    # autocheck feature
+    is_autocheck = models.BooleanField(
+        default=False,
+        verbose_name=_('Авто проверка?'),
+        help_text=_('Если "Да", то должно быть заполнено поле "Правильный ответ"'))
+    correct_answer = models.TextField(
+        max_length=20000, null=True, blank=True,
+        verbose_name=_('Правильный ответ(ы)'),
+        help_text=_('Значение правильного ответа. В нескольких значений - каждое значение на отдельной строке'))
+
+    def autocheck_answer(self, answer: str):
+        """
+        Check the responce automatically.
+        Raises ValueError if answer is None.
+        Raises ValueError if autocheck is disabled.
+
+        :return earned score
+        """
+        if answer is None:
+            raise ValueError('no answer given')
+        if not self.is_autocheck:
+            raise ValueError('auctocheck disabled')
+        score = 0
+        if answer == self.correct_answer:
+            score = self.score
+        return score
+
+
+class Response(StatefulMixin, CreatedUpdatedMixin, models.Model):
+    """Ответ студента на вопросы урока"""
+
+    class State(TextChoices):
+        FILLED = 'FILLED', _('Filled')
+        CHECKED = 'CHECKED', _('Checked')
+
+    # student's flow_lesson. (Using more generic ParticipantLesson)
+    participant_lesson = models.ForeignKey(ParticipantLesson, on_delete=models.CASCADE, related_name='answer')
+
+    # student's part
+    answers_json = models.TextField(
+        max_length=2000,
+        help_text=_('JSON answers of the student on questions of the lesson'))
+    when_sent_by_student = models.DateTimeField(
+        null=True, blank=True,
+        help_text=_('When the student send this response'))
+
+    # teacher's part
+    assigned_to = models.ForeignKey(
+        Participant, on_delete=models.CASCADE, related_name='+',
+        help_text=_('The teacher who is to check this response'))
+    when_checked_by_teacher = models.DateTimeField(
+        null=True, blank=True,
+        help_text=_('When the teacher check this response'))
+    # this fields to be filled during assessment
+    comments_json = models.TextField(
+        max_length=10000,
+        help_text=_('JSON comments on student\'s answers. Structure: question_code: answer text'))
+    check_comment = models.TextField(
+        null=True, blank=True,
+        help_text=_('Comment on this whole response. Structure: question_code: {"score": value, "comment": value}')
+    )
+    is_accepted = models.BooleanField(
+        null=True, blank=True,
+        help_text=_('Is student\'s response accepted'))
+    score = models.IntegerField(
+        null=True, blank=True,
+        help_text=_('Overall score for this response'))
+
+    def autockeck(self):
+        """Performs autocheck for questions which support autocheck."""
+        answers = json.loads(self.answers_json) if self.answers_json else {}
+        questions = {q.code: q for q in self.participant_lesson.flow_lesson.lesson.questions.all()}
+        comments = json.loads(self.answers_json) if self.answers_json else {}
+
+        overall_score = 0
+        for question_code, answer in answers.items():
+            question: Question = questions[question_code]
+            assert question, f'No question with code {question_code}. Codes: {questions.keys()}'
+            if question.is_autocheck:
+                score = question.autocheck_answer(answer)
+                overall_score += score
+                comments[question_code] = {'score': score, 'comment': ''}
+
+        self.comments_json = json.dumps(comments, indent=4)
+        self.score = overall_score
+        self.save()

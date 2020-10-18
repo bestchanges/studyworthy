@@ -1,10 +1,12 @@
 from adminsortable2.admin import SortableInlineAdminMixin
+from ckeditor.widgets import CKEditorWidget
 from cms.admin.placeholderadmin import PlaceholderAdminMixin
 from django.contrib import admin
 from django.contrib.auth.models import User
+from django import forms
 
 from djangoapps.lms.models import Flow, Student, FlowLesson, Unit, \
-    Teacher, Admin, ParticipantLesson, CourseLesson
+    Teacher, Admin, ParticipantLesson, CourseLesson, Question
 from djangoapps.lms_cms import constants
 from djangoapps.lms_cms.models import FlowSchedule, FlowParticipants, CmsCourse, CmsLesson
 
@@ -135,9 +137,36 @@ class StudentAdmin(admin.ModelAdmin):
     inlines = [AttendanceInline]
 
 
+class LessonQuestionAdminForm(forms.ModelForm):
+    text = forms.CharField(widget=CKEditorWidget(config_name='admin_config'))
+
+    class Meta:
+        model = Question
+        fields = '__all__'
+
+
+class LessonQuestionInline(admin.StackedInline):
+    model = Question
+    form = LessonQuestionAdminForm
+    fieldsets = (
+        (None, {
+            'fields': (
+                ('ordering', 'name', 'code', 'type', 'required', 'score'),
+                ('text', 'choices'),
+            ),
+        }),
+        ('Автопроверка', {
+            # 'classes': ('collapse',),
+            'fields': (('is_autocheck', 'correct_answer'),),
+        }),
+    )
+    extra = 0
+
+
 @admin.register(CmsLesson)
 class LessonAdmin(PlaceholderAdminMixin, admin.ModelAdmin):
     list_display = ['code', 'title']
+    inlines = [LessonQuestionInline]
 
 
 @admin.register(Unit)

@@ -91,7 +91,9 @@ INSTALLED_APPS = [
     # 'timezone_field',
     # 'widget_tweaks',
 
+    'ckeditor',
     'djmoney',
+    'djangoapps.common',
     'djangoapps.erp',
     'djangoapps.lms',
     'djangoapps.lms_cms',
@@ -274,3 +276,13 @@ else:
 
 MY_ORGANIZATION_CODE = 'studyworthy'
 MY_ORGANIZATION_NAME = 'Online Educational Platform "StudyWorthy"'
+
+CKEDITOR_CONFIGS = {
+    'admin_config': {
+        'toolbar': 'full',
+        'buttons': 'NumberedList,BulletedList',
+    },
+    'default': {
+        'toolbar': 'Basic',
+    },
+}
