@@ -9,7 +9,7 @@ from djangocms_bootstrap4.contrib.bootstrap4_picture.cms_plugins import Bootstra
 from djangocms_file.cms_plugins import FilePlugin
 from djangocms_text_ckeditor.cms_plugins import TextPlugin
 
-from djangoapps.lms.models import Student, Participant, ParticipantLesson, Lesson
+from djangoapps.lms.models import Student, Participant, ParticipantLesson, Lesson, FlowLesson
 from djangoapps.lms_cms.forms import create_comment_form
 from djangoapps.lms_cms.models import VideoYoutubeConfigCMSPlugin, \
     CommentsConfigCMSPlugin, CourseLessonsConfigCMSPlugin, Comment, \
@@ -137,6 +137,25 @@ class PageTitleCMSPlugin(AddPageBlockIfRootPlugin):
                     break
 
         context['title'] = title
+        context = super().render(context, instance, placeholder)
+        return context
+
+
+@plugin_pool.register_plugin
+class WebinarVideoCMSPlugin(AddPageBlockIfRootPlugin):
+    """Webinar Video Plugin."""
+    name = _('Вебинар видео')
+    render_template = "lms_cms/cms_plugins/webinar_video.html"
+    module = _(' LMS Content')
+    cache = True
+
+    def render(self, context, instance, placeholder):
+        flow_lesson: FlowLesson = context.get('flow_lesson')
+        if flow_lesson:
+            webinar = flow_lesson.webinar
+            if webinar:
+                context['webinar'] = webinar
+                context['webinar_template'] = f"lms_cms/webinars/{webinar.platform}.html"
         context = super().render(context, instance, placeholder)
         return context
 

@@ -1,0 +1,6 @@
+{% extends base_template %}
+{% block content %}
+    {% if webinar %}
+        {% include webinar_template with webinar=webinar %}
+    {% endif %}
+{% endblock %}

@@ -1,3 +1,4 @@
+import datetime
 import json
 import uuid
 from collections import OrderedDict
@@ -18,8 +19,18 @@ from djangoapps.lms.signals import lesson_available, lesson_unavailable, flow_st
 
 
 class Lesson(CodeNaturalKeyAbstractModel):
+    class TimingType(TextChoices):
+        ON_DEMAND = 'ON_DEMAND', _('в удобное время')
+        ONLINE = 'ONLINE', _('в определенное время')
+
     title = models.CharField(max_length=250, default=_('Lesson name'), verbose_name=_('Title'))
     brief = models.TextField(max_length=5000, blank=True, null=True, help_text='Описание содержимого урока')
+    timing_type = models.CharField(
+        max_length=100, choices=TimingType.choices, default='ON_DEMAND',
+        verbose_name=_('Вид доступа'),
+        help_text=_("В какое время участник может получить доступ к материалам урока. "
+                    "Попасть на вебинар может быть только в определенное время."))
+    webinar = models.ForeignKey('Webinar', null=True, blank=True, on_delete=models.SET_NULL)
 
     class Meta:
         verbose_name = _('Lesson')
@@ -205,6 +216,10 @@ class FlowLesson(OrderingMixin, models.Model):
     course_lesson = models.ForeignKey(CourseLesson, null=True, on_delete=models.SET_NULL, related_name='+')
     unit = models.ForeignKey(Unit, null=True, on_delete=models.CASCADE, related_name='+')
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, related_name='flow_lessons')
+    flow_webinar = models.ForeignKey(
+        'Webinar', null=True, blank=True, on_delete=models.SET_NULL,
+        verbose_name=_('Вебинар'),
+        help_text=_("Вебинар урока для данного потока. Если не указан, то используется вебинар урока."))
 
     is_opened = models.BooleanField(default=False)
     open_planned_at = models.DateTimeField(null=True, blank=True)
@@ -223,6 +238,14 @@ class FlowLesson(OrderingMixin, models.Model):
                     participant=participant,
                     flow_lesson=flow_lesson,
                 )
+
+    @property
+    def webinar(self):
+        return self.flow_webinar if self.flow_webinar else self.lesson.webinar
+
+    @webinar.setter
+    def webinar(self, value):
+        self.flow_webinar = value
 
     def open_lesson(self, by_user=None):
         if self.is_opened:
@@ -539,3 +562,44 @@ class LessonResponse(StatefulMixin, CreatedUpdatedMixin, models.Model):
         self.comments_json = json.dumps(comments, indent=4)
         self.score = overall_score
         self.save()
+
+
+class Webinar(CodeNaturalKeyAbstractModel, StatefulMixin, models.Model):
+
+    class State(TextChoices):
+        DRAFT = 'DRAFT'
+        PLANNED = 'PLANNED'
+        ONGOING = 'ONGOING'
+        FINISHED = 'FINISHED'
+        CANCELLED = 'CANCELLED'
+
+    class Platform(TextChoices):
+        YOUTUBE = 'youtube'
+        SKYPE = 'skype'
+        ZOOM = 'zoom'
+        OTHER = 'other'
+
+    name = models.CharField(max_length=100, null=True, blank=True, verbose_name=_('Название вебинара'))
+    state = models.CharField(max_length=100, choices=State.choices, default='DRAFT', verbose_name=_('Состояние'))
+
+    start_at = models.DateTimeField(null=True, blank=True, verbose_name=_('Начало в'))
+    duration = models.DurationField(null=True, blank=True, verbose_name='Продолжительность ЧЧ:ММ')
+
+    platform = models.CharField(
+        choices=Platform.choices, max_length=100, null=True, blank=True, verbose_name=_('Платформа вебинаров'))
+    platform_id = models.CharField(
+        max_length=200, null=True, blank=True,
+        verbose_name=_('ID вебинара на платформе'),
+        help_text=_("Может быть номер, строка-код или ссылка"))
+
+    class Meta:
+        verbose_name = _("Вебинар")
+        verbose_name_plural = _("Вебинары")
+
+    def __str__(self):
+        return self.name
+
+    @property
+    def finish_at(self):
+        """Get finish timestamp"""
+        return self.start_at + self.duration
