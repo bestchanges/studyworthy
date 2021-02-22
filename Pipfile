@@ -14,7 +14,7 @@ parameterized = "*"
 responses = "*"
 
 [packages]
-django = "<2.3"
+django = "<3.2"
 django-classy-tags = ">=0.9"
 django-cms = "<3.8,>=3.7"
 django-crispy-forms = "*"
